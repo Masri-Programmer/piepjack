@@ -85,6 +85,8 @@ import CartgProduct from "./CartProduct.vue";
 import { useToast } from "vue-toastification";
 import { computed, onMounted } from "vue";
 import "@assets/css/cart/cartPage.css";
+import { useArea } from '@lib/useArea.js'
+const {  getApiUrl } = useArea();
 
 const toast = useToast();
 const { t } = useI18n();
@@ -95,7 +97,7 @@ onMounted(async () => {
     for (const cartProduct of cartState.value.cartItems) {
       try {
         const response = await axios.get(
-          `${BASE_URL}/products/${cartProduct.id}`
+          `${getApiUrl()}/products/${cartProduct.id}`
         );
         const validProduct = response.data.data;
 

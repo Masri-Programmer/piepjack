@@ -166,9 +166,10 @@ const breakpoints = {
 }
 
 .carousel__slide {
+  max-height: 400px;
   padding: 0.5rem;
 }
-
+b
 .carousel__next--disabled,
 .carousel__prev--disabled {
   display: none;

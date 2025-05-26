@@ -35,7 +35,7 @@
 }
 
 .cart-overlay-background {
-    @apply absolute inset-0 bg-zinc-900 bg-black/55;
+    @apply absolute inset-0 bg-zinc-900/55;
 }
 
 .cart-content {

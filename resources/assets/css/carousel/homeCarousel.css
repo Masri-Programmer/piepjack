@@ -120,6 +120,7 @@
 }
 
 .carousel__slide {
+  max-height: 400px;
     align-items: start;
     padding: 0.5rem;
 }

@@ -161,7 +161,7 @@ import { useI18n } from "vue-i18n";
 import Truck from "../Icons/Truck.vue";
 import PaypalIcon from "../Icons/Paypal.vue";
 import VisaIcon from "../Icons/VisaIcon.vue";
-import { BASE_URL } from "@lib/constants";
+import { useArea } from '@lib/useArea.js'
 import { onClickOutside } from "@vueuse/core";
 import { useToast } from "vue-toastification";
 import { ref, onMounted, watch } from "vue";
@@ -172,6 +172,7 @@ import emptyCart from "@img/svg/empty_cart.svg";
 import ProductSmallCard from "../product/ProductSmallCard.vue";
 import "@assets/css/cart/cart.css";
 
+const {  getApiUrl } = useArea();
 const Cart = ref(null);
 const emit = defineEmits(["close"]);
 onClickOutside(Cart, () => {
@@ -194,7 +195,7 @@ onMounted(async () => {
     for (const cartProduct of cartState.value.cartItems) {
       try {
         const response = await axios.get(
-          `${BASE_URL}/products/${cartProduct.id}`
+          `${getApiUrl()}/products/${cartProduct.id}`
         );
         const validProduct = response.data.data;
 

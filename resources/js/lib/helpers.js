@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { BASE_URL } from '@lib/constants.js';
 import { useStorage, useSessionStorage } from "@vueuse/core";
 import { useQuery, useInfiniteQuery } from '@tanstack/vue-query';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
@@ -7,6 +6,8 @@ import { useDateFormat } from "@vueuse/core";
 import { i18n } from "@lib/config.js"
 import { useApiNotifications } from '@lib/useApiNotifications';
 import { useApiShopNotifications } from '@lib/useApiShopNotifications';
+import { useArea } from '@lib/useArea.js'
+const { getApiUrl  } = useArea();
 
 const userStorage = useStorage("user", {});
 const userSessionStorage = useSessionStorage("user", {});
@@ -18,16 +19,7 @@ axios.defaults.headers.common['Accept-Language'] = i18n.global.locale;
 
 export const apiRequest = async (method, url, data = {}, params = {}) => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${userSessionStorage.value.token || userStorage.value.token || ''}`;
-    let apiUrl = BASE_URL;
-    const area = localStorage.getItem('area');
-
-    if (area === 'shop') {
-        apiUrl += '/shop';
-    } else if (area === 'admin') {
-        apiUrl += '/admin';
-    }
-
-    axios.defaults.baseURL = apiUrl;
+    axios.defaults.baseURL = getApiUrl();
 
     const resource = url.split('/').pop();
 

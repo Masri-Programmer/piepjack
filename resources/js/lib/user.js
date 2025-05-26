@@ -37,7 +37,7 @@ export const useLogin = () => {
                 userSessionStorage.value = { ...user, token,remember };
                 userStorage.value = {};
             }
-            router.push("admin/dashboard");
+            router.push("/admin/dashboard");
         },
         onError: (error) => {
             toast.error(error.message || "An error occurred");
@@ -57,12 +57,12 @@ export const useLogout = () => {
         onSuccess: () => {
             userStorage.value = {};
             userSessionStorage.value = {};
-            router.push("admin/login");
+            router.push("/admin/login");
         },
         onError: (error) => {
             userStorage.value = {};
             userSessionStorage.value = {};
-            router.push("admin/login");
+            router.push("/admin/login");
             toast.error(error.message || "An error occurred");
         },
     });

@@ -6,7 +6,7 @@
       <div
         class="flex h-18 w-full items-center justify-center border-b border-main p-2"
       >
-        <router-link to="/" class="block h-12 md:h-16">
+        <router-link to="/admin/" class="block h-12 md:h-16">
           <img
             :src="logoCircle"
             alt="Logo"
@@ -16,7 +16,7 @@
       </div>
       <nav class="flex flex-1 flex-col gap-y-4 pt-10">
         <router-link
-          to="/"
+          to="/admin/"
           :class="[
             'text-accent',
             'group',
@@ -43,7 +43,7 @@
         </router-link>
 
         <router-link
-          to="/products"
+          to="/admin/products"
           :class="[
             'text-accent',
             'group',
@@ -70,7 +70,7 @@
         </router-link>
 
         <router-link
-          to="/categories"
+          to="/admin/categories"
           :class="[
             'text-accent',
             'group',
@@ -97,7 +97,7 @@
         </router-link>
 
         <router-link
-          to="/Orders"
+          to="/admin/Orders"
           :class="[
             'text-accent',
             'group',
@@ -124,7 +124,7 @@
         </router-link>
 
         <router-link
-          to="/Returns"
+          to="/admin/Returns"
           :class="[
             'text-accent',
             'group',
@@ -151,7 +151,7 @@
         </router-link>
 
         <router-link
-          to="/Users"
+          to="/admin/Users"
           :class="[
             'text-accent',
             'group',
@@ -178,7 +178,7 @@
         </router-link>
 
         <router-link
-          to="/Reports"
+          to="/admin/Reports"
           :class="[
             'text-accent',
             'group',
@@ -205,7 +205,7 @@
         </router-link>
 
         <router-link
-          to="/Settings"
+          to="/admin/Settings"
           :class="[
             'text-accent',
             'group',

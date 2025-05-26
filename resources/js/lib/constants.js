@@ -1,7 +1,6 @@
 export const PRODUCTS_PER_PAGE = 10;
 export const USERS_PER_PAGE = 10;
 export const CUSTOMERS_PER_PAGE = 10;
-export const BASE_URL = import.meta.env.VITE_API_URL;
 export const SHOP_LINK = import.meta.env.BASE_URL;
 export const ADMIN_LINK = import.meta.env.BASE_URL+'/admin';
 export const SUPPORT_LOCALES = ['en', 'de'];

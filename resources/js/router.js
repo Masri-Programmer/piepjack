@@ -3,14 +3,15 @@ import { createRouter, createWebHistory } from "vue-router";
 import "@assets/css/nprogress.css";
 import { useStorage, useSessionStorage } from '@vueuse/core';
 import { createApiResource } from '@lib/helpers';
-
 import AppLayout from "./layouts/shop/AppLayout.vue";
 import AppLayout2 from "./layouts/shop/AppLayout2.vue";
 import AdminAppLayout from "./layouts/admin/AppLayout.vue";
 import AdminLoginLayout from "./layouts/admin/Login.vue";
 import AdminNotFoundLayout from "./layouts/admin/NotFound.vue";
 import PublicNotFoundLayout from "./layouts/shop/NotFound.vue";
-
+import { useArea } from '@lib/useArea.js'
+import { setAppArea } from '@lib/useArea'
+const { updateArea } = useArea();
 const BASE_TITLE = "PIEPJACK CLOTHING";
 
 const isAuthenticated = () => {
@@ -322,9 +323,9 @@ router.beforeEach((to, from, next) => {
     NProgress.start();
 
     if (to.path.startsWith('/admin')) {
-        localStorage.setItem('area', 'admin');
+        setAppArea('admin');
     } else if (to.name !== 'admin.login') {
-        localStorage.setItem('area', 'shop');
+        setAppArea('shop');
     }
 
     const pageTitle = to.meta.title;

@@ -1,5 +1,5 @@
 <template>
-  <div class="checkout-cart-container">
+  <div class="md:max-h-[50%] overflow-auto border grid grid-cols-1 md:grid-cols-2 border-gray">
     <template v-for="product in cartState.cartItems">
       <template v-for="item in product.items">
         <ProductSmallCard :product="product" :item="item" :label="'no-label'" />
@@ -7,32 +7,31 @@
     </template>
   </div>
 
-  <div class="checkout-cart-summary">
-    <div class="checkout-cart-subtotal">
-      <p>
+  <div class="grid m-6 text-main gap-3">
+    <div class="flex justify-between">
+      <p class="text-sm">
         {{ $t("pages.checkout.subtotal", { itemCount: cartTotalQuantity() }) }}
       </p>
-      <p>{{ cartTotalPrice() }} {{ $currency }}</p>
+      <p class="text-sm">{{ cartTotalPrice() }} {{ $currency }}</p>
     </div>
-    <div class="checkout-cart-shipping">
-      <p>{{ $t("pages.checkout.shipping") }}</p>
-      <p v-if="cartTotalPrice() >= 100 || freeShipping">
+    <div class="flex justify-between">
+      <p class="text-sm">{{ $t("pages.checkout.shipping") }}</p>
+      <p v-if="cartTotalPrice() >= 100 || freeShipping" class="text-sm">
         {{ $t("pages.checkout.free") }}
       </p>
-      <p v-else>5.90 {{ $currency }}</p>
+      <p v-else class="text-sm">5.90 {{ $currency }}</p>
     </div>
 
-    <!-- Promo Code Section -->
-    <div class="checkout-cart-promo">
-      <label for="promoCode" class="checkout-cart-promo-label">
+    <div class="py-3 border-t border-b border-gray">
+      <label for="promoCode" class="block mb-2 text-sm">
         {{ $t("pages.checkout.promoCode") }}
       </label>
-      <div class="checkout-cart-promo-input-wrapper">
+      <div class="flex items-center gap-2">
         <input
           type="text"
           id="promoCode"
           v-model="promoCode"
-          class="checkout-cart-promo-input"
+          class="flex-1 px-4 py-4 border border-gray text-sm focus:outline-none text-accent"
           :placeholder="$t('pages.checkout.enterPromoCode')"
         />
         <button
@@ -42,25 +41,25 @@
           {{ $t("pages.checkout.apply") }}
         </button>
       </div>
-      <p v-if="promoApplied" class="checkout-cart-promo-success">
+      <p v-if="promoApplied" class="text-green-500 text-xs mt-2">
         {{ $t("pages.checkout.promoApplied") }}
       </p>
-      <p v-if="promoError" class="checkout-cart-promo-error">
+      <p v-if="promoError" class="text-red-500 text-xs mt-2">
         {{ $t("pages.checkout.invalidPromo") }}
       </p>
     </div>
 
-    <div class="checkout-cart-total">
-      <div class="checkout-cart-total-value">
+    <div class="mb-4">
+      <div class="flex justify-between">
         <p class="text-xl font-bold">
           <strong>{{ $t("pages.checkout.total") }}</strong>
         </p>
-        <p>
+        <p class="text-xl font-bold">
           {{ calculateFinalPrice() }}
           {{ $currency }}
         </p>
       </div>
-      <p class="checkout-cart-tax">
+      <p class="text-zinc-200 text-sm">
         {{ $t("pages.checkout.includingTaxes", { taxAmount: "19%" }) }}
       </p>
     </div>
@@ -70,7 +69,6 @@
 <script setup>
 import ProductSmallCard from "../product/ProductSmallCard.vue";
 import { reactive, computed, ref, onBeforeMount } from "vue";
-import "@assets/css/checkout/checkoutCart.css";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   cartState,

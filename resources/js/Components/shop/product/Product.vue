@@ -26,9 +26,10 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 import { onMounted, watch, ref } from "vue";
 import Spinner from "@components/ui/Spinner.vue";
-import { BASE_URL } from "@lib/constants.js";
+import { useArea } from '@lib/useArea.js'
 import ProductContent from "./ProductContent.vue";
 import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
+const {  getApiUrl } = useArea();
 
 const route = useRoute();
 const product = ref(null);
@@ -37,7 +38,7 @@ const isLoading = ref(true);
 const fetchProduct = async (id) => {
   isLoading.value = true;
   try {
-    const response = await axios.get(`${BASE_URL}/products/${id}`);
+    const response = await axios.get(`${getApiUrl()}/products/${id}`);
     product.value = response.data.data;
     error.value = null;
   } catch (err) {
