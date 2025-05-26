@@ -1,3 +1,5 @@
+@reference '../app.css';
+
 .cart-product-product {
     @apply p-3;
 }

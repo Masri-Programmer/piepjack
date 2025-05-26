@@ -79,7 +79,7 @@
 import { reactive, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { object, string, boolean } from "yup";
-import Spinner from "@layouts/admin/Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 import { useRouter } from "vue-router";
 import { apiQuery } from "@lib/helpers";
 

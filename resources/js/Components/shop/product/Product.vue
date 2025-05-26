@@ -25,10 +25,10 @@
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { onMounted, watch, ref } from "vue";
-import Spinner from "../../Layouts/Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 import { BASE_URL } from "@lib/constants.js";
 import ProductContent from "./ProductContent.vue";
-import HomeCarousel from "../home/HomeCarousel.vue";
+import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
 
 const route = useRoute();
 const product = ref(null);

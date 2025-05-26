@@ -26,7 +26,7 @@
 
 <script setup>
 import { ref } from "vue";
-import Spinner from "@layouts/admin/Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 import { useUploadImgMutation } from "@lib/form";
 const emit = defineEmits("handle:img");
 const props = defineProps({

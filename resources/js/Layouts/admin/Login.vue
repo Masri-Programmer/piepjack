@@ -102,7 +102,7 @@
 import { Lock } from "lucide-vue-next";
 import GuestLayout from "@layouts/admin/GuestLayout.vue";
 import { useLogin } from "@lib/user.js";
-import Spinner from "./Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 const { mutate: signIn, isLoading, data } = useLogin();
 
 const user = {

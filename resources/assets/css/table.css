@@ -1,3 +1,5 @@
+@reference './app.css';
+
 .accordion-table-container {
     @apply pt-3 text-xs;
 }

@@ -37,9 +37,10 @@
 </template>
 
 <script setup>
+import "@assets/css/checkout/checkout.css";
 import logo from "@img/logo-new.png";
 import ContactForm from "./ContactForm.vue";
-import Breadcrumbs from "../Breadcrumbs.vue";
+import Breadcrumbs from "../../Breadcrumbs.vue";
 import CheckoutCart from "../cart/CheckoutCart.vue";
 import { ref } from "vue";
 
@@ -56,7 +57,3 @@ const links = ref([
   },
 ]);
 </script>
-
-<style scoped>
-@import "@assets/css/checkout/checkout.css";
-</style>

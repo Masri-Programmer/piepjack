@@ -182,8 +182,9 @@ import * as Yup from "yup";
 import { useI18n } from "vue-i18n";
 import Tooltip from "../Tooltip.vue";
 import { apiQuery } from "@lib/helpers";
+import "@assets/css/checkout/contactFrom.css";
 import { ChevronLeft } from "lucide-vue-next";
-import Spinner from "../../Layouts/Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 import { onMounted, reactive, ref, computed, watch } from "vue";
 import { cartState, checkoutform } from "@lib/store/shop/index.js";
 
@@ -392,7 +393,3 @@ onMounted(() => {
   clearErrorOnInputChange();
 });
 </script>
-
-<style scoped>
-@import "@assets/css/checkout/contactFrom.css";
-</style>

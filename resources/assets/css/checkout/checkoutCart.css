@@ -1,3 +1,5 @@
+@reference '../app.css';
+
 .checkout-cart-container {
     @apply md:max-h-[50%] overflow-auto border grid grid-cols-1 md:grid-cols-2 border-gray;
 }

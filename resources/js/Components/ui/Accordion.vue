@@ -22,6 +22,7 @@
 
 <script setup>
 // import Icon  from "@lib/components/Icon.vue";
+import "@assets/css/accordion.css";
 
 const props = defineProps({
   id: String,
@@ -31,7 +32,3 @@ const props = defineProps({
 });
 
 </script>
-
-<style scoped>
-@import "@assets/css/accordion.css";
-</style>

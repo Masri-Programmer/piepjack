@@ -4,12 +4,12 @@ import "@assets/css/nprogress.css";
 import { useStorage, useSessionStorage } from '@vueuse/core';
 import { createApiResource } from '@lib/helpers';
 
-import AppLayout from "./Layouts/AppLayout.vue";
-import AppLayout2 from "./Layouts/AppLayout2.vue";
-import AdminAppLayout from "./Layouts/admin/AppLayout.vue";
-import AdminLoginLayout from "./Layouts/admin/Login.vue";
-import AdminNotFoundLayout from "./Layouts/admin/NotFound.vue";
-import PublicNotFoundLayout from "./Layouts/NotFound.vue";
+import AppLayout from "./layouts/shop/AppLayout.vue";
+import AppLayout2 from "./layouts/shop/AppLayout2.vue";
+import AdminAppLayout from "./layouts/admin/AppLayout.vue";
+import AdminLoginLayout from "./layouts/admin/Login.vue";
+import AdminNotFoundLayout from "./layouts/admin/NotFound.vue";
+import PublicNotFoundLayout from "./layouts/shop/NotFound.vue";
 
 const BASE_TITLE = "PIEPJACK CLOTHING";
 
@@ -27,48 +27,48 @@ const routes = [
             {
                 path: "",
                 name: "Home",
-                component: () => import("./Pages/Home.vue"),
+                component: () => import("./pages/shop/Home.vue"),
             },
             {
                 path: "terms-of-service",
                 name: "terms-of-service",
-                component: () => import("./Pages/TermsOfService.vue"),
+                component: () => import("./pages/shop/TermsOfService.vue"),
                 meta: { title: "Terms of Service" },
             },
             {
                 path: "impressum",
                 name: "Impressum",
-                component: () => import("./Pages/Impressum.vue"),
+                component: () => import("./pages/shop/Impressum.vue"),
                 meta: { title: "Impressum" },
             },
             {
                 path: "shipping",
                 name: "Shipping",
-                component: () => import("./Pages/Shipping.vue"),
+                component: () => import("./pages/shop/Shipping.vue"),
                 meta: { title: "Shipping" },
             },
             {
                 path: "faq",
                 name: "faq",
-                component: () => import("./Pages/FAQ.vue"),
+                component: () => import("./pages/shop/FAQ.vue"),
                 meta: { title: "FAQ" },
             },
             {
                 path: "track-order",
                 name: "TrackOrder",
-                component: () => import("./Pages/TrackOrder.vue"),
+                component: () => import("./pages/shop/TrackOrder.vue"),
                 meta: { title: "Track Your Order" },
             },
             {
                 path: "track-order/:id",
                 name: "TrackOrderId",
-                component: () => import("./Pages/TrackOrder.vue"),
+                component: () => import("./pages/shop/TrackOrder.vue"),
                 meta: { title: "Track Your Order" },
             },
             {
                 path: "about",
                 name: "AboutUs",
-                component: () => import("./Pages/AboutUs.vue"),
+                component: () => import("./pages/shop/AboutUs.vue"),
                 meta: { title: "About Us" },
             },
             {
@@ -78,42 +78,42 @@ const routes = [
                     {
                         path: "",
                         name: "Collections",
-                        component: () => import("./Pages/Collections.vue"),
+                        component: () => import("./pages/shop/Collections.vue"),
                     },
                     {
                         path: "shop-all",
                         name: "CollectionsShopAll",
-                        component: () => import("./Pages/Collections.vue"),
+                        component: () => import("./pages/shop/Collections.vue"),
                     },
                     {
                         path: ":id/:slug",
                         name: "CollectionProduct",
-                        component: () => import("./Pages/Collections.vue"),
+                        component: () => import("./pages/shop/Collections.vue"),
                     },
                 ],
             },
             {
                 path: "product/:id/:slug",
                 name: "Product",
-                component: () => import("./Components/product/Product.vue"),
+                component: () => import("./components/shop/product/Product.vue"),
                 meta: { title: "Product" },
             },
             {
                 path: "datenschutzerklarung",
                 name: "Datenschutzerklärung",
-                component: () => import("./Pages/Datenschutzerklarung.vue"),
+                component: () => import("./pages/shop/Datenschutzerklarung.vue"),
                 meta: { title: "Datenschutzerklärung" },
             },
             {
                 path: "cart",
                 name: "Cart",
-                component: () => import("./Components/cart/CartPage.vue"),
+                component: () => import("./components/shop/cart/CartPage.vue"),
                 meta: { title: "Cart" },
             },
             {
                 path: "off-the-radar",
                 name: "OffTheRadar",
-                component: () => import("./Pages/OffTheRadar.vue"),
+                component: () => import("./pages/shop/OffTheRadar.vue"),
                 meta: { title: "Off The Radar" },
             },
             {
@@ -123,25 +123,25 @@ const routes = [
                     {
                         path: "",
                         name: "ReturnOrder",
-                        component: () => import("./Components/order/ReturnOrder.vue"),
+                        component: () => import("./components/shop/order/ReturnOrder.vue"),
                     },
                     {
                         path: ":slug",
                         name: "ReturnOrderSlug",
-                        component: () => import("./Components/order/ReturnSuccess.vue"),
+                        component: () => import("./components/shop/order/ReturnSuccess.vue"),
                     },
                 ],
             },
             {
                 path: "success",
                 name: "Success",
-                component: () => import("./Components/checkout/Success.vue"),
+                component: () => import("./components/shop/checkout/Success.vue"),
                 meta: { title: "Success" },
             },
             {
                 path: "category/:slug",
                 name: "Category",
-                component: () => import("./Pages/Collections.vue"),
+                component: () => import("./pages/shop/Collections.vue"),
                 meta: (route) => ({ title: route.params.slug }),
             },
         ],
@@ -153,7 +153,7 @@ const routes = [
             {
                 path: "",
                 name: "Checkout",
-                component: () => import("./Components/checkout/Checkout.vue"),
+                component: () => import("./components/shop/checkout/Checkout.vue"),
                 meta: { title: "Checkout" },
             },
         ],
@@ -178,25 +178,25 @@ const routes = [
             {
                 path: "dashboard",
                 name: "admin.dashboard",
-                component: () => import("./Pages/admin/Dashboard.vue"),
+                component: () => import("./pages/admin/Dashboard.vue"),
                 meta: { title: "Dashboard" },
             },
             {
                 path: "products",
                 name: "admin.products.show",
-                component: () => import("./Pages/admin/products/ProductsShow.vue"),
+                component: () => import("./pages/admin/products/ProductsShow.vue"),
                 meta: { title: "Products" },
             },
             {
                 path: "products/add",
                 name: "admin.products.add",
-                component: () => import("./Pages/admin/products/StoreProduct.vue"),
+                component: () => import("./pages/admin/products/StoreProduct.vue"),
                 meta: { title: "Add Product" },
             },
             {
                 path: "products/:id/:slug",
                 name: "admin.products.view",
-                component: () => import("./Pages/admin/products/Product.vue"),
+                component: () => import("./pages/admin/products/Product.vue"),
                 meta: (route) => ({ title: `Product: ${route.params.slug}` }),
             },
             {
@@ -220,19 +220,19 @@ const routes = [
             {
                 path: "categories",
                 name: "admin.categories",
-                component: () => import("./Pages/admin/categories/Categories.vue"),
+                component: () => import("./pages/admin/categories/Categories.vue"),
                 meta: { title: "Categories" },
             },
             {
                 path: "categories/add",
                 name: "admin.categories.add",
-                component: () => import("./Pages/admin/categories/StoreCategory.vue"),
+                component: () => import("./pages/admin/categories/StoreCategory.vue"),
                 meta: { title: "Add Category" },
             },
             {
                 path: "categories/:id/:slug",
                 name: "admin.categories.view",
-                component: () => import("./Pages/admin/categories/Category.vue"),
+                component: () => import("./pages/admin/categories/Category.vue"),
                 meta: (route) => ({ title: `Category: ${route.params.slug}` }),
             },
             {
@@ -256,37 +256,37 @@ const routes = [
             {
                 path: "orders",
                 name: "admin.orders",
-                component: () => import("./Pages/admin/orders/Orders.vue"),
+                component: () => import("./pages/admin/orders/Orders.vue"),
                 meta: { title: "Orders" },
             },
             {
                 path: "orders/:id",
                 name: "admin.orders.view",
-                component: () => import("./Pages/admin/orders/Order.vue"),
+                component: () => import("./pages/admin/orders/Order.vue"),
                 meta: (route) => ({ title: `Order: ${route.params.id}` }),
             },
             {
                 path: "returns",
                 name: "admin.returns",
-                component: () => import("./Pages/admin/returns/Returns.vue"),
+                component: () => import("./pages/admin/returns/Returns.vue"),
                 meta: { title: "Returns" },
             },
             {
                 path: "returns/:id",
                 name: "admin.returns.view",
-                component: () => import("./Pages/admin/returns/Returns.vue"),
+                component: () => import("./pages/admin/returns/Returns.vue"),
                 meta: (route) => ({ title: `Return: ${route.params.id}` }),
             },
             {
                 path: "users",
                 name: "admin.users",
-                component: () => import("./Pages/admin/users/Users.vue"),
+                component: () => import("./pages/admin/users/Users.vue"),
                 meta: { title: "Users" },
             },
             {
                 path: "users/:id",
                 name: "admin.users.view",
-                component: () => import("./Pages/admin/users/User.vue"),
+                component: () => import("./pages/admin/users/User.vue"),
                 meta: (route) => ({ title: `User: ${route.params.id}` }),
             },
             {

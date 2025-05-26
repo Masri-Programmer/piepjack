@@ -1,26 +1,70 @@
-@reference './app.css';
-
 .cart-product-quantity {
-    @apply p-3;
+    padding: 0.75rem;
 }
 
 .cart-product-custom-number-input {
-    @apply w-28 h-full;
+    width: 7rem;
+    height: 100%;
 }
 
 .cart-product-quantity-input {
-    @apply flex w-full justify-between gap-3 items-center;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: center;
 }
 
 .cart-product-quantity-buttons {
-    @apply flex flex-row w-full relative bg-transparent mt-1 justify-between;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    position: relative;
+    background-color: transparent;
+    margin-top: 0.25rem;
+    justify-content: space-between;
 }
 
 .cart-product-quantity-decrement,
 .cart-product-quantity-increment {
-    @apply border border-gray text-main opacity-55 hover:text-main hover:bg-gray h-full w-20 cursor-pointer outline-none;
+    border: 1px solid var(--gray);
+    color: var(--main);
+    opacity: 0.55;
+    height: 100%;
+    width: 5rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.cart-product-quantity-decrement:hover,
+.cart-product-quantity-increment:hover {
+    color: var(--main);
+    background-color: var(--gray);
 }
 
 .cart-product-quantity-input-box {
-    @apply bg-accent_dark border-l-0 border-r-0 outline-none focus:outline-none text-center w-full text-xs hover:text-main focus:text-main cursor-default flex items-center border-t border-b border-gray;
+    background-color: var(--accent_dark);
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top: 1px solid var(--gray);
+    border-bottom: 1px solid var(--gray);
+    outline: none;
+    text-align: center;
+    width: 100%;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: inherit;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-product-quantity-input-box:hover {
+    color: var(--main);
+}
+
+.cart-product-quantity-input-box:focus {
+    outline: none;
+    color: var(--main);
 }

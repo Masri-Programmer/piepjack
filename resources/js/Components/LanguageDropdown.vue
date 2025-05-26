@@ -33,7 +33,7 @@
 import { computed, ref } from "vue";
 import de from "@img/lang/de_DE.svg";
 import en from "@img/lang/en_GB.svg";
-import DropdownMenu from "@ui/DropdownMenu.vue";
+import DropdownMenu from "@components/ui/DropdownMenu.vue";
 import { useI18n } from "vue-i18n";
 import { changeLanguage } from "@lib/config.js";
 const { t, locale } = useI18n();

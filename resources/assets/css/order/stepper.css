@@ -1,4 +1,5 @@
-/* In your CSS file */
+@reference '../app.css';
+
 .stepper-container {
     @apply relative hidden md:block;
 }

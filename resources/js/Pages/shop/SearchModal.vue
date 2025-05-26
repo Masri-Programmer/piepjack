@@ -109,10 +109,10 @@ import { useI18n } from "vue-i18n";
 import { ref, computed } from "vue";
 import "@assets/css/pages/searchModal.css";
 import { useDebounceFn } from "@vueuse/core";
-import Modal from "./../components/Modal.vue";
+import Modal from "@components/Modal.vue";
 import { apiQuery } from "@lib/helpers";
 import searchIllustration from "@img/svg/search.svg";
-import ProductSmallCard from "../components/product/ProductSmallCard.vue";
+import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
 import { productParams } from "@lib/store/shop/index.js";
 
 const props = defineProps({

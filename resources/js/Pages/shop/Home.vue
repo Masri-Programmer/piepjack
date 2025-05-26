@@ -19,12 +19,11 @@
 </template>
 
 <script setup>
-import HeroBanner from "../components/home/HeroBanner.vue";
-import HomeProducts from "../components/home/HomeProducts.vue";
-import HomeCategories from "../components/home/HomeCategories.vue";
-import HomeCarousel from "../components/home/HomeCarousel.vue";
+import HeroBanner from "@components/shop/home/HeroBanner.vue";
+import HomeProducts from "@components/shop/home/HomeProducts.vue";
+import HomeCategories from "@components/shop/home/HomeCategories.vue";
+import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
 import { apiQuery } from "@lib/helpers";
 
 const { data, error, isLoading } = apiQuery("categories").useGet({});
 </script>
-w

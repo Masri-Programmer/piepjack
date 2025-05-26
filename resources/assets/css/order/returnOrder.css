@@ -1,4 +1,4 @@
-/* In your CSS file, you can use the @apply rule to define the styles */
+@reference '../app.css';
 
 .return-order-container {
     @apply grid place-content-center gap-4 relative;

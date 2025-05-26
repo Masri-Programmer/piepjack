@@ -1,4 +1,4 @@
-/* In your CSS file */
+@reference './app.css';
 
 /* Container for accordion */
 .accordion-container {

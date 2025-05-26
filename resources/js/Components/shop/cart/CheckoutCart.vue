@@ -70,6 +70,7 @@
 <script setup>
 import ProductSmallCard from "../product/ProductSmallCard.vue";
 import { reactive, computed, ref, onBeforeMount } from "vue";
+import "@assets/css/checkout/checkoutCart.css";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   cartState,
@@ -129,7 +130,3 @@ onBeforeMount(() => {
   });
 });
 </script>
-
-<style scoped>
-@import "@assets/css/checkout/checkoutCart.css";
-</style>

@@ -75,7 +75,7 @@
 import { reactive, ref } from "vue";
 import ProductImg from "./ProductImg.vue";
 import { apiQuery } from "@lib/helpers";
-import Spinner from "@layouts/admin/Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 import ToggleSwitch from "@components/admin/ToggleSwitch.vue";
 
 const { data: categoriesData } = apiQuery("all-categories").useGet({});

@@ -399,46 +399,90 @@ input[type="number"] {
   }
 }
 
-@layer components {
-  .trackOrder {
-    .icon {
-      @apply w-6 h-6;
-    }
+.trackOrder .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
 
-    .tracking-container {
-      @apply bg-accent_light shadow-lg p-6 space-y-6 w-96;
-    }
+.trackOrder .tracking-container {
+  background-color: var(--accent_light);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  width: 24rem;
+}
 
-    .title {
-      @apply text-2xl font-bold text-main;
-    }
+.trackOrder .tracking-container> :not([hidden])~ :not([hidden]) {
+  margin-top: 1.5rem;
+}
 
-    .tracking-form {
-      @apply flex flex-col space-y-4;
-    }
+.trackOrder .title {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  color: var(--main);
+}
 
-    .input-field {
-      @apply w-full p-3 border border-gray focus:outline-none focus:ring-2 focus:ring-accent text-accent;
-    }
+.trackOrder .tracking-form {
+  display: flex;
+  flex-direction: column;
+}
 
-    .submit-button {
-      @apply w-full bg-accent text-main font-semibold py-3 flex items-center justify-center transition disabled:bg-accent_dark;
-    }
+.trackOrder .tracking-form> :not([hidden])~ :not([hidden]) {
+  margin-top: 1rem;
+}
 
-    .back-button {
-      @apply w-full bg-accent text-main font-semibold py-3 flex items-center justify-center transition disabled:bg-accent_dark;
-    }
+.trackOrder .input-field {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--gray);
+  color: var(--accent);
+}
 
-    .subtitle {
-      @apply text-xl font-semibold text-main mb-4;
-    }
+.trackOrder .input-field:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
 
-    .details-grid {
-      @apply grid grid-cols-2 gap-2 text-gray;
-    }
+.trackOrder .submit-button,
+.trackOrder .back-button {
+  width: 100%;
+  background-color: var(--accent);
+  color: var(--main);
+  font-weight: 600;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
 
-    .products-list {
-      @apply space-y-3 mt-4;
-    }
-  }
+.trackOrder .submit-button:disabled,
+.trackOrder .back-button:disabled {
+  background-color: var(--accent_dark);
+}
+
+.trackOrder .subtitle {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--main);
+  margin-bottom: 1rem;
+}
+
+.trackOrder .details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  color: var(--gray);
+}
+
+.trackOrder .products-list {
+  margin-top: 1rem;
+}
+
+.trackOrder .products-list> :not([hidden])~ :not([hidden]) {
+  margin-top: 0.75rem;
 }

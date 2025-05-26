@@ -50,7 +50,7 @@
 
 <script setup>
 import Breadcrumbs from "@components/admin/Breadcrumbs.vue";
-import Spinner from "./Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 import { object } from "yup";
 const props = defineProps({
   data: { type: Array },

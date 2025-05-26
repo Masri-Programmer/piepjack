@@ -119,11 +119,11 @@ import { Search } from "lucide-vue-next";
 import NavSidebar from "./NavSidebar.vue";
 import logoCircle from "@img/logo-new.png";
 import { apiQuery } from "@lib/helpers";
-import Cart from "../Components/cart/Cart.vue";
-import TopBanner from "./../Layouts/TopBanner.vue";
-import SearchModal from "./../Pages/SearchModal.vue";
+import Cart from "@components/shop/cart/Cart.vue";
+import TopBanner from "@layouts/shop/TopBanner.vue";
+import SearchModal from "@pages/shop/SearchModal.vue";
 import { cartState, cartTotalQuantity } from "@lib/store/shop/index.js";
-import LanguageDropdown from "./../Components/LanguageDropdown.vue";
+import LanguageDropdown from "@components/LanguageDropdown.vue";
 
 const { data, error, isLoading } = apiQuery("categories").useGet({});
 

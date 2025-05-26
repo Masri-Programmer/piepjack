@@ -6,6 +6,15 @@
 @import "tailwindcss";
 @config "../../../tailwind.config.js";
 
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    } }
+
 @font-face {
     font-weight: 500;
     font-style: normal;

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full px-4 md:px-8 2xl:px-16 py-10 border-t border-gray shadow-md tracking-normal bg-accent_dark text-xs sm:text-sm flex justify-center items-center gap-4"
+    class="w-full px-4 md:px-8 2xl:px-16 py-10 border-t border-gray-400 shadow-md tracking-normal text-xs sm:text-sm flex justify-center items-center gap-4 bg-[#f2f0a1] text-accent_dark"
   >
     <a
       href="https://www.instagram.com/piepjack"

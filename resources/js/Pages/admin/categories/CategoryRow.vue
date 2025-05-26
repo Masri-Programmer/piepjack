@@ -51,7 +51,7 @@
 
 <script setup>
 import ToggleSwitch from "@components/admin/ToggleSwitch.vue";
-import Spinner from "@layouts/admin/Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 import { apiQuery } from "@lib/helpers";
 import { reactive, ref } from "vue";
 

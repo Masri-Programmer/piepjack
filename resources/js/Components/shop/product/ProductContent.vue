@@ -1,6 +1,6 @@
 <template>
   <main class="md:w-2/3 lg:w-3/4 w-full md:min-h-screen grid grid-cols-2 gap-4">
-    <template v-for="(item, index) in data.items">
+    <template v-for="(item, index) in data?.items">
       <Lens
         v-if="item.image_url"
         :hovering="hoverStates[index]"
@@ -31,12 +31,12 @@
   <aside class="w-full md:w-1/3 lg:w-1/4">
     <div class="sticky top-12 flex flex-col gap-6">
       <h6 class="text-base font-extrabold">
-        {{ data.name }}
+        {{ data?.name }}
       </h6>
-      <template v-if="variants?.data && data.items.length">
+      <template v-if="variants?.data && data?.items.length">
         <ProductVariations
           :variants="variants?.data"
-          :items="data.items"
+          :items="data?.items"
           :product="data"
         />
         <ProductContentAddOns />
@@ -47,7 +47,7 @@
       <Accordion
         id="description"
         :label="$t('common.product.desc')"
-        :content="data.description"
+        :content="data?.description"
         iconName="Info"
       />
       <Accordion
@@ -132,7 +132,7 @@ const {
   data: variants,
   error,
   isLoading,
-} = apiQuery("category-variations").useGetById(props.data.category_id);
+} = apiQuery("category-variations").useGetById(props.data?.category_id);
 
 const visibleRef = ref(false);
 const indexRef = ref(0);
@@ -151,7 +151,7 @@ const showSingle = (src) => {
   onShow();
 };
 const showMultiple = (index) => {
-  imgsRef.value = props.data.items
+  imgsRef.value = props.data?.items
     .filter((item) => item.image_url)
     .map((item) => ({ title: "Image", src: item.image_url }));
   indexRef.value = index;

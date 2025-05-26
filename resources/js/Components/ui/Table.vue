@@ -37,13 +37,11 @@
 </template>
 
 <script setup>
+import "@assets/css/table.css";
+
 const props = defineProps({
   headers: Array,
   rows: Array,
   returnsInfo: Object,
 });
 </script>
-
-<style scoped>
-@import "@assets/css/table.css";
-</style>

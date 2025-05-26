@@ -109,7 +109,7 @@
 <script setup>
 import { useI18n } from "vue-i18n";
 import { ref, onMounted } from "vue";
-import ProductCard from "../components/product/ProductCard.vue";
+import ProductCard from "@components/shop/product/ProductCard.vue";
 
 const { t } = useI18n();
 

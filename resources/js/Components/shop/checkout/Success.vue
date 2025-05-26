@@ -9,17 +9,11 @@
       </svg>
       <div class="text-center text-accent_dark">
         <h3 class="md:text-3xl text-base text-accent font-semibold text-center">
-          # {{ returnId }} <br />
+          # {{ orderId }} <br />
           {{ $t("validation.success.title") }}
         </h3>
         <p class="my-2">{{ $t("validation.success.thankYou") }}</p>
-        <p>
-          {{
-            $t("validation.success.checkEmail", {
-              payment: $t("validation.success.return"),
-            })
-          }}
-        </p>
+        <p>{{ $t("validation.success.checkEmail", { payment:$t('validation.success.order')}) }}</p>
       </div>
     </div>
   </div>
@@ -41,18 +35,18 @@
 <script setup>
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
-import Spinner from "../../Layouts/Spinner.vue";
-import HomeCarousel from "../home/HomeCarousel.vue";
+import Spinner from "@components/ui/Spinner.vue";
+import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
 import { apiQuery } from "@lib/helpers";
 import { cartState } from "@lib/store/shop/index.js";
 
 const route = useRoute();
-const returnId = route.query.return_number;
+const orderId = route.query.order_number;
 const { data, error, isLoading } = apiQuery("categories").useGet({});
 
 onMounted(() => {
-  if (returnId) {
-    cartState.value.cartItems = [];
+  if (orderId) {
+ cartState.value.cartItems = [];
   }
 });
 </script>

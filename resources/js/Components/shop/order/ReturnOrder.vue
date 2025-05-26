@@ -188,14 +188,15 @@
 </template>
 
 <script setup>
+import "@assets/css/order/returnOrder.css";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { ChevronLeft } from "lucide-vue-next";
 import { useToast } from "vue-toastification";
 import { ref, computed, onMounted } from "vue";
-import Spinner from "../../Layouts/Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 import { useSessionStorage } from "@vueuse/core";
-import ProductSmallCard from "../product/ProductSmallCard.vue";
+import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
 import { apiQuery } from "@lib/helpers";
 import { checkoutform } from "@lib/store/shop/index.js";
 
@@ -336,7 +337,3 @@ onMounted(() => {
   }
 });
 </script>
-
-<style scoped>
-@import "@assets/css/order/returnOrder.css";
-</style>

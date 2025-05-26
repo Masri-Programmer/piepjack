@@ -34,7 +34,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
+} from "@components/ui/dropdown-menu";
 const props = defineProps({
   open: {
     type: Boolean,

@@ -82,11 +82,11 @@
 <script setup>
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
-import Spinner from "../Layouts/Spinner.vue";
+import Spinner from "@components/ui/Spinner.vue";
 import { useToast } from "vue-toastification";
 import { ref, computed, onMounted, watch } from "vue";
 import { useSessionStorage } from "@vueuse/core";
-import ProductSmallCard from "../components/product/ProductSmallCard.vue";
+import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
 import { apiQuery } from "@lib/helpers";
 import { checkoutform } from "@lib/store/shop/index.js";
 
