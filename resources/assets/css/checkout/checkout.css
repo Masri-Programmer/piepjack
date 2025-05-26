@@ -1,0 +1,51 @@
+.checkout-container {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .checkout-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.checkout-form-content {
+    display: grid;
+    justify-items: center;
+}
+
+.checkout-logo {
+    margin-bottom: 0.5rem;
+    width: 6rem;
+}
+
+.checkout-contact-form {
+    flex-grow: 1;
+}
+
+.checkout-footer {
+    margin-top: 1.5rem;
+}
+
+.checkout-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.link-button {
+    color: var(--main-color);
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+    text-decoration: underline;
+}
+
+.link-button:hover {
+    color: gray;
+}

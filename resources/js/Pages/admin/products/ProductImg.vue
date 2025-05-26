@@ -1,0 +1,66 @@
+<template>
+  <div
+    class="relative inline-block shrink-0 rounded-2xl me-3 w-[100px] h-[100px] shadow-xl"
+  >
+    <input
+      type="file"
+      accept="image/*"
+      @change="(e) => handleImageUpload(e, product)"
+      class="hidden"
+      ref="imageInput"
+    />
+    <img
+      v-if="!uploadLoading"
+      :src="product.image || product.image_url || defaultImage"
+      class="w-full h-full inline-block shrink-0 rounded-2xl cursor-pointer object-contain"
+      alt="Image"
+      loading="lazy"
+      @click="triggerFileInput"
+    />
+    <Spinner
+      v-if="uploadLoading"
+      class="w-full h-full inline-block shrink-0 rounded-2xl bg-lime-500 object-contain"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref } from "vue";
+import Spinner from "@layouts/admin/Spinner.vue";
+import { useUploadImgMutation } from "@lib/form";
+const emit = defineEmits("handle:img");
+const props = defineProps({
+  product: { type: Object },
+});
+const defaultImage =
+  "https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/riva-dashboard-tailwind/img/img-49-new.jpg";
+const imageInput = ref(null);
+const { mutate: upload, isLoading: uploadLoading } = useUploadImgMutation();
+
+const handleImageUpload = (event, product) => {
+  const file = event.target.files[0];
+  upload(file, {
+    onSuccess: (data) => {
+      product.image = data.image;
+      emit("handle:img", {
+        product,
+        img: "image",
+        value: {
+          image: data.image,
+          image_mime: data.image_mime,
+          image_size: data.image_size,
+        },
+      });
+    },
+  });
+};
+
+const triggerFileInput = (event) => {
+  event.preventDefault();
+  if (imageInput.value) {
+    imageInput.value.click();
+  }
+};
+</script>
+
+<style lang="scss" scoped></style>

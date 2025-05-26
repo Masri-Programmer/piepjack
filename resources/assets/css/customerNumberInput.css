@@ -1,0 +1,26 @@
+@reference './app.css';
+
+.cart-product-quantity {
+    @apply p-3;
+}
+
+.cart-product-custom-number-input {
+    @apply w-28 h-full;
+}
+
+.cart-product-quantity-input {
+    @apply flex w-full justify-between gap-3 items-center;
+}
+
+.cart-product-quantity-buttons {
+    @apply flex flex-row w-full relative bg-transparent mt-1 justify-between;
+}
+
+.cart-product-quantity-decrement,
+.cart-product-quantity-increment {
+    @apply border border-gray text-main opacity-55 hover:text-main hover:bg-gray h-full w-20 cursor-pointer outline-none;
+}
+
+.cart-product-quantity-input-box {
+    @apply bg-accent_dark border-l-0 border-r-0 outline-none focus:outline-none text-center w-full text-xs hover:text-main focus:text-main cursor-default flex items-center border-t border-b border-gray;
+}

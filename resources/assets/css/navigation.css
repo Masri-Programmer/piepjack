@@ -1,0 +1,173 @@
+@reference "./app.css";
+
+.hoverBtn {
+    color: var(--main);
+    padding: 5px 15px;
+    background: var(--accent);
+    background-size: 200% 100%;
+    background-position: right;
+    border: 1px solid var(--accent);
+    font-family: 'AvenirNext-Bold';
+    transition: background-position 0.7s ease-in-out, color 0.7s ease-in-out;
+    background-image: linear-gradient(to left, var(--accent) 50%, var(--main) 50%);
+}
+
+.hoverBtn:hover {
+    background-position: left;
+    color: var(--accent);
+}
+
+.sale-text-banner {
+    font-size: .5rem;
+    text-align: center;
+}
+
+@media screen and (min-width: 30em) {
+    .sale-text-banner {
+        font-size: .7rem;
+    }
+}
+
+@keyframes border-left-to-right {
+    0% {
+        width: 0;
+        left: 0;
+    }
+
+    100% {
+        width: 100%;
+        left: 0;
+    }
+}
+
+.border-animate {
+    position: relative;
+}
+
+.border-animate::before {
+    left: 0;
+    width: 0;
+    bottom: 0;
+    content: '';
+    height: 2px;
+    position: absolute;
+    background-color: currentColor;
+    transition: width 0.2s ease-in-out;
+}
+
+.border-animate:hover::before {
+    width: 100%;
+}
+
+.dropdown-menu span {
+    cursor: pointer;
+}
+
+.dropdown-menu p {
+    opacity: 0.75;
+    margin: 0.5rem;
+    margin-left: 0;
+    cursor: pointer;
+    text-transform: uppercase;
+
+    &:hover {
+        color: var(--main);
+        opacity: 1;
+    }
+}
+
+.navigation-bar {
+    @apply flex items-center justify-between w-full text-main h-12 px-4 z-10;
+}
+
+@media (max-width:768px) {
+    .navigation-bar {
+        @apply fixed top-0 z-10
+    }
+}
+
+.menu-button {
+    @apply p-4 block md:hidden;
+}
+
+.menu-icon {
+    @apply h-8 w-8 opacity-55 cursor-pointer;
+}
+
+.logo-link {
+    @apply block h-10;
+}
+
+.logo-img {
+    @apply h-full rounded-full;
+}
+
+.nav-links {
+    @apply md:flex gap-5 hidden h-full uppercase relative;
+}
+
+.nav-item {
+    @apply flex items-center h-full border-accent px-1 cursor-pointer text-xs;
+}
+
+.nav-icons {
+    @apply block;
+}
+
+.icon-list {
+    @apply grid grid-flow-col items-center gap-3;
+}
+
+.search-icon {
+    @apply cursor-pointer;
+}
+
+.cart-icon {
+    @apply relative inline-flex items-center cursor-pointer;
+}
+
+.cart-img {
+    @apply h-5 w-5 mr-2 text-main;
+}
+
+.cart-badge {
+    @apply absolute bg-yellow-500 text-yellow-900 px-2 py-1 text-xs font-bold rounded-full -top-3 -right-3 scale-75;
+}
+
+.dropdown-menu {
+    @apply bg-accent flex justify-center p-6 border-t border-gray absolute z-50 w-full text-xs;
+}
+
+.dropdown-content {
+    @apply flex flex-row gap-12 uppercase;
+}
+
+.dropdown-link {
+    @apply hover:text-white;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fade-up-enter-active,
+.fade-up-leave-active {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.fade-up-enter-from,
+.fade-up-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.fade-up-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+}
