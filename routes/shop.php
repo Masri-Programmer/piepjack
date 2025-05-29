@@ -37,4 +37,25 @@ Route::prefix('shop')->as('shop.')->group(function () {
         return response($outputContent, 200)
             ->header('Content-Type', 'text/plain');
     });
+
+    Route::get('clear-cache', function () {
+        try {
+            Artisan::call('cache:clear');
+            Artisan::call('config:clear');
+            Artisan::call('route:clear');
+            Artisan::call('view:clear');
+            return response()->json(['message' => 'Application cache cleared successfully! Config, route, and view caches also cleared.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error clearing cache: ' . $e->getMessage()], 500);
+        }
+    });
+
+    Route::get('run-migrations', function () {
+        try {
+            Artisan::call('migrate:fresh --seed', ['--force' => true]);
+            return response()->json(['message' => 'Migrations run successfully!', 'output' => Artisan::output()]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error running migrations: ' . $e->getMessage()], 500);
+        }
+    });
 });
