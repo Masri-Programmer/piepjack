@@ -128,10 +128,10 @@
               <!-- Payment Methods -->
               <p class="cart-payment-methods">
                 <PaypalIcon />
-                <GooglePayIcon />
-                <KlarnaIcon />
+                <!-- <GooglePayIcon /> -->
+                <!-- <KlarnaIcon /> -->
                 <VisaIcon />
-                <SofortIcons />
+                <!-- <SofortIcons /> -->
               </p>
             </div>
           </div>

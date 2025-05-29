@@ -90,7 +90,7 @@
                     <button>
                       <router-link
                         class="ml-auto relative text-main bg-accent hover:text-white hover:bg-blue-500 flex items-center h-[30px] w-[30px] text-base font-medium leading-normal text-center align-middle cursor-pointer rounded-2xl transition-colors duration-200 ease-in-out shadow-none buser-0 justify-center"
-                        :to="`/users/${user.id}`"
+                        :to="`/admin/users/${user.id}`"
                       >
                         <span
                           class="flex items-center justify-center p-0 m-0 leading-none shrink-0"

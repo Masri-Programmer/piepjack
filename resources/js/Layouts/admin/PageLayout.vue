@@ -12,7 +12,7 @@
       <h1 class="text-3xl font-extrabold capitalize text-pretty whitespace-normal w-3/4 break-words">{{ title }}</h1>
       <button @click.stop="$emit('button:click')" v-if="button">
         <router-link
-          :to="button.link"
+          :to="'/admin/'+button.link"
           v-if="!button.click"
           class="bg-main px-4 py-3 text-sm text-accent rounded-lg font-bold hover:bg-zinc-100"
         >

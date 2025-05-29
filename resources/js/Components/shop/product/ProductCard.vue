@@ -9,7 +9,7 @@
    <!-- max-w-[180px] sm:max-w-[220px] md:max-w-[250px] -->
     <div
       v-if="isNewProduct"
-      class="absolute top-2 left-2 bg-main text-accent_dark shadow-md font-bold px-2 py-1 text-xs z-9 transition-transform duration-300 group-hover:scale-110"
+      class="absolute top-6 left-2 bg-main text-accent_dark shadow-md font-bold px-2 py-1 text-xs z-9 transition-transform duration-300 group-hover:scale-110"
     >
       <p>{{ $t("common.product.new") }}</p>
     </div>

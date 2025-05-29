@@ -36,11 +36,19 @@ export default defineConfig({
             'vue': 'vue/dist/vue.esm-bundler.js',
         },
     },
-    server: {
-        host: 'localhost',
-        port: 3000,
-        hmr: {
-            host: 'localhost',
-        }
-    }
+    base: '/',
+    // server: {
+    //     host: 'localhost',
+    //     port: 8000,
+    //     hmr: {
+    //         host: 'localhost',
+    //     },
+    //     proxy: {
+    //         '^/(?!hot-update|@vite|node_modules|resources|vendor|storage|public).*': {
+    //             target: 'http://localhost:8000', // Your Laravel dev server
+    //             changeOrigin: true,
+    //             secure: false,
+    //         },
+    //     },
+    // },
 });

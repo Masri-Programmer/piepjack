@@ -61,7 +61,7 @@
               >
                 <td>{{ returning.id }}</td>
                 <td class="underline text-blue-400">
-                  <router-link :to="`/orders/${returning.order_id}`">
+                  <router-link :to="`/admin/orders/${returning.order_id}`">
                     # {{ returning.order_id }}
                   </router-link>
                 </td>

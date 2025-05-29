@@ -25,9 +25,13 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->count(10)->create();
 
-        $categories = Category::factory(5)->create();
+        // Create specific categories
+        $categoryNames = ['t-shirts', 'sweaters', 'underwear', 'jackets', 'sports', 'accessories'];
+        $categories = collect();
+        foreach ($categoryNames as $name) {
+            $categories->push(Category::create(['name' => ucfirst($name)]));
+        }
 
-        // Create Only 3 Variations Per Category
         $categories->each(function ($category) {
             $variations = collect([
                 Variation::create(['name' => 'Color', 'category_id' => $category->id]),
@@ -63,7 +67,7 @@ class DatabaseSeeder extends Seeder
         Setting::insert([
             ['key' => 'site_name', 'value' => 'My E-Commerce'],
             ['key' => 'currency', 'value' => 'EUR'],
-            ['key' => 'tax_rate', 'value' => '1)'],
+            ['key' => 'tax_rate', 'value' => '19'], // Example: 19% tax rate
         ]);
     }
 }

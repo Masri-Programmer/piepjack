@@ -12,7 +12,7 @@
     </p>
     <div class="flex flex-row justify-center items-center gap-3">
       <div class="view-all text-xs mt-12" @click="goBack">Go Back</div>
-      <router-link to="/">
+      <router-link to="/admin/dashboard">
         <div class="view-all text-xs mt-12">Dashboard</div>
       </router-link>
     </div>

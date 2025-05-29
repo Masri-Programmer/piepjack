@@ -51,11 +51,11 @@ const [value, toggle] = useToggle();
 const links = ref([
   {
     title: "Home",
-    link: "/",
+    link: "/admin/dashboard",
   },
   {
     title: "Products",
-    link: "/products",
+    link: "/admin/products",
   },
   {
     title: slug,

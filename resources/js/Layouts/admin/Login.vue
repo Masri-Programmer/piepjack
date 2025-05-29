@@ -44,7 +44,7 @@
             v-model="user.remember"
             class="h-4 w-4 text-gray focus:ring-main border-gray rounded"
           />
-          <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+          <label for="remember-me" class="ml-2 block text-sm text-gray-300">
             Remember me
           </label>
         </div>
