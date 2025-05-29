@@ -6,8 +6,9 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/js/app.js', 'resources/assets/css/app.css'],
+            input: ['resources/js/app.js'],
             refresh: true,
+            detectTls: 'piepjack.test',
         }),
         tailwindcss(),
         vue({
@@ -21,8 +22,6 @@ export default defineConfig({
     ],
     build: {
         target: 'es2022',
-        outDir: 'public/build',
-        emptyOutDir: true,
     },
     resolve: {
         alias: {
@@ -38,7 +37,7 @@ export default defineConfig({
             'vue': 'vue/dist/vue.esm-bundler.js',
         },
     },
-    // base: '/',
+    base: '/',
     // server: {
     //     host: 'localhost',
     //     port: 8000,

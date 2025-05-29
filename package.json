@@ -3,6 +3,7 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
+        "preview": "vite preview",
         "start": "concurrently \"php artisan serve\" \"npm run dev\"",
         "dev": "vite"
     },
