@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->count(10)->create();
 
-        // Create specific categories
         $categoryNames = ['t-shirts', 'sweaters', 'underwear', 'jackets', 'sports', 'accessories'];
         $categories = collect();
         foreach ($categoryNames as $name) {
