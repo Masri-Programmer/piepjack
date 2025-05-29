@@ -21,6 +21,8 @@ export default defineConfig({
     ],
     build: {
         target: 'es2022',
+        outDir: 'public/build',
+        emptyOutDir: true,
     },
     resolve: {
         alias: {
