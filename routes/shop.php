@@ -52,7 +52,7 @@ Route::prefix('shop')->as('shop.')->group(function () {
 
     Route::get('run-migrations', function () {
         try {
-            Artisan::call('migrate:fresh --seed', ['--force' => true]);
+            Artisan::call('migrate', ['--force' => true]);
             return response()->json(['message' => 'Migrations run successfully!', 'output' => Artisan::output()]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error running migrations: ' . $e->getMessage()], 500);
