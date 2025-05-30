@@ -142,8 +142,8 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            $success_url = env('BASE_URL') . '/success?order_number=' . $order->order_number;
-            $cancel_url = env('BASE_URL') . '/checkout?order_number=' . $order->order_number;
+            $success_url = env('FRONTEND_URL') . '/success?order_number=' . $order->order_number;
+            $cancel_url = env('FRONTEND_URL') . '/checkout?order_number=' . $order->order_number;
 
             Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
 

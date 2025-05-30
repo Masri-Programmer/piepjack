@@ -312,7 +312,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHistory(import.meta.env.FRONTEND_URL),
     routes: routes,
     scrollBehavior(to, from, savedPosition) {
         return savedPosition || { top: 0, behavior: 'smooth' };

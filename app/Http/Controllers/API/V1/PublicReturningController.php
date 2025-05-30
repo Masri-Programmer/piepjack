@@ -225,8 +225,8 @@ class PublicReturningController extends Controller
     {
         Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
 
-        $successUrl = env('BASE_URL') . '/return-order/success?return_number=' . $return->return_number;
-        $cancelUrl = env('BASE_URL') . '/return-order';
+        $successUrl = env('FRONTEND_URL') . '/return-order/success?return_number=' . $return->return_number;
+        $cancelUrl = env('FRONTEND_URL') . '/return-order';
 
         return Session::create([
             'line_items' => [[

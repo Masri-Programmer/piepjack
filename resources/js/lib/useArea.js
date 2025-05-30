@@ -10,6 +10,7 @@ const _apiUrl = ref('');
 
 const _updateApiUrl = (currentAreaValue) => {
     let newApiUrl = VITE_API_URL;
+    console.log(import.meta.env.VITE_API_URL);
     if (currentAreaValue === 'shop') {
         newApiUrl += '/shop';
     } else if (currentAreaValue === 'admin') {
