@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-full w-full bg-accent">
-    <Navigation />
-    <main
-      class="p-4 pt-16 md:p-8 2xl:p-16 grid gap-8 md:gap-8 2xl:gap-16 bg-accent tracking-normal min-h-screen overflow-x-hidden"
-    >
-      <router-view />
-    </main>
-  </div>
-  <Cookies />
-  <Footer />
+    <div class="w-full min-h-full bg-accent">
+        <Navigation />
+        <main
+            class="grid gap-8 p-4 pt-16 overflow-x-hidden tracking-normal md:p-8 2xl:p-16 md:gap-8 2xl:gap-16 bg-accent"
+        >
+            <router-view />
+        </main>
+    </div>
+    <Cookies />
+    <Footer />
 </template>
 <script setup>
 import AOS from "aos";
@@ -19,6 +19,6 @@ import Cookies from "./Cookies.vue";
 import Navigation from "./Navigation.vue";
 
 onMounted(() => {
-  AOS.init();
+    AOS.init();
 });
 </script>
