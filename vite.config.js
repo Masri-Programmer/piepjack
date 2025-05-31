@@ -24,13 +24,13 @@ export default defineConfig({
     ],
     root: 'resources/js',
     build: {
-        outDir: '../public/build',
+        outDir: '../../public/build',
         emptyOutDir: true,
         manifest: false,
         target: 'esnext',
         rollupOptions: {
             input: {
-                app: './resources/js/index.html', // e.g., resolves to 'resources/js/index.html'
+                app: './resources/js/index.html',
             },
         },
     },
