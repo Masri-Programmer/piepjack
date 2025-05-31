@@ -77,21 +77,21 @@
 }
 
 .navigation-bar {
-    @apply flex items-center justify-between w-full text-main h-12 px-4 z-10;
+    @apply z-10 flex items-center justify-between w-full h-12 px-4 text-main;
 }
 
 @media (max-width:768px) {
     .navigation-bar {
-        @apply fixed top-0 z-10
+        @apply fixed top-0 bg-accent z-20
     }
 }
 
 .menu-button {
-    @apply p-4 block md:hidden;
+    @apply block p-4 md:hidden;
 }
 
 .menu-icon {
-    @apply h-8 w-8 opacity-55 cursor-pointer;
+    @apply w-8 h-8 cursor-pointer opacity-55;
 }
 
 .logo-link {
@@ -103,11 +103,11 @@
 }
 
 .nav-links {
-    @apply md:flex gap-5 hidden h-full uppercase relative;
+    @apply relative hidden h-full gap-5 uppercase md:flex;
 }
 
 .nav-item {
-    @apply flex items-center h-full border-accent px-1 cursor-pointer text-xs;
+    @apply flex items-center h-full px-1 text-xs cursor-pointer border-accent;
 }
 
 .nav-icons {
@@ -115,7 +115,7 @@
 }
 
 .icon-list {
-    @apply grid grid-flow-col items-center gap-3;
+    @apply grid items-center grid-flow-col gap-3;
 }
 
 .search-icon {
@@ -127,15 +127,15 @@
 }
 
 .cart-img {
-    @apply h-5 w-5 mr-2 text-main;
+    @apply w-5 h-5 mr-2 text-main;
 }
 
 .cart-badge {
-    @apply absolute bg-yellow-500 text-yellow-900 px-2 py-1 text-xs font-bold rounded-full -top-3 -right-3 scale-75;
+    @apply absolute px-2 py-1 text-xs font-bold text-yellow-900 scale-75 bg-yellow-500 rounded-full -top-3 -right-3;
 }
 
 .dropdown-menu {
-    @apply bg-accent flex justify-center p-6 border-t border-gray absolute z-50 w-full text-xs;
+    @apply absolute z-50 flex justify-center w-full p-6 text-xs border-t bg-accent border-gray;
 }
 
 .dropdown-content {
