@@ -33,17 +33,16 @@
     -webkit-box-shadow: 2px 4px 15px 13px rgba(0, 0, 0, 0.17);
 }
 
-@media (max-width:768px) {
-
+@media (max-width: 768px) {
     .carousel__prev,
     .carousel__next {
         padding: 0.5rem;
     }
-        .carousel__prev::before,
-        .carousel__next::before {
-    top: 0%;
+    .carousel__prev::before,
+    .carousel__next::before {
+        top: 0%;
     }
-    }
+}
 
 .carousel__prev::after,
 .carousel__next::after {
@@ -115,9 +114,9 @@
     display: none;
 }
 
-.carousel__viewport {
+/* .carousel__viewport {
     overflow: hidden !important;
-}
+} */
 
 .carousel__slide {
     align-items: start;
