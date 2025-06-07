@@ -65,10 +65,7 @@ Route::prefix('shop')->as('shop.')->group(function () {
         // }
 
         try {
-            Artisan::call('optimize:clear');
-            $this->info(Artisan::output());
-
-            Artisan::call('migrate:fresh', ['--force' => true]);
+            Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
             $outputFresh = Artisan::output();
 
             Artisan::call('db:seed', ['--force' => true]);
