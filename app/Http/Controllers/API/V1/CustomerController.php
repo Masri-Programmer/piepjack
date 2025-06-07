@@ -45,7 +45,7 @@ class CustomerController extends Controller
     {
         $user = Customer::findOrFail($request->user);
 
-        $frontendUrl = env('FRONTEND_URL');
+        $frontendUrl = env('VITE_FRONTEND_URL');
 
         if (! URL::hasValidSignature($request)) {
             return redirect()->away($frontendUrl . '/invalid-link');

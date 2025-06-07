@@ -1,16 +1,16 @@
 import NProgress from "nprogress";
 import { createRouter, createWebHistory } from "vue-router";
 import "@assets/css/nprogress.css";
-import { useStorage, useSessionStorage } from '@vueuse/core';
-import { createApiResource } from '@lib/helpers';
+import { useStorage, useSessionStorage } from "@vueuse/core";
+import { createApiResource } from "@lib/helpers";
 import AppLayout from "./layouts/shop/AppLayout.vue";
 import AppLayout2 from "./layouts/shop/AppLayout2.vue";
 import AdminAppLayout from "./layouts/admin/AppLayout.vue";
 import AdminLoginLayout from "./layouts/admin/Login.vue";
 import AdminNotFoundLayout from "./layouts/admin/NotFound.vue";
 import PublicNotFoundLayout from "./layouts/shop/NotFound.vue";
-import { useArea } from '@lib/useArea.js'
-import { setAppArea } from '@lib/useArea'
+import { useArea } from "@lib/useArea.js";
+import { setAppArea } from "@lib/useArea";
 const { updateArea } = useArea();
 const BASE_TITLE = "PIEPJACK CLOTHING";
 
@@ -96,13 +96,15 @@ const routes = [
             {
                 path: "product/:id/:slug",
                 name: "Product",
-                component: () => import("./components/shop/product/Product.vue"),
+                component: () =>
+                    import("./components/shop/product/Product.vue"),
                 meta: { title: "Product" },
             },
             {
                 path: "datenschutzerklarung",
                 name: "Datenschutzerklärung",
-                component: () => import("./pages/shop/Datenschutzerklarung.vue"),
+                component: () =>
+                    import("./pages/shop/Datenschutzerklarung.vue"),
                 meta: { title: "Datenschutzerklärung" },
             },
             {
@@ -124,19 +126,22 @@ const routes = [
                     {
                         path: "",
                         name: "ReturnOrder",
-                        component: () => import("./components/shop/order/ReturnOrder.vue"),
+                        component: () =>
+                            import("./components/shop/order/ReturnOrder.vue"),
                     },
                     {
                         path: ":slug",
                         name: "ReturnOrderSlug",
-                        component: () => import("./components/shop/order/ReturnSuccess.vue"),
+                        component: () =>
+                            import("./components/shop/order/ReturnSuccess.vue"),
                     },
                 ],
             },
             {
                 path: "success",
                 name: "Success",
-                component: () => import("./components/shop/checkout/Success.vue"),
+                component: () =>
+                    import("./components/shop/checkout/Success.vue"),
                 meta: { title: "Success" },
             },
             {
@@ -154,7 +159,8 @@ const routes = [
             {
                 path: "",
                 name: "Checkout",
-                component: () => import("./components/shop/checkout/Checkout.vue"),
+                component: () =>
+                    import("./components/shop/checkout/Checkout.vue"),
                 meta: { title: "Checkout" },
             },
         ],
@@ -185,13 +191,15 @@ const routes = [
             {
                 path: "products",
                 name: "admin.products.show",
-                component: () => import("./pages/admin/products/ProductsShow.vue"),
+                component: () =>
+                    import("./pages/admin/products/ProductsShow.vue"),
                 meta: { title: "Products" },
             },
             {
                 path: "products/add",
                 name: "admin.products.add",
-                component: () => import("./pages/admin/products/StoreProduct.vue"),
+                component: () =>
+                    import("./pages/admin/products/StoreProduct.vue"),
                 meta: { title: "Add Product" },
             },
             {
@@ -206,14 +214,24 @@ const routes = [
                 redirect: async (to) => {
                     const { id } = to.params;
                     try {
-                        const product = await createApiResource("products").getById(id);
+                        const product = await createApiResource(
+                            "products"
+                        ).getById(id);
                         if (product && product.slug) {
-                            return { name: "admin.products.view", params: { id, slug: product.slug } };
+                            return {
+                                name: "admin.products.view",
+                                params: { id, slug: product.slug },
+                            };
                         }
-                        console.warn(`Admin: Product with ID ${id} not found or slug missing. Redirecting to admin notfound.`);
+                        console.warn(
+                            `Admin: Product with ID ${id} not found or slug missing. Redirecting to admin notfound.`
+                        );
                         return { name: "admin.notfound" };
                     } catch (error) {
-                        console.error(`Admin: Error fetching product ID ${id} for redirect:`, error);
+                        console.error(
+                            `Admin: Error fetching product ID ${id} for redirect:`,
+                            error
+                        );
                         return { name: "admin.notfound" };
                     }
                 },
@@ -221,19 +239,22 @@ const routes = [
             {
                 path: "categories",
                 name: "admin.categories",
-                component: () => import("./pages/admin/categories/Categories.vue"),
+                component: () =>
+                    import("./pages/admin/categories/Categories.vue"),
                 meta: { title: "Categories" },
             },
             {
                 path: "categories/add",
                 name: "admin.categories.add",
-                component: () => import("./pages/admin/categories/StoreCategory.vue"),
+                component: () =>
+                    import("./pages/admin/categories/StoreCategory.vue"),
                 meta: { title: "Add Category" },
             },
             {
                 path: "categories/:id/:slug",
                 name: "admin.categories.view",
-                component: () => import("./pages/admin/categories/Category.vue"),
+                component: () =>
+                    import("./pages/admin/categories/Category.vue"),
                 meta: (route) => ({ title: `Category: ${route.params.slug}` }),
             },
             {
@@ -242,14 +263,24 @@ const routes = [
                 redirect: async (to) => {
                     const { id } = to.params;
                     try {
-                        const category = await createApiResource("categories").getById(id);
+                        const category = await createApiResource(
+                            "categories"
+                        ).getById(id);
                         if (category && category.slug) {
-                            return { name: "admin.categories.view", params: { id, slug: category.slug } };
+                            return {
+                                name: "admin.categories.view",
+                                params: { id, slug: category.slug },
+                            };
                         }
-                        console.warn(`Admin: Category with ID ${id} not found or slug missing. Redirecting to admin notfound.`);
+                        console.warn(
+                            `Admin: Category with ID ${id} not found or slug missing. Redirecting to admin notfound.`
+                        );
                         return { name: "admin.notfound" };
                     } catch (error) {
-                        console.error(`Admin: Error fetching category ID ${id} for redirect:`, error);
+                        console.error(
+                            `Admin: Error fetching category ID ${id} for redirect:`,
+                            error
+                        );
                         return { name: "admin.notfound" };
                     }
                 },
@@ -298,8 +329,8 @@ const routes = [
             },
             {
                 path: ":adminPathMatch(.*)*",
-                redirect: { name: "admin.notfound" }
-            }
+                redirect: { name: "admin.notfound" },
+            },
         ],
     },
 
@@ -312,20 +343,20 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.FRONTEND_URL),
+    history: createWebHistory(import.meta.env.VITE_FRONTEND_URL),
     routes: routes,
     scrollBehavior(to, from, savedPosition) {
-        return savedPosition || { top: 0, behavior: 'smooth' };
+        return savedPosition || { top: 0, behavior: "smooth" };
     },
 });
 
 router.beforeEach((to, from, next) => {
     NProgress.start();
 
-    if (to.path.startsWith('/admin')) {
-        setAppArea('admin');
-    } else if (to.name !== 'admin.login') {
-        setAppArea('shop');
+    if (to.path.startsWith("/admin")) {
+        setAppArea("admin");
+    } else if (to.name !== "admin.login") {
+        setAppArea("shop");
     }
 
     const pageTitle = to.meta.title;
@@ -338,18 +369,20 @@ router.beforeEach((to, from, next) => {
         document.title = titleSuffix;
     }
 
-    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-    const requiresGuest = to.matched.some(record => record.meta.requiresGuest);
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+    const requiresGuest = to.matched.some(
+        (record) => record.meta.requiresGuest
+    );
     const loggedIn = isAuthenticated();
 
     if (requiresAuth && !loggedIn) {
-        if (to.name !== 'admin.login') {
-            next({ name: 'admin.login', });
+        if (to.name !== "admin.login") {
+            next({ name: "admin.login" });
         } else {
             next();
         }
     } else if (requiresGuest && loggedIn) {
-        next({ name: 'admin.dashboard' });
+        next({ name: "admin.dashboard" });
     } else {
         next();
     }
