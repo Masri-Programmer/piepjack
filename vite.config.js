@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import vue from '@vitejs/plugin-vue';
-import tailwindcss from "@tailwindcss/vite"
-import path from 'path';
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+import vue from "@vitejs/plugin-vue";
+import tailwindcss from "@tailwindcss/vite";
+import path from "path";
 
 export default defineConfig({
     plugins: [
@@ -22,33 +22,33 @@ export default defineConfig({
         //     },
         // }
     ],
-    root: 'resources/js',
+    root: "resources/js",
     build: {
-        outDir: '../../public/build',
+        outDir: "../../public/build",
         emptyOutDir: true,
         manifest: false,
-        target: 'esnext',
+        target: "esnext",
         rollupOptions: {
             input: {
-                app: './resources/js/index.html',
+                app: "./resources/js/index.html",
             },
         },
     },
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, 'resources'),
-            '@lib': path.resolve(__dirname, 'resources/js/lib'),
-            '@assets': path.resolve(__dirname, 'resources/assets'),
-            '@img': path.resolve(__dirname, 'resources/assets/img'),
-            '@components': path.resolve(__dirname, 'resources/js/components'),
-            '@pages': path.resolve(__dirname, 'resources/js/pages'),
-            '@layouts': path.resolve(__dirname, 'resources/js/layouts'),
-            '@ui': path.resolve(__dirname, 'resources/js/components/ui'),
-            '@/lib/utils': path.resolve(__dirname, 'resources/js/lib/utils.ts'),
-            'vue': 'vue/dist/vue.esm-bundler.js',
+            "@": path.resolve(__dirname, "resources"),
+            "@lib": path.resolve(__dirname, "resources/js/lib"),
+            "@assets": path.resolve(__dirname, "resources/assets"),
+            "@img": path.resolve(__dirname, "resources/assets/img"),
+            "@components": path.resolve(__dirname, "resources/js/components"),
+            "@pages": path.resolve(__dirname, "resources/js/pages"),
+            "@layouts": path.resolve(__dirname, "resources/js/layouts"),
+            "@ui": path.resolve(__dirname, "resources/js/components/ui"),
+            "@/lib/utils": path.resolve(__dirname, "resources/js/lib/utils.ts"),
+            vue: "vue/dist/vue.esm-bundler.js",
         },
     },
-    base: '/',
+    // base: '/',
     // server: {
     //     host: 'localhost',
     //     port: 8000,
