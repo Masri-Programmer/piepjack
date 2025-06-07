@@ -50,12 +50,26 @@ Route::prefix('shop')->as('shop.')->group(function () {
         }
     });
 
-    Route::get('run-migrations', function () {
+    Route::get('run-migrate-fresh-seed', function () {
+        // IMPORTANT: Add security checks for production environments!
+        // if (app()->environment('production')) {
+        //     return response()->json(['message' => 'This action is not allowed in production.', 'status' => 403], 403);
+        // }
+
         try {
-            Artisan::call('migrate', ['--force' => true]);
-            return response()->json(['message' => 'Migrations run successfully!', 'output' => Artisan::output()]);
+            Artisan::call('migrate:fresh', ['--force' => true]);
+            $outputFresh = Artisan::output();
+
+            Artisan::call('db:seed', ['--force' => true]);
+            $outputSeed = Artisan::output();
+
+            return response()->json([
+                'message' => 'Database refreshed and seeded successfully!',
+                'output_fresh' => $outputFresh,
+                'output_seed' => $outputSeed
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error running migrations: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Error running migrate:fresh --seed: ' . $e->getMessage()], 500);
         }
     });
 });
