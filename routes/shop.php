@@ -60,12 +60,12 @@ Route::prefix('shop')->as('shop.')->group(function () {
     });
 
     Route::get('run-migrate-fresh-seed', function () {
-        // if (app()->environment('production')) {
-        //     return response()->json(['message' => 'This action is not allowed in production.', 'status' => 403], 403);
-        // }
+        if (app()->environment('production')) {
+            return response()->json(['message' => 'This action is not allowed in production.', 'status' => 403], 403);
+        }
 
         try {
-            Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
+            Artisan::call('migrate:fresh', ['--force' => true]);
             $outputFresh = Artisan::output();
 
             Artisan::call('db:seed', ['--force' => true]);

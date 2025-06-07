@@ -2,7 +2,7 @@
     <div class="w-full min-h-full bg-accent">
         <Navigation />
         <main
-            class="grid gap-8 p-4 pt-16 overflow-x-hidden tracking-normal md:p-8 2xl:p-16 md:gap-8 2xl:gap-16 bg-accent"
+            class="grid min-h-screen gap-8 p-4 pt-16 overflow-x-hidden tracking-normal md:p-8 2xl:p-16 md:gap-8 2xl:gap-16 bg-accent"
         >
             <router-view />
         </main>
