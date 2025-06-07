@@ -18,7 +18,7 @@ class ProductFactory extends Factory
         return [
             'name' => ucfirst($name),
             'slug' => Str::slug($name),
-            'image' => 'https://www.ktmcty.com/storage/products/unisex-half-sleeve-t-shirt-kurt45402-summer-wear/gallery/thumbs/cover_17121457241_.jpg',
+            'image' => 'https://placehold.co/600x400.png?text=Product+Image',
             'image_mime' => 'image/jpeg',
             'image_size' => rand(100, 5000),
             'description' => $this->faker->paragraph,
