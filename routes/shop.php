@@ -50,13 +50,24 @@ Route::prefix('shop')->as('shop.')->group(function () {
         }
     });
 
+    Route::get('run-migrations', function () {
+        try {
+            Artisan::call('migrate', ['--force' => true]);
+            return response()->json(['message' => 'Migrations run successfully!', 'output' => Artisan::output()]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error running migrations: ' . $e->getMessage()], 500);
+        }
+    });
+
     Route::get('run-migrate-fresh-seed', function () {
-        // IMPORTANT: Add security checks for production environments!
         // if (app()->environment('production')) {
         //     return response()->json(['message' => 'This action is not allowed in production.', 'status' => 403], 403);
         // }
 
         try {
+            Artisan::call('optimize:clear');
+            $this->info(Artisan::output());
+
             Artisan::call('migrate:fresh', ['--force' => true]);
             $outputFresh = Artisan::output();
 
