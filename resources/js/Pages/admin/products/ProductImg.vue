@@ -45,7 +45,7 @@ const handleImageUpload = (event, product) => {
                 product,
                 img: "image",
                 value: {
-                    image: data.image,
+                    image: data.image_url,
                     image_mime: data.image_mime,
                     image_size: data.image_size,
                 },
