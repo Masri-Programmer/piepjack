@@ -25,7 +25,7 @@ export const uploadImg = async (imageFile) => {
 export const useUploadImgMutation = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (params) => uploadImg(params),
+        mutationFn: uploadImg,
         onSuccess: () => {
             queryClient.invalidateQueries(["products", "product-items"]);
             toast.success("Image Uploaded Successfully!");

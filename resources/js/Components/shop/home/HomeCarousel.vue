@@ -1,12 +1,12 @@
 <template>
-    <div class="w-full overflow-hidden" v-if="products?.data.length">
+    <div class="w-full" v-if="products?.data.length">
         <h1 class="mb-6 text-3xl font-extrabold text-center md:mb-12">
             {{ title }}
         </h1>
         <Carousel
             v-bind="settings"
             :breakpoints="breakpoints"
-            class="overflow-hidden vue-carousel"
+            class="vue-carousel"
         >
             <Slide v-for="product in products?.data" :key="product.id">
                 <div class="carousel__item">
