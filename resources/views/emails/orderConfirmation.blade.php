@@ -66,7 +66,7 @@
                 <table class="content-table" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #252526; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);">
                     <tr>
                         <td align="center" style="padding: 40px 0 20px 0;">
-                            <img src="https://testing.piepjack-clothing.de/assets/logo-new-MYA7MG0d.png" alt="Piepjack Clothing" width="180" style="display: block; width: 180px; filter: brightness(90%);">
+                            <img src="https://api.piepjack-clothing.de/images/logo_new_gray_bg_black.jpeg" alt="Piepjack Clothing" width="180" style="display: block; width: 180px; filter: brightness(90%);">
                         </td>
                     </tr>
                     <tr>

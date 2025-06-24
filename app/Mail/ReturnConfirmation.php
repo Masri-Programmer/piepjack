@@ -35,7 +35,7 @@ class ReturnConfirmation extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.returnItems',
+            view: 'emails.returnConfirmation',
             with: [
                 'returnData' => $this->returnData,
                 'return' => $this->returnData['return'],
