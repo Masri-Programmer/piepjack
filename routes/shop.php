@@ -19,7 +19,7 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::get('generate-shutdown-code', [ShutdownController::class, 'generateShutdownCode']);
     Route::get('shutdown-code', [ShutdownController::class, 'getShutdownCode']);
     Route::post('checkout', [CheckoutController::class, 'checkout']);
-    // Route::get('sendTestEmail', [CheckoutController::class, 'sendTestEmail']);
+    Route::get('sendTestEmail/{orderId}', [CheckoutController::class, 'sendTestEmail']);
     // Route::get('sendReturnEmailTest', [PublicReturningController::class, 'sendReturnEmailTest']);
     Route::post('webhook/stripe', [CheckoutController::class, 'handleWebhook']);
     Route::post('webhook/return-items', [PublicReturningController::class, 'handleWebhook']);
@@ -50,34 +50,34 @@ Route::prefix('shop')->as('shop.')->group(function () {
         }
     });
 
-    Route::get('run-migrations', function () {
-        try {
-            Artisan::call('migrate', ['--force' => true]);
-            return response()->json(['message' => 'Migrations run successfully!', 'output' => Artisan::output()]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error running migrations: ' . $e->getMessage()], 500);
-        }
-    });
+    // Route::get('run-migrations', function () {
+    //     try {
+    //         Artisan::call('migrate', ['--force' => true]);
+    //         return response()->json(['message' => 'Migrations run successfully!', 'output' => Artisan::output()]);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['message' => 'Error running migrations: ' . $e->getMessage()], 500);
+    //     }
+    // });
 
-    Route::get('run-migrate-fresh-seed', function () {
-        if (app()->environment('production')) {
-            return response()->json(['message' => 'This action is not allowed in production.', 'status' => 403], 403);
-        }
+    // Route::get('run-migrate-fresh-seed', function () {
+    //     if (app()->environment('production')) {
+    //         return response()->json(['message' => 'This action is not allowed in production.', 'status' => 403], 403);
+    //     }
 
-        try {
-            Artisan::call('migrate:fresh', ['--force' => true]);
-            $outputFresh = Artisan::output();
+    //     try {
+    //         Artisan::call('migrate:fresh', ['--force' => true]);
+    //         $outputFresh = Artisan::output();
 
-            Artisan::call('db:seed', ['--force' => true]);
-            $outputSeed = Artisan::output();
+    //         Artisan::call('db:seed', ['--force' => true]);
+    //         $outputSeed = Artisan::output();
 
-            return response()->json([
-                'message' => 'Database refreshed and seeded successfully!',
-                'output_fresh' => $outputFresh,
-                'output_seed' => $outputSeed
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error running migrate:fresh --seed: ' . $e->getMessage()], 500);
-        }
-    });
+    //         return response()->json([
+    //             'message' => 'Database refreshed and seeded successfully!',
+    //             'output_fresh' => $outputFresh,
+    //             'output_seed' => $outputSeed
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['message' => 'Error running migrate:fresh --seed: ' . $e->getMessage()], 500);
+    //     }
+    // });
 });
