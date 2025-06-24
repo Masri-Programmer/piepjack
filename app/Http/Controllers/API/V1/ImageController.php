@@ -15,10 +15,10 @@ class ImageController extends Controller
 {
     public function store(Request $request)
     {
-        Log::info('Image upload request received', [
-            'ip' => $request->ip(),
-            'user_agent' => $request->header('User-Agent'),
-        ]);
+        // Log::info('Image upload request received', [
+        //     'ip' => $request->ip(),
+        //     'user_agent' => $request->header('User-Agent'),
+        // ]);
 
         $validated = $request->validate([
             'image' => 'required|image',
