@@ -208,6 +208,9 @@ class CheckoutController extends Controller
     public function handleWebhook()
     {
         $endpoint_secret = env('STRIPE_WEBHOOK_SECRET');
+        // cd "C:\Program Files\Stripe CLI\stripe_1.23.5_windows_x86_64"
+        // stripe login
+        // stripe listen --forward-to localhost:8000/api/V1/shop/webhook/stripe
         // $endpoint_secret = 'whsec_1ec88b1f8be092cb44234aa740821ceb154cd06bdd5fe05b996b09ef79d33a94';
         $payload = @file_get_contents('php://input');
         $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
@@ -393,9 +396,9 @@ class CheckoutController extends Controller
         }
     }
 
-    public function sendTestEmail()
+    public function sendTestEmail($orderId)
     {
-        $order = Order::find(15); // You can adjust this based on a real test order ID
+        $order = Order::find($orderId);
         if (! $order) {
             return response()->json(['message' => 'Order not found'], 404);
         }
