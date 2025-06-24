@@ -9,14 +9,6 @@
                 >
                     <button
                         class="p-1 rounded text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300"
-                        @click="addFeatureTag"
-                        aria-label="Add Feature Tag"
-                        title="Add Feature Tag"
-                    >
-                        <Tag size="18" />
-                    </button>
-                    <button
-                        class="p-1 rounded text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300"
                         @click="editor.chain().focus().toggleBold().run()"
                         :disabled="
                             !editor.can().chain().focus().toggleBold().run()
@@ -224,10 +216,10 @@
                             editor.chain().focus().toggleUnderline().run()
                         "
                         :class="{
-                            'bg-slate-100': editor.isActive('underline'),
+                            'bg-slate-100': editor.isActive('bulletList'),
                         }"
-                        aria-label="Underline"
-                        title="Underline"
+                        aria-label="Bullet list"
+                        title="Bullet list"
                     >
                         <Underline size="18" />
                     </button>
@@ -272,7 +264,9 @@
                 <div
                     class="h-full flex justify-between items-center sm:gap-1 overflow-x-scroll [scrollbar-width:none] px-3"
                 >
+                    <!-- Left actions -->
                     <div class="flex items-center">
+                        <!-- Delete button -->
                         <div
                             class="pr-5 relative flex items-center after:absolute after:right-2.5 after:h-6 after:w-px after:bg-slate-200"
                         >
@@ -287,6 +281,7 @@
                                 <Trash2 size="18" />
                             </button>
                         </div>
+                        <!-- More buttons -->
                         <div class="flex sm:gap-1">
                             <button
                                 class="p-1 rounded text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300"
@@ -374,6 +369,7 @@
                             </button>
                         </div>
                     </div>
+                    <!-- Right actions -->
                     <div>
                         <button
                             class="inline-flex items-center justify-center h-8 px-2 text-sm font-medium text-indigo-500 transition-colors rounded-lg whitespace-nowrap hover:text-white hover:bg-indigo-500 focus-visible:text-white focus-visible:bg-indigo-500 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 dark:focus-visible:ring-slate-600"
@@ -395,9 +391,6 @@ import StarterKit from "@tiptap/starter-kit";
 import Color from "@tiptap/extension-color";
 import ListItem from "@tiptap/extension-list-item";
 import TextStyle from "@tiptap/extension-text-style";
-import Underline from "@tiptap/extension-underline"; // 👉 Import Underline extension
-import FeatureTag from "./Tiptap/FeatureTag.js"; // 👉 Import our custom extension
-
 import {
     Bold,
     Code,
@@ -418,15 +411,13 @@ import {
     ListOrdered,
     Strikethrough,
     RemoveFormatting,
-    Underline as UnderlineIcon, // Renamed to avoid conflict with the extension
+    Underline,
     MessageSquareQuote,
-    Tag, // 👉 Import an icon for our new button
 } from "lucide-vue-next";
-
 const props = defineProps({
     desc: { type: String },
 });
-const emit = defineEmits(["handle:editor"]);
+const emit = defineEmits("handle:editor");
 const editor = ref(null);
 
 onMounted(() => {
@@ -435,8 +426,6 @@ onMounted(() => {
             Color.configure({ types: [TextStyle.name, ListItem.name] }),
             TextStyle.configure({ types: [ListItem.name] }),
             StarterKit,
-            Underline, // 👉 Add Underline extension
-            FeatureTag, // 👉 Add our custom FeatureTag extension
         ],
         content: props.desc,
     });
@@ -445,25 +434,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
     editor.value?.destroy();
 });
-
-// 👉 Method to insert a new feature tag
-const addFeatureTag = () => {
-    editor.value
-        .chain()
-        .focus()
-        .insertContent({
-            type: "featureTag",
-            attrs: { icon: "heart" }, // Default icon
-            content: [
-                {
-                    type: "paragraph",
-                    content: [{ type: "text", text: "New Feature" }],
-                },
-            ],
-        })
-        .run();
-};
-
 const emitEditorContent = () => {
     emit("handle:editor", editor.value.getHTML());
 };
