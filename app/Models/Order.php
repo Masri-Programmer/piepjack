@@ -18,7 +18,9 @@ class Order extends Model
         parent::boot();
 
         static::creating(function ($order) {
-            $lastOrder = self::latest()->first();
+            $lastOrder = self::latest()->withTrashed()
+                ->latest('id')
+                ->first();
             $nextNumber = $lastOrder ? $lastOrder->id + 1 : 1;
             $order->order_number = 'ORD-' . date('Ym') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
             //  ORD-202502-00001
