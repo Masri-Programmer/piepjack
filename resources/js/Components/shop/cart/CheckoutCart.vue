@@ -4,11 +4,7 @@
     >
         <template v-for="product in cartState.cartItems">
             <template v-for="item in product.items">
-                <ProductSmallCard
-                    :product="product"
-                    :item="item"
-                    :label="'no-label'"
-                />
+                <ProductSmallCard :product="product" :item="item" />
             </template>
         </template>
     </div>
