@@ -19,8 +19,8 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::get('generate-shutdown-code', [ShutdownController::class, 'generateShutdownCode']);
     Route::get('shutdown-code', [ShutdownController::class, 'getShutdownCode']);
     Route::post('checkout', [CheckoutController::class, 'checkout']);
-    Route::get('sendTestEmail/{orderId}', [CheckoutController::class, 'sendTestEmail']);
-    // Route::get('sendReturnEmailTest', [PublicReturningController::class, 'sendReturnEmailTest']);
+    // Route::get('sendTestEmail/{orderId}', [CheckoutController::class, 'sendTestEmail']);
+    // Route::get('sendReturnTestEmail/{returnId}', [PublicReturningController::class, 'sendReturnEmailTest']);
     Route::post('webhook/stripe', [CheckoutController::class, 'handleWebhook']);
     Route::post('webhook/return-items', [PublicReturningController::class, 'handleWebhook']);
     Route::post('shutdown', [ShutdownController::class, 'shutdown']);

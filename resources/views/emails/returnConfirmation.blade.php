@@ -1,24 +1,25 @@
-<!DOCTYPE html>
-<html>
+@extends('emails.layout')
 
-<head>
-    <title>Return Request Confirmation</title>
-</head>
+@section('title', 'Bestätigung deiner Rücksendung')
+@section('subtitle') Rücksende-Nr. #{{ $return->id ?? '' }}@endsection
+@section('subtitle_2') Hallo {{ $customer->first_name ?? '' }}, wir haben die Artikel aus deiner Rücksendung erhalten und werden sie in Kürze bearbeiten.@endsection
 
-<body>
-    <h1>Your Return Request Has Been Approved</h1>
-    <p>Dear {{ $customer->name }},</p>
-    <p>We are pleased to inform you that your return request for the following items has been approved:</p>
-    <ul>
-        @foreach ($items as $item)
-        <li>
-            {{ $item->orderProduct->product_name }} - Quantity: {{ $item->quantity }}
-        </li>
-        @endforeach
-    </ul>
-    <p>If you have any questions or need further assistance, feel free to contact us.</p>
-    <p>Thank you for shopping with us!</p>
-    <p>Best regards,<br>{{env('APP_NAME')}}</p>
-</body>
+@section('preheader', 'Wir haben deine Rücksendung erhalten und werden sie in Kürze bearbeiten.')
 
-</html>
+@section('content')
+
+<tr>
+    <td style="padding: 0 30px 30px 30px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+                <td class="section-header" style="padding-bottom: 20px; border-bottom: 1px solid #444444; color: #f5f5f5; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 20px; font-weight: bold;">
+                    Zusammenfassung der Rücksendung
+                </td>
+            </tr>
+            @foreach ($items as $product)
+            @include('emails.products', ['product' => $product])
+            @endforeach
+        </table>
+    </td>
+</tr>
+@endsection
