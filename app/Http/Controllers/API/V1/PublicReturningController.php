@@ -11,6 +11,7 @@ use App\Models\ReturnItem;
 use App\Models\ProductItem;
 use Illuminate\Http\Request;
 use Stripe\Checkout\Session;
+use App\Models\OrderProduct;
 use App\Models\CustomerDetail;
 use Illuminate\Validation\Rule;
 use App\Mail\ReturnConfirmation;
@@ -18,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+
 use Stripe\Webhook as StripeWebhook;
 
 class PublicReturningController extends Controller
@@ -108,6 +110,10 @@ class PublicReturningController extends Controller
 
     public function handleWebhook()
     {
+        // cd "C:\Program Files\Stripe CLI\stripe_1.23.5_windows_x86_64"
+        // stripe login
+        // stripe listen --forward-to localhost:8000/api/V1/shop/webhook/return-items
+        // $endpointSecret = 'whsec_1ec88b1f8be092cb44234aa740821ceb154cd06bdd5fe05b996b09ef79d33a94';
         $endpointSecret = env('STRIPE_WEBHOOK_SECRET_RETURN');
         $payload = @file_get_contents('php://input');
         $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? null;
@@ -260,37 +266,53 @@ class PublicReturningController extends Controller
      */
     private function sendReturnConfirmationEmail(Order $order, Returning $return)
     {
-        $return = Returning::with('items.productItem.product')->find($return->id);
-        if (! $return) {
-            return response()->json(['message' => 'Return not found'], 404);
-        }
-
-        $order = Order::find($return->order_id);
-        if (! $order) {
-            return response()->json(['message' => 'Order not found'], 404);
-        }
+        $return->load([
+            'items.productItem.product',
+            'items.productItem.options.variation'
+        ]);
 
         $customerDetail = CustomerDetail::find($order->customer_details_id);
-        $customer = $customerDetail ? Customer::find($customerDetail->customer_id) : null;
-
-        if (! $customer) {
-            return response()->json(['message' => 'Customer not found'], 404);
+        if (!$customerDetail) {
+            return;
         }
-        $items = $return->items->map(function ($item) {
+
+        $customer = Customer::find($customerDetail->customer_id);
+        if (!$customer) {
+            return;
+        }
+
+        $productItemIds = $return->items->pluck('product_item_id');
+
+        $orderProducts = OrderProduct::where('order_id', $order->id)
+            ->whereIn('product_item_id', $productItemIds)
+            ->get()
+            ->keyBy('product_item_id');
+
+        // Map the return items to the desired detailed format for the email
+        $items = $return->items->map(function ($returnItem) use ($orderProducts) {
+            $productItem = $returnItem->productItem;
+            $orderProduct = $orderProducts->get($returnItem->product_item_id);
+
             return [
-                'product_name' => $item->productItem->product->name,
-                'quantity' => $item->quantity,
+                'product_name' => $productItem->product->name,
+                'quantity' => $returnItem->quantity,
+                'price_per_item' => $orderProduct->price_per_item ?? null,
+                'image' => $productItem->image ?? asset('images/logo_new_gray_bg_black.jpeg'),
+                'options' => $productItem->options->map(fn($option) => [
+                    'name' => optional($option->variation)->name,
+                    'value' => $option->value,
+                ])->toArray(),
             ];
         });
+
         $returnData = [
             'return' => $return,
             'customer' => $customerDetail,
             'items' => $items
         ];
-        Log::info('email sending');
+
         Mail::to($customer->email)->send(new ReturnConfirmation($returnData));
     }
-
     /**
      * Helper methods for standardized responses.
      */
@@ -330,30 +352,51 @@ class PublicReturningController extends Controller
         return response()->json(['message' => $message], 200);
     }
 
-    public function sendReturnEmailTest()
+    public function sendReturnEmailTest($returnId)
     {
-        $return = Returning::with('items.productItem.product')->findOrFail(5); // Adjust to a real test return ID
-        if (! $return) {
-            return response()->json(['message' => 'Return not found'], 404);
-        }
+        $return = Returning::with([
+            'items.productItem.product',
+            'items.productItem.options.variation'
+        ])->findOrFail($returnId);
 
         $order = Order::find($return->order_id);
-        if (! $order) {
+        if (!$order) {
             return response()->json(['message' => 'Order not found'], 404);
         }
 
         $customerDetail = CustomerDetail::find($order->customer_details_id);
-        $customer = $customerDetail ? Customer::find($customerDetail->customer_id) : null;
+        if (!$customerDetail) {
+            return response()->json(['message' => 'Customer details not found'], 404);
+        }
 
-        if (! $customer) {
+        $customer = Customer::find($customerDetail->customer_id);
+        if (!$customer) {
             return response()->json(['message' => 'Customer not found'], 404);
         }
-        $items = $return->items->map(function ($item) {
+
+        $productItemIds = $return->items->pluck('product_item_id');
+
+        $orderProducts = OrderProduct::where('order_id', $return->order_id)
+            ->whereIn('product_item_id', $productItemIds)
+            ->get()
+            ->keyBy('product_item_id');
+
+        $items = $return->items->map(function ($returnItem) use ($orderProducts) {
+            $productItem = $returnItem->productItem;
+            $orderProduct = $orderProducts->get($returnItem->product_item_id);
+
             return [
-                'product_name' => $item->productItem->product->name,
-                'quantity' => $item->quantity,
+                'product_name' => $productItem->product->name,
+                'quantity' => $returnItem->quantity,
+                'price_per_item' => $orderProduct->price_per_item ?? null,
+                'image' => $productItem->image ?? asset('images/logo_new_gray_bg_black.jpeg'),
+                'options' => $productItem->options->map(fn($option) => [
+                    'name' => optional($option->variation)->name,
+                    'value' => $option->value,
+                ])->toArray(),
             ];
         });
+
         $returnData = [
             'return' => $return,
             'customer' => $customerDetail,

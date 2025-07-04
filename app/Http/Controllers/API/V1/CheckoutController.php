@@ -16,6 +16,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\API\V1\CheckoutRequest;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class CheckoutController extends Controller
 {
@@ -207,16 +208,16 @@ class CheckoutController extends Controller
      */
     public function handleWebhook()
     {
-        $endpoint_secret = env('STRIPE_WEBHOOK_SECRET');
+        $endpointSecret = env('STRIPE_WEBHOOK_SECRET');
         // cd "C:\Program Files\Stripe CLI\stripe_1.23.5_windows_x86_64"
         // stripe login
         // stripe listen --forward-to localhost:8000/api/V1/shop/webhook/stripe
-        // $endpoint_secret = 'whsec_1ec88b1f8be092cb44234aa740821ceb154cd06bdd5fe05b996b09ef79d33a94';
+        // $endpointSecret = 'whsec_1ec88b1f8be092cb44234aa740821ceb154cd06bdd5fe05b996b09ef79d33a94';
         $payload = @file_get_contents('php://input');
         $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
 
         try {
-            $event = \Stripe\Webhook::constructEvent($payload, $sig_header, $endpoint_secret);
+            $event = \Stripe\Webhook::constructEvent($payload, $sig_header, $endpointSecret);
         } catch (UnexpectedValueException $e) {
             Log::error('Webhook error: Invalid payload', [
                 'error' => $e->getMessage(),
@@ -418,7 +419,7 @@ class CheckoutController extends Controller
 
         $orderData = [
             'order' => $order->toArray(),
-            'customer' => $customerDetail->toArray(),
+            'customer' => array_merge($customer->toArray(), $customerDetail->toArray()),
             'products' => $orderProducts->map(fn($orderProduct) => [
                 'quantity' => $orderProduct->quantity,
                 'price_per_item' => $orderProduct->price_per_item,
