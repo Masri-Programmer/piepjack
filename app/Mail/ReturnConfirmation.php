@@ -12,44 +12,37 @@ class ReturnConfirmation extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * The data for the return.
+     *
+     * @var array
+     */
     public $returnData;
 
-    public function __construct($returnData)
+    public function __construct(array $returnData)
     {
         $this->returnData = $returnData;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Return Request Confirmation'
+            subject: 'Return Request Confirmation',
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
             view: 'emails.returnConfirmation',
             with: [
-                'returnData' => $this->returnData,
-                'return' => $this->returnData['return'],
+                'return'   => $this->returnData['return'],
                 'customer' => $this->returnData['customer'],
-                'items' => $this->returnData['items'],
-            ],
+                'items'    => $this->returnData['items'],
+            ]
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];
