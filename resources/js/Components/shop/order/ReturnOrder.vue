@@ -208,7 +208,7 @@ import { checkoutform } from "@lib/store/shop/index.js";
 const { t } = useI18n();
 const toast = useToast();
 const route = useRoute();
-const slug = route.params.slug;
+const slug = computed(() => route.params.slug);
 
 // Reactive State
 const activeStep = ref(1);
@@ -225,11 +225,12 @@ const form = useSessionStorage("active-return-form", {
 const returnData = ref({});
 
 // API Query
+const orderQueryKey = computed(() => form.value.orderNr);
 const {
     data: order,
     isLoading: isLoadingOrder,
     refetch: refetchOrder,
-} = apiQuery("orders").useGetById(route.params.slug ?? form.value.orderNr);
+} = apiQuery("orders").useGetById(orderQueryKey);
 
 // Fetch Order
 const fetchOrder = async () => {
@@ -335,7 +336,7 @@ const resetStepper = () => {
 
 // Lifecycle Hooks
 onMounted(() => {
-    if (slug === "success") {
+    if (slug.value === "success") {
         resetStepper();
         toast.success(t("common.alerts.returnSuccess"));
     }

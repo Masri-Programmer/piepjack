@@ -74,7 +74,7 @@ export const apiQuery = (resource) => {
 
         useGetById: (id) => useQuery({
             queryKey: [resource, id],
-            queryFn: () => api.getById(id),
+            queryFn: () => api.getById(id.value),
             cacheTime: 0,
             staleTime: 0,
             enabled: !!id,

@@ -4,7 +4,7 @@
       <table class="w-full my-0 align-middle text-dark border-neutral-200">
         <thead class="align-bottom">
           <tr class="font-semibold text-[0.95rem] text-gray">
-            <th class="py-3 text-start uppercase">ID</th>
+            <th class="py-3 uppercase text-start">ID</th>
             <th class="p-3 text-start min-w-[95px] uppercase">IMG</th>
             <th class="p-3 text-start min-w-[175px] uppercase">NAME</th>
             <th
@@ -30,7 +30,7 @@
                 {{ option.name }}
               </th>
             </template>
-            <th class="p-3 text-start uppercase">PUBLISHED</th>
+            <th class="p-3 uppercase text-start">PUBLISHED</th>
             <th class="p-3 text-start uppercase min-w-[95px]">price</th>
             <th class="p-3 text-start uppercase min-w-[95px]">quantity</th>
           </tr>
@@ -58,7 +58,7 @@
               </td>
               <td class="p-3">
                 <div
-                  class="mt-1 block font-bold w-full p-2 rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
+                  class="block w-full p-2 mt-1 font-bold rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
                 >
                   {{ data.name }}
                 </div>
@@ -73,7 +73,7 @@
               >
                 {{ product.options[index].value }}
                 <select
-                  class="font-bold w-full pb-1 rounded-md focus:outline-none focus:ring focus:ring-accent_dark flex items-center gap-1 justify-between py-1 px-2 mr-4"
+                  class="flex items-center justify-between w-full gap-1 px-2 py-1 pb-1 mr-4 font-bold rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
                   v-model="product.options[index].value"
                   @change="
                     (event) =>
@@ -111,7 +111,7 @@
                   @change="
                     (e) => handleUpdate(product, 'price', e.target.value)
                   "
-                  class="border-0 mt-1 block font-bold w-full p-2 rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
+                  class="block w-full p-2 mt-1 font-bold border-0 rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
                 />
               </td>
               <td class="p-3 pr-2 text-start">
@@ -123,7 +123,7 @@
                   @change="
                     (e) => handleUpdate(product, 'quantity', e.target.value)
                   "
-                  class="border-0 mt-1 block font-bold w-full p-2 rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
+                  class="block w-full p-2 mt-1 font-bold border-0 rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
                 />
               </td>
               <td class="p-3 text-start">
@@ -150,7 +150,7 @@
 </template>
 
 <script setup>
-import { watch } from "vue";
+import { watch , computed} from "vue";
 import { Trash2 } from "lucide-vue-next";
 import { useToggle } from "@vueuse/core";
 import ProductImg from "./ProductImg.vue";
@@ -204,9 +204,11 @@ const { mutate: deleteItem, isLoading: deleteLoading } =
 const handleDelete = async (id) => {
   deleteItem(id);
 };
+const categoryId = computed(() => props.data.category?.id);
+
 const { data: variations, isLoading: isLoadingVariations } = apiQuery(
   "category-variations"
-).useGetById(props.data.category?.id);
+).useGetById(categoryId);
 
 watch(
   () => props.storeValue,

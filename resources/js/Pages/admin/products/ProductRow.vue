@@ -16,7 +16,7 @@
         ref="ProductInput"
         type="text"
         id="name"
-        class="mt-1 block font-bold w-full p-2 rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
+        class="block w-full p-2 mt-1 font-bold rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
       />
     </td>
     <td class="p-3 text-start">
@@ -24,7 +24,7 @@
         v-model="newProduct.description"
         type="text"
         id="description"
-        class="mt-1 block font-bold w-full p-2 rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
+        class="block w-full p-2 mt-1 font-bold rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
         placeholder="No description"
       />
     </td>
@@ -93,11 +93,10 @@ const newProduct = reactive({
 const ProductInput = ref(null);
 const handleAddProduct = async () => {
   newProduct.active = newProduct.active ? 1 : 0;
-  newProduct.category_id =
-    !newProduct.category_id && categoriesData.value?.length
+  newProduct.category_id = newProduct.category_id ? newProduct.category_id :
+ categoriesData.value?.data?.length
       ? categoriesData.value?.data[0].id
       : null;
-  //   newProduct.category_id = newProduct.category.id;
   await storeProduct(newProduct, {
     onSuccess: () => {
       newProduct.name = "";

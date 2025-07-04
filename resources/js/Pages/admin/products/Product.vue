@@ -32,13 +32,13 @@
 <script setup>
 import { useRoute } from "vue-router";
 import { useToggle } from "@vueuse/core";
-import { ref } from "vue";
+import { ref , computed} from "vue";
 import PageLayout from "@layouts/admin/PageLayout.vue";
 import ProductDetails from "./ProductDetails.vue";
 import { apiQuery } from "@lib/helpers";
 
 const route = useRoute();
-const id = route.params.id;
+const id = computed(() => route.params.id);
 const slug = route.params.slug;
 const {
   data: product,

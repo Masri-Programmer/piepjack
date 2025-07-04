@@ -128,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref,computed } from "vue";
 import Lens from "@ui/Lens.vue";
 import Accordion from "@ui/Accordion.vue";
 import { apiQuery } from "@lib/helpers";
@@ -139,11 +139,13 @@ import Table from "@ui/Table.vue";
 const props = defineProps({
     data: { type: Object, required: true },
 });
+const id = computed(() =>props.data?.category_id);
+
 const {
     data: variants,
     error,
     isLoading,
-} = apiQuery("category-variations").useGetById(props.data?.category_id);
+} = apiQuery("category-variations").useGetById(id);
 
 const visibleRef = ref(false);
 const indexRef = ref(0);

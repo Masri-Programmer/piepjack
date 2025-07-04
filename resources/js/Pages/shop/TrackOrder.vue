@@ -119,7 +119,7 @@ const {
     data: order,
     isLoading: isLoadingOrder,
     refetch: refetchOrder,
-} = apiQuery("orders").useGetById(orderQueryKey.value || form.value.orderNr);
+} = apiQuery("orders").useGetById(orderQueryKey);
 
 // Error Handling
 const errorMessage = ref("");

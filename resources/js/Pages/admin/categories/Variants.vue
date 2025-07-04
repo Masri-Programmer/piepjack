@@ -1,6 +1,6 @@
 <template>
-  <h5 class="font-bold text-accent text-xl">Variants</h5>
-  <div class="flex items-start gap-5 text-accent my-3 flex-wrap">
+  <h5 class="text-xl font-bold text-accent">Variants</h5>
+  <div class="flex flex-wrap items-start gap-5 my-3 text-accent">
     <template v-if="data?.data" class="my-3">
       <div
         v-for="v in data.data"
@@ -18,8 +18,8 @@
             :delete="true"
             :colorClass="'bg-indigo-400'"
             :closeButtonClass="'bg-indigo-400'"
-            @handle:delete="deleteVariantOption(v.id)"
-          >
+            @handle:delete="deleteVariantOption(o.id)"
+            >
             {{ o.value }}
           </Badge>
         </div>
@@ -33,7 +33,7 @@
       <!-- <button
         type="button"
         @click="toggleVariant(!variant)"
-        class="bg-accent_dark text-white p-2 rounded-md hover:bg-accent_light transition duration-200 me-3"
+        class="p-2 text-white transition duration-200 rounded-md bg-accent_dark hover:bg-accent_light me-3"
       >
         <span>Add Variant</span>
       </button> -->
@@ -42,7 +42,7 @@
       <button
         type="button"
         @click="toggleOption(!option)"
-        class="bg-accent_dark text-white p-2 rounded-md hover:bg-accent_light transition duration-200"
+        class="p-2 text-white transition duration-200 rounded-md bg-accent_dark hover:bg-accent_light"
       >
         <span>Add Option</span>
       </button>
@@ -58,7 +58,7 @@
         name="variant"
         @change="handleStoreVariant"
         id="variant"
-        class="mt-1 block p-2 border border-gray rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
+        class="block p-2 mt-1 border rounded-md border-gray focus:outline-none focus:ring focus:ring-accent_dark"
       />
     </div>
     <div class="flex items-center gap-3 my-3 text-accent" v-if="option">
@@ -67,7 +67,7 @@
         v-model="newOption.variation_id"
         name="variants"
         id="variants"
-        class="mt-1 block p-2 border border-gray rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
+        class="block p-2 mt-1 border rounded-md border-gray focus:outline-none focus:ring focus:ring-accent_dark"
       >
         <option value="" disabled>Select a variant</option>
         <option v-for="v in data?.data" :key="v.id" :value="v.id">
@@ -81,7 +81,7 @@
         placeholder="Option"
         @change="handleStoreOption"
         id="option"
-        class="mt-1 block p-2 border border-gray rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
+        class="block p-2 mt-1 border rounded-md border-gray focus:outline-none focus:ring focus:ring-accent_dark"
       />
     </div>
   </div>
@@ -92,10 +92,10 @@ import Badge from "@components/admin/Badge.vue";
 import { apiQuery } from "@lib/helpers";
 import { useToggle } from "@vueuse/core";
 import { useRoute } from "vue-router";
-import { reactive } from "vue";
+import {computed, reactive } from "vue";
 
 const route = useRoute();
-const id = route.params.id;
+const id = computed(() => route.params.id);
 const newVariant = reactive({
   category_id: id,
   name: "",
@@ -107,7 +107,7 @@ const newOption = reactive({
 const { mutate: storeVariant, isLoading: storeLoading } =
   apiQuery("variations").useStore();
 const { mutate: storeOption, isLoading: storeOptionLoading } =
-  apiQuery("variations-options").useStore();
+  apiQuery("variation-options").useStore();
 const { mutate: deleteVariant, isLoading: deleteLoading } =
     apiQuery("variations").useDelete();
 const { mutate: deleteVariantOption, isLoading: deleteOptionLoading } =
