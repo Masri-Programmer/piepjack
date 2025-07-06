@@ -10,17 +10,20 @@ export default {
         PairsWellWith: "PAIRS WELL WITH",
         title: "FOOTBALL MESH SHORTS PINK",
         ab: "From",
+        reviews: "Reviews",
         maximum_quantity: "The product has reached it's maximum quantity",
         notFound: "NO PRODUCTS FOUND",
         productOutofStock: "product Out of Stock",
         otherProductTitle: "MORE LOVE MESH JERSEY GREEN",
         creditAndMobile: "All credit cards & mobile payments",
-        modelDescription: "Model is {height} cm tall weighs {weight} kg and wears size {size}.",
+        modelDescription:
+            "Model is {height} cm tall weighs {weight} kg and wears size {size}.",
         shipping: "Shipping & Returns",
         polyester: "100% Polyester",
         embroideredPatch: "Embroidered Patch",
         wovenPatch: "Woven patch on waistband",
-        femaleModel: "Female Model is {height} cm tall weighs {weight} kg and wears size {size}.",
+        femaleModel:
+            "Female Model is {height} cm tall weighs {weight} kg and wears size {size}.",
         shippingInfo: {
             country: "Country",
             deliveryTime: "Delivery Time",
@@ -37,12 +40,12 @@ export default {
             usaDelivery: "8-10 working days",
             restWorldDelivery: "8-10 working days",
             returnsInfo: "You can return your order within 14 days through our",
-            returnsPortal: "returns portal"
-        }
+            returnsPortal: "returns portal",
+        },
     },
     titles: {
         peopleAlsoLiked: "PEOPLE ALSO LIKED",
-        return_exchange: "Return your products from Piepjack-Clothing here"
+        return_exchange: "Return your products from Piepjack-Clothing here",
     },
     menu: {
         shopAll: "SHOP ALL",
@@ -51,7 +54,7 @@ export default {
         bestseller: "BESTSELLER",
         aboutUs: "ABOUT US",
         home: "HOME",
-        close: "Close"
+        close: "Close",
     },
     search: {
         title: "SEARCH",
@@ -60,16 +63,12 @@ export default {
             "Gar dameer - Italy",
             "Gar da - Veneto - Italy",
             "Gar da Hotel - Italy",
-            "Gar dena Resort - Italy"
+            "Gar dena Resort - Italy",
         ],
-        tabs: [
-            "Products",
-            "Collections",
-            "Pages"
-        ],
+        tabs: ["Products", "Collections", "Pages"],
         productsContent: "Products content goes here",
         collectionsContent: "Collections content goes here",
-        pagesContent: "Pages content goes here"
+        pagesContent: "Pages content goes here",
     },
     forms: {
         emailLabel: "E-Mail",
@@ -95,11 +94,11 @@ export default {
         continueToShipping: "Continue to shipping",
         landPlaceholder: "Please select a country",
         coupon: "Discount Code or gift Card",
-        applyCode: "Apply Code"
+        applyCode: "Apply Code",
     },
     input: {
         orderTracking: "Order number or tracking code (e.g GREFIYOO2Q)",
-        email: "Your email address"
+        email: "Your email address",
     },
     return: {
         provide_reason: "Provide a reason for your return.",
@@ -108,17 +107,20 @@ export default {
         next: "Next",
         reason: "Reason: {reason}",
         select_shipping: "CHOOSE SHIPPING PROVIDER",
-        select_shipping_desc: "Select a transport service to return your packages",
+        select_shipping_desc:
+            "Select a transport service to return your packages",
         dhl: "DHL Parcel Shop",
         insurance: "Return Shipping Insurance",
         insurance_yes: "Yes, I want to add insurance",
         insurance_no: "No, I don't want to add insurance",
-        insurance_info: "The coverage amount is {amount}€ and protects against damage or loss.",
-        insurance_warning: "If the package is lost or damaged, you may lose your refund.",
+        insurance_info:
+            "The coverage amount is {amount}€ and protects against damage or loss.",
+        insurance_warning:
+            "If the package is lost or damaged, you may lose your refund.",
         total_amount: "Total Amount: {total} €",
         terms: "I accept the terms and conditions.*",
         back_products: "Back to products",
-        next_step: "Proceed to the next step"
+        next_step: "Proceed to the next step",
     },
     alerts: {
         orderNotFound: "Order not found.",
@@ -126,11 +128,12 @@ export default {
         selectAtLeastOneProduct: "Please select at least one product.",
         provideReason: "Please provide a reason for your return.",
         returnSuccess: "Return request succeeded",
-        trackSuccess: "Order tracking initiated successfully"
+        trackSuccess: "Order tracking initiated successfully",
     },
     cookieNotification: {
-        message: "This website uses cookies to ensure you get the best experience on our website.",
+        message:
+            "This website uses cookies to ensure you get the best experience on our website.",
         learnMore: "Learn more",
-        understood: "Got it"
+        understood: "Got it",
     },
-}
+};

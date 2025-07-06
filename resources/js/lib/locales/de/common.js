@@ -12,15 +12,18 @@ export default {
         notFound: "Keine Produkte gefunden",
         productOutofStock: "Produkt aus dem Vorrat",
         ab: "ab",
+        reviews: "Bewertungen",
         secureAndFast: "Sicher und schnell",
         otherProductTitle: "MORE LOVE MESH JERSEY GRÜN",
         creditAndMobile: "Alle Kreditkarten & mobile Zahlungen",
-        modelDescription: "Das Model ist {height} cm groß, wiegt {weight} kg und trägt Größe {size}.",
+        modelDescription:
+            "Das Model ist {height} cm groß, wiegt {weight} kg und trägt Größe {size}.",
         shipping: "Versand&Rücksendungen",
         polyester: "100% Polyester",
         embroideredPatch: "Gestickter Patch",
         wovenPatch: "Gewebtes Patch am Bund",
-        femaleModel: "Das weibliche Model ist {height} cm groß, wiegt {weight} kg und trägt Größe {size}.",
+        femaleModel:
+            "Das weibliche Model ist {height} cm groß, wiegt {weight} kg und trägt Größe {size}.",
         shippingInfo: {
             country: "Land",
             deliveryTime: "Lieferzeit",
@@ -36,9 +39,10 @@ export default {
             switzerlandDelivery: "3-5 Werktage",
             usaDelivery: "8-10 Werktage",
             restWorldDelivery: "8-10 Werktage",
-            returnsInfo: "Sie können Ihre Bestellung innerhalb von 14 Tagen über unser",
-            returnsPortal: "Rückgabeportal"
-        }
+            returnsInfo:
+                "Sie können Ihre Bestellung innerhalb von 14 Tagen über unser",
+            returnsPortal: "Rückgabeportal",
+        },
     },
     titles: {
         peopleAlsoLiked: "Andere kauften auch",
@@ -51,7 +55,7 @@ export default {
         bestseller: "BESTSELLER",
         aboutUs: "ÜBER UNS",
         home: "STARTSEITE",
-        close: "Schließen"
+        close: "Schließen",
     },
 
     search: {
@@ -61,20 +65,17 @@ export default {
             "Gar dameer - Italien",
             "Gar da - Veneto - Italien",
             "Gar da Hotel - Italien",
-            "Gar dena Resort - Italien"
+            "Gar dena Resort - Italien",
         ],
-        tabs: [
-            "Produkte",
-            "Kategorien",
-            "Seiten"
-        ],
+        tabs: ["Produkte", "Kategorien", "Seiten"],
         productsContent: "Produktinhalte kommen hierhin",
         collectionsContent: "Kollektioninhalte kommen hierhin",
-        pagesContent: "Seiteninhalte kommen hierhin"
+        pagesContent: "Seiteninhalte kommen hierhin",
     },
     forms: {
         emailLabel: "E-Mail",
-        emailTooltip: "Wir werden diese E -Mail verwenden, um Ihre Bestelldaten zu senden.",
+        emailTooltip:
+            "Wir werden diese E -Mail verwenden, um Ihre Bestelldaten zu senden.",
         contact: "Kontakt",
         deliveryAddress: "LIEFERADRESSE",
         emailPlaceholder: "E-Mail-Adresse eingeben",
@@ -96,11 +97,11 @@ export default {
         continueToShipping: "Weiter zum Versand",
         landPlaceholder: "Bitte wählen Sie ein Land aus",
         coupon: "Rabattcode oder Geschenkkarte",
-        applyCode: "Code anwenden"
+        applyCode: "Code anwenden",
     },
     input: {
         orderTracking: "Bestellnummer oder Tracking -Code (e.g GREFIYOO2Q)",
-        email: "Ihre E-Mail Adresse"
+        email: "Ihre E-Mail Adresse",
     },
     return: {
         provide_reason: "Geben Sie einen Grund für Ihre Rücksendung an.",
@@ -109,17 +110,20 @@ export default {
         next: "Weiter",
         reason: "Grund: {reason}",
         select_shipping: "VERSANDDIENSTLEISTER WÄHLEN",
-        select_shipping_desc: "Wählen Sie einen Transportdienst aus, um Ihre Pakete zurückzusenden",
+        select_shipping_desc:
+            "Wählen Sie einen Transportdienst aus, um Ihre Pakete zurückzusenden",
         dhl: "DHL Paketshop",
         insurance: "Rücksendeversicherung",
         insurance_yes: "Ja, ich möchte eine Versicherung hinzufügen",
         insurance_no: "Nein, ich möchte keine Versicherung hinzufügen",
-        insurance_info: "Die Deckung beträgt {amount}€ und schützt vor Schäden oder Verlust der Sendung.",
-        insurance_warning: "Wenn das Paket verloren geht oder beschädigt wird, besteht die Möglichkeit, dass Sie Ihre Rückerstattung verlieren.",
+        insurance_info:
+            "Die Deckung beträgt {amount}€ und schützt vor Schäden oder Verlust der Sendung.",
+        insurance_warning:
+            "Wenn das Paket verloren geht oder beschädigt wird, besteht die Möglichkeit, dass Sie Ihre Rückerstattung verlieren.",
         total_amount: "Gesamtbetrag: {total} €",
         terms: "Ich akzeptiere die Nutzungsbedingungen.*",
         back_products: "Zurück zu den Produkten",
-        next_step: "Zum nächsten Schritt"
+        next_step: "Zum nächsten Schritt",
     },
     alerts: {
         orderNotFound: "Nicht gefunden.",
@@ -127,12 +131,12 @@ export default {
         selectAtLeastOneProduct: "Bitte wählen Sie mindestens ein Produkt.",
         provideReason: "Bitte geben Sie einen Grund für Ihre Rückkehr an.",
         returnSuccess: "Rückgabeanforderung erfolgreich",
-        trackSuccess: "Bestellverfolgung erfolgreich initiiert"
+        trackSuccess: "Bestellverfolgung erfolgreich initiiert",
     },
     cookieNotification: {
-        message: "Diese Website verwendet Cookies, um sicherzustellen, dass Sie das beste Erlebnis auf unserer Website erhalten.",
+        message:
+            "Diese Website verwendet Cookies, um sicherzustellen, dass Sie das beste Erlebnis auf unserer Website erhalten.",
         learnMore: "Mehr erfahren",
-        understood: "Verstanden"
+        understood: "Verstanden",
     },
-
-}
+};
