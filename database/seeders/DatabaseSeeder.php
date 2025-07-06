@@ -12,6 +12,8 @@ use App\Models\Variation;
 use App\Models\VariationOption;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Database\Seeders\ProductCommentSeeder;
+use Database\Seeders\ProductReviewSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -67,6 +69,12 @@ class DatabaseSeeder extends Seeder
             ['key' => 'site_name', 'value' => 'My E-Commerce'],
             ['key' => 'currency', 'value' => 'EUR'],
             ['key' => 'tax_rate', 'value' => '19'], // Example: 19% tax rate
+        ]);
+
+
+        $this->call([
+            ProductReviewSeeder::class,
+            ProductCommentSeeder::class,
         ]);
     }
 }
