@@ -6,6 +6,7 @@ use App\Http\Controllers\API\V1\CheckoutController;
 use App\Http\Controllers\API\V1\ShutdownController;
 use App\Http\Controllers\API\V1\VariationController;
 use App\Http\Controllers\API\V1\PublicProductController;
+use App\Http\Controllers\API\V1\ProductReviewController;
 use App\Http\Controllers\API\V1\PublicCategoryController;
 use App\Http\Controllers\API\V1\PublicReturningController;
 use App\Http\Controllers\API\V1\PublicOrderController;
@@ -14,6 +15,8 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::apiResource('products', PublicProductController::class)->only(['show', 'index']);
     Route::apiResource('returns', PublicReturningController::class)->only(['show', 'store']);
     Route::apiResource('orders', PublicOrderController::class)->only(['show', 'index']);
+    // Route::apiResource('products.reviews', ProductReviewController::class)->shallow();
+    Route::get('products-reviews/{product}', [ProductReviewController::class, 'index']);
     Route::get('categories', [PublicCategoryController::class, 'index']);
     Route::get('category-variations/{category}', [VariationController::class, 'categoryVariations']);
     Route::get('generate-shutdown-code', [ShutdownController::class, 'generateShutdownCode']);
