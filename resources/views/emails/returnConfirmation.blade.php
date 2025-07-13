@@ -2,7 +2,7 @@
 
 @section('title', 'Bestätigung deiner Rücksendung')
 @section('subtitle') Rücksende-Nr. #{{ $return->id ?? '' }}@endsection
-@section('subtitle_2') Hallo {{ $customer->first_name ?? '' }}, wir haben die Artikel aus deiner Rücksendung erhalten und werden sie in Kürze bearbeiten.@endsection
+@section('subtitle_2') Hallo {{ $user->first_name ?? '' }}, wir haben die Artikel aus deiner Rücksendung erhalten und werden sie in Kürze bearbeiten.@endsection
 
 @section('preheader', 'Wir haben deine Rücksendung erhalten und werden sie in Kürze bearbeiten.')
 

@@ -53,6 +53,25 @@
       </transition>
     </div>
 
+      <div class="contact-form-section">
+        <label class="contact-form-label">  {{ $t("common.forms.state") }}</label>
+        <input
+            v-model="checkoutform.stateProvince"
+            type="text"
+            autocomplete="address-level1"
+            :class="[
+                'contact-form-input',
+                errors.stateProvince ? 'contact-form-error' : '',
+            ]"
+            placeholder="State / Province"
+        />
+        <transition name="fade">
+            <p v-if="errors.stateProvince" class="contact-form-error-message">
+                {{ errors.stateProvince }}
+            </p>
+        </transition>
+    </div>
+
     <div class="contact-form-grid">
       <div class="contact-form-section">
         <label class="contact-form-label">{{
@@ -197,6 +216,7 @@ const errors = reactive({
   land: null,
   phone: null,
   city: null,
+  stateProvince: null, // FIX: Added stateProvince to errors object
 });
 const { t } = useI18n();
 const validationSchema = Yup.object().shape({
@@ -204,12 +224,6 @@ const validationSchema = Yup.object().shape({
     .email(t("validation.validation.email.invalid"))
     .required(t("validation.validation.email.required")),
   firstName: Yup.string().required(t("validation.validation.firstName")),
-  // phone: Yup.string()
-  //   .matches(
-  //     /^[\+]?[0-9]{0,3}[\W]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
-  //     t("validation.validation.phone")
-  //   )
-  //   .optional(),
   lastName: Yup.string().required(t("validation.validation.lastName")),
   address: Yup.string().required(t("validation.validation.address")),
   land: Yup.lazy((value) => {
@@ -235,12 +249,14 @@ const validationSchema = Yup.object().shape({
   }),
   zip: Yup.string().required(t("validation.validation.zip")),
   city: Yup.string().required(t("validation.validation.city")),
+  stateProvince: Yup.string().required("State or Province is required."),
 });
 
 const { mutate: checkout, isLoading } = apiQuery("checkout").useStore();
 
 const submitForm = async () => {
   try {
+    // Make sure to add 'stateProvince' to your checkoutform store
     await validationSchema.validate(checkoutform.value, { abortEarly: false });
     const requestform = buildRequestForm(checkoutform.value);
 
@@ -253,6 +269,8 @@ const submitForm = async () => {
       },
     });
   } catch (validationErrors) {
+    // Clear previous errors
+    resetErrors();
     validationErrors.inner.forEach((error) => {
       errors[error.path] = error.message;
     });
@@ -292,33 +310,6 @@ const translatedCountries = computed(() => {
     .sort((a, b) => a.name.localeCompare(b.name));
 });
 
-const formatPhoneNumber = (event) => {
-  const rawInput = event.target.value;
-  const sanitizedInput = rawInput.replace(/[^\d+()-\s]/g, ""); // Sanitize the input
-
-  if (/[a-zA-Z]/.test(rawInput)) {
-    checkoutform.value.phone = sanitizedInput;
-    return;
-  }
-
-  checkoutform.value.phone = sanitizedInput;
-
-  if (
-    checkoutform.value.land.tel_code &&
-    !checkoutform.value.phone.startsWith("+") &&
-    !checkoutform.value.phone.startsWith("00")
-  ) {
-    checkoutform.value.phone =
-      checkoutform.value.land.tel_code + sanitizedInput;
-  } else if (
-    !checkoutform.value.land.tel_code &&
-    !checkoutform.value.phone.startsWith("+") &&
-    !checkoutform.value.phone.startsWith("00")
-  ) {
-    checkoutform.value.phone = "+49" + sanitizedInput;
-  }
-};
-
 const updatePhoneCode = () => {
   if (checkoutform.value.land.tel_code) {
     if (checkoutform.value.phone) {
@@ -350,27 +341,20 @@ const clearErrorOnInputChange = () => {
 };
 
 const buildRequestForm = (form) => {
-  return {
-    email: form.email,
-    first_name: `${form.firstName
-      .charAt(0)
-      .toUpperCase()}${form.firstName.slice(1)}`,
-    last_name: `${form.lastName.charAt(0).toUpperCase()}${form.lastName.slice(
-      1
-    )}`,
-    address_line_one: `${form.address
-      .charAt(0)
-      .toUpperCase()}${form.address.slice(1)}, ${form.zip}, ${form.city
-      .charAt(0)
-      .toUpperCase()}${form.city.slice(1)}, ${form.land.name}`,
-    address_line_two: `${form.address
-      .charAt(0)
-      .toUpperCase()}${form.address.slice(1)}, ${form.zip}, ${form.city
-      .charAt(0)
-      .toUpperCase()}${form.city.slice(1)}, ${form.land.name}`,
-    products: transformCartItmes(cartState.value.cartItems),
-    promo_code: `${cartState.value.promoCode}`,
-  };
+    return {
+        email: form.email,
+        first_name: form.firstName,
+        last_name: form.lastName,
+
+        street_address: form.address,
+        city: form.city,
+        postal_code: form.zip,
+        country_code: form.land.code,
+        state_province: form.stateProvince,
+
+        products: transformCartItmes(cartState.value.cartItems),
+        promo_code: cartState.value.promoCode || null,
+    };
 };
 
 function transformCartItmes(cartItems) {
@@ -386,7 +370,6 @@ function resetErrors() {
   Object.keys(errors).forEach((key) => {
     errors[key] = null;
   });
-  cartState.value.promoCode = "";
 }
 onMounted(() => {
   fetchCountries();

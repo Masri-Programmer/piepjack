@@ -3,7 +3,7 @@
     <div class="dashboard grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
       <div class="card text-accent grid">
         <h1 class="text-base font-bold mb-3">
-          Users: <span>{{ Dashboard?.customer_counts }}</span>
+          Users: <span>{{ Dashboard?.user_counts }}</span>
         </h1>
         <p v-if="isLoadingDashboard"><Spinner class="w-8" /></p>
       </div>

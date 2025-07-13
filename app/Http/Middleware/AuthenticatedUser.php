@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
-class AuthenticatedCustomer
+class AuthenticatedUser
 {
     /**
      * Handle an incoming request.
@@ -14,7 +14,7 @@ class AuthenticatedCustomer
      */
     public function handle($request, Closure $next)
     {
-        if (! Auth::guard('customer')->check()) {
+        if (! Auth::guard('user')->check()) {
             return response(['message' => 'Unauthenticated.'], 401);
         }
 

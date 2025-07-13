@@ -43,8 +43,8 @@ export const useShopGlobalState = createGlobalState(() => {
         page: 1,
         per_page: 15,
         search: '',
-        sort_direction: '',
-        sort_field: '',
+        sort_direction: 'desc',
+        sort_field: 'created_at',
     })
     
     return {

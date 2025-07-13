@@ -4,8 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\AddressResource;
 
-class CustomerResource extends JsonResource
+class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +17,10 @@ class CustomerResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
             'email' => $this->email,
-            'info' => $this->whenLoaded('details'),
+            'info' => AddressResource::collection($this->whenLoaded('addresses')),
             'orders' => $this->whenLoaded('orders'),
         ];
     }

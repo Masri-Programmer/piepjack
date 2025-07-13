@@ -5,32 +5,27 @@ namespace App\Http\Controllers\API\V1;
 use Exception;
 use Stripe\Stripe;
 use App\Models\Order;
-use App\Models\Customer;
+use App\Models\User;
 use App\Models\Returning;
 use App\Models\ReturnItem;
-use App\Models\ProductItem;
 use Illuminate\Http\Request;
 use Stripe\Checkout\Session;
 use App\Models\OrderProduct;
-use App\Models\CustomerDetail;
+use App\Models\Address;
 use Illuminate\Validation\Rule;
 use App\Mail\ReturnConfirmation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
-
 use Stripe\Webhook as StripeWebhook;
 
 class PublicReturningController extends Controller
 {
     /**
      * Show the specified return request.
-     *
-     * @param  int  $id
-     * @return JsonResponse
      */
-    public function show($id)
+    public function show($id): JsonResponse
     {
         $return = Returning::with('order')->findOrFail($id);
         return response()->json($return);
@@ -38,35 +33,26 @@ class PublicReturningController extends Controller
 
     /**
      * Store a new return request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        // Validate input data
         $validated = $this->validateRequest($request);
 
-        // Fetch related entities
-        $order = Order::findOrFail($validated['order_id']);
-        $customer = Customer::where('email', $validated['email'])->first();
+        $order = Order::with('user')->findOrFail($validated['order_id']);
+        $user = $order->user;
 
-        // Check if the customer is banned
-        if ($customer && ! $customer->active) {
+        if (!$user->active) {
             return $this->forbiddenResponse('You are banned from using this website.');
         }
 
-        // Ensure the email matches the order's customer
-        if ($order->customerDetail->customer->email !== $validated['email']) {
-            return $this->unprocessableEntityResponse('The provided email does not match the customer associated with this order.');
+        // FIX: Ensure the email matches the order's user directly
+        if ($user->email !== $validated['email']) {
+            return $this->unprocessableEntityResponse('The provided email does not match the user associated with this order.');
         }
+if (!in_array($order->status, ["paid", "shipped", "delivered"])) {
+    return $this->unprocessableEntityResponse('Returns can only be created for paid, shipped, or delivered orders.');
+}
 
-        // Ensure the order is paid
-        if ($order->status !== 'paid') {
-            return $this->unprocessableEntityResponse('Returns can only be created for paid orders.');
-        }
-
-        // Create or update the return request
         $return = Returning::updateOrCreate(
             ['order_id' => $validated['order_id']],
             [
@@ -75,10 +61,9 @@ class PublicReturningController extends Controller
             ]
         );
 
-        // Process return items
         foreach ($validated['items'] as $item) {
             if (!$this->canAddReturnItem($return, $item)) {
-                continue; // Skip duplicates or invalid items
+                continue;
             }
             ReturnItem::create([
                 'return_id' => $return->id,
@@ -87,11 +72,8 @@ class PublicReturningController extends Controller
             ]);
         }
 
-        Log::info(' Paymnt recieved Total:', ['total' => $validated['total'], 'converted_total' => (int) round($validated['total'] * 100)]);
-
-        // Initialize Stripe payment session
         try {
-            $checkoutSession = $this->createStripeSession($order, $return, $validated['total'], $customer->email);
+            $checkoutSession = $this->createStripeSession($order, $return, $validated['total'], $user->email);
             return $this->successResponse('Return record created successfully. Redirect to payment.', [
                 'data' => $return->load('items'),
                 'checkout_url' => $checkoutSession->url,
@@ -104,16 +86,9 @@ class PublicReturningController extends Controller
 
     /**
      * Handle Stripe webhook events.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
-
     public function handleWebhook()
     {
-        // cd "C:\Program Files\Stripe CLI\stripe_1.23.5_windows_x86_64"
-        // stripe login
-        // stripe listen --forward-to localhost:8000/api/V1/shop/webhook/return-items
-        // $endpointSecret = 'whsec_1ec88b1f8be092cb44234aa740821ceb154cd06bdd5fe05b996b09ef79d33a94';
         $endpointSecret = env('STRIPE_WEBHOOK_SECRET_RETURN');
         $payload = @file_get_contents('php://input');
         $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? null;
@@ -130,19 +105,15 @@ class PublicReturningController extends Controller
         $orderId = $metadata['order_id'] ?? null;
         $returnId = $metadata['return_id'] ?? null;
 
-        if (! $orderId || ! $returnId) {
+        if (!$orderId || !$returnId) {
             return $this->badRequestResponse('Missing required metadata.');
         }
 
         $order = Order::find($orderId);
         $return = Returning::find($returnId);
 
-        if (! $order) {
-            return $this->notFoundResponse('Order not found.');
-        }
-
-        if (! $return) {
-            return $this->notFoundResponse('Return not found.');
+        if (!$order || !$return) {
+            return $this->notFoundResponse('Order or Return not found.');
         }
 
         if ($order->status !== 'paid') {
@@ -155,7 +126,7 @@ class PublicReturningController extends Controller
                 try {
                     $this->sendReturnConfirmationEmail($order, $return);
                 } catch (\Exception $e) {
-                    // Email failed, but continue execution
+                    Log::error("Failed to send return confirmation email for return ID {$return->id}: " . $e->getMessage());
                 }
                 break;
 
@@ -174,22 +145,19 @@ class PublicReturningController extends Controller
 
     /**
      * Validate the request data.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
      */
-    private function validateRequest(Request $request)
+    private function validateRequest(Request $request): array
     {
         return $request->validate([
-            'total' => 'required',
+            'total' => 'required|numeric',
             'order_id' => 'required|exists:orders,id',
-            'email' => 'required|email|exists:customers,email',
+            'email' => 'required|email|exists:users,email',
             'status' => 'required|in:not_requested,requested,approved,rejected',
             'reason' => 'nullable|string|max:1000',
             'items' => 'required|array',
             'items.*.id' => [
                 'required',
-                Rule::exists('order_products', 'product_item_id')
+                Rule::exists('order_products', 'product_item_id')->where('order_id', $request->order_id)
             ],
             'items.*.cartQuantity' => 'required|integer|min:1',
         ]);
@@ -197,10 +165,6 @@ class PublicReturningController extends Controller
 
     /**
      * Check if a return item can be added.
-     *
-     * @param  \App\Models\Returning  $return
-     * @param  array  $item
-     * @return bool
      */
     private function canAddReturnItem(Returning $return, array $item): bool
     {
@@ -220,12 +184,6 @@ class PublicReturningController extends Controller
 
     /**
      * Create a Stripe checkout session.
-     *
-     * @param  \App\Models\Order  $order
-     * @param  \App\Models\Returning  $return
-     * @param  int  $total
-     * @param  string  $email
-     * @return \Stripe\Checkout\Session
      */
     private function createStripeSession(Order $order, Returning $return, float $total, string $email): Session
     {
@@ -241,7 +199,7 @@ class PublicReturningController extends Controller
                     'product_data' => [
                         'name' => 'Delivery Fee for Return',
                     ],
-                    'unit_amount' => (float) round($total * 100),
+                    'unit_amount' => (int) round($total * 100),
                 ],
                 'quantity' => 1,
             ]],
@@ -260,9 +218,6 @@ class PublicReturningController extends Controller
 
     /**
      * Send return confirmation email.
-     *
-     * @param  \App\Models\Order  $order
-     * @param  \App\Models\Returning  $return
      */
     private function sendReturnConfirmationEmail(Order $order, Returning $return)
     {
@@ -271,13 +226,12 @@ class PublicReturningController extends Controller
             'items.productItem.options.variation'
         ]);
 
-        $customerDetail = CustomerDetail::find($order->customer_details_id);
-        if (!$customerDetail) {
-            return;
-        }
+        $order->load('user', 'shippingAddress');
+        $user = $order->user;
+        $address = $order->shippingAddress;
 
-        $customer = Customer::find($customerDetail->customer_id);
-        if (!$customer) {
+        if (!$user || !$address) {
+            Log::error("User or Shipping Address not found for Order ID: {$order->id}");
             return;
         }
 
@@ -288,7 +242,6 @@ class PublicReturningController extends Controller
             ->get()
             ->keyBy('product_item_id');
 
-        // Map the return items to the desired detailed format for the email
         $items = $return->items->map(function ($returnItem) use ($orderProducts) {
             $productItem = $returnItem->productItem;
             $orderProduct = $orderProducts->get($returnItem->product_item_id);
@@ -307,16 +260,17 @@ class PublicReturningController extends Controller
 
         $returnData = [
             'return' => $return,
-            'customer' => $customerDetail,
+            'user' => $user,
+            'address' => $address,
             'items' => $items
         ];
 
-        Mail::to($customer->email)->send(new ReturnConfirmation($returnData));
+        Mail::to($user->email)->send(new ReturnConfirmation($returnData));
     }
+
     /**
      * Helper methods for standardized responses.
      */
-
     private function successResponse(string $message, array $data = []): JsonResponse
     {
         return response()->json(array_merge(['message' => $message], $data), 201);
@@ -352,58 +306,20 @@ class PublicReturningController extends Controller
         return response()->json(['message' => $message], 200);
     }
 
+    /**
+     * Test function for sending a return email.
+     */
     public function sendReturnEmailTest($returnId)
     {
-        $return = Returning::with([
-            'items.productItem.product',
-            'items.productItem.options.variation'
-        ])->findOrFail($returnId);
+        $return = Returning::findOrFail($returnId);
 
-        $order = Order::find($return->order_id);
+        // FIX: Load order with the necessary relationships
+        $order = Order::with(['user', 'shippingAddress'])->find($return->order_id);
         if (!$order) {
-            return response()->json(['message' => 'Order not found'], 404);
+            return $this->notFoundResponse('Order not found');
         }
 
-        $customerDetail = CustomerDetail::find($order->customer_details_id);
-        if (!$customerDetail) {
-            return response()->json(['message' => 'Customer details not found'], 404);
-        }
-
-        $customer = Customer::find($customerDetail->customer_id);
-        if (!$customer) {
-            return response()->json(['message' => 'Customer not found'], 404);
-        }
-
-        $productItemIds = $return->items->pluck('product_item_id');
-
-        $orderProducts = OrderProduct::where('order_id', $return->order_id)
-            ->whereIn('product_item_id', $productItemIds)
-            ->get()
-            ->keyBy('product_item_id');
-
-        $items = $return->items->map(function ($returnItem) use ($orderProducts) {
-            $productItem = $returnItem->productItem;
-            $orderProduct = $orderProducts->get($returnItem->product_item_id);
-
-            return [
-                'product_name' => $productItem->product->name,
-                'quantity' => $returnItem->quantity,
-                'price_per_item' => $orderProduct->price_per_item ?? null,
-                'image' => $productItem->image ?? asset('images/logo_new_gray_bg_black.jpeg'),
-                'options' => $productItem->options->map(fn($option) => [
-                    'name' => optional($option->variation)->name,
-                    'value' => $option->value,
-                ])->toArray(),
-            ];
-        });
-
-        $returnData = [
-            'return' => $return,
-            'customer' => $customerDetail,
-            'items' => $items
-        ];
-
-        Mail::to($customer->email)->send(new ReturnConfirmation($returnData));
+        $this->sendReturnConfirmationEmail($order, $return);
 
         return response()->json(['message' => 'Test return email sent successfully']);
     }

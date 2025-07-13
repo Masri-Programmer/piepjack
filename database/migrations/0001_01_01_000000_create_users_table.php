@@ -8,14 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+      Schema::create('users', function (Blueprint $table) {
+            $table->id(); 
+            $table->string('first_name');
+            $table->string('last_name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('active')->default(false);
+            $table->string('phone_number', 50)->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes(); 
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

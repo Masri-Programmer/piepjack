@@ -15,11 +15,10 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
 
-            // For threaded comments (replies)
             $table->foreignId('parent_id')->nullable()->constrained('product_comments')->cascadeOnDelete();
 
             $table->text('comment');
-            $table->boolean('is_approved')->default(false); // For moderation
+            $table->boolean('is_approved')->default(false);
             $table->timestamps();
         });
     }

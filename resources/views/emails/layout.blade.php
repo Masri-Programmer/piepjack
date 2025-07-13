@@ -105,6 +105,4 @@
         </tr>
     </table>
 </body>
-{{dd(1);}}
-
 </html>

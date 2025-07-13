@@ -12,16 +12,13 @@ class OrderConfirmation extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $orderData;
+    public array $orderData;
 
-    public function __construct($orderData)
+    public function __construct(array $orderData)
     {
         $this->orderData = $orderData;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -29,28 +26,19 @@ class OrderConfirmation extends Mailable
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
             view: 'emails.orderConfirmation',
             with: [
-                'orderData' => $this->orderData,
                 'order' => $this->orderData['order'],
-                'customer' => $this->orderData['customer'],
+                'user' => $this->orderData['user'],
+                'address' => $this->orderData['address'],
                 'products' => $this->orderData['products'],
-                'items' => $this->orderData['items'],
             ],
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];

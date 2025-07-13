@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Customer;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
@@ -26,9 +26,9 @@ class AdminDashboardController extends Controller
             'inactive' => Product::where('active', false)->count(),
         ];
 
-        $customerCounts = [
-            'active' => Customer::where('active', true)->count(),
-            'inactive' => Customer::where('active', false)->count(),
+        $userCounts = [
+            'active' => User::where('active', true)->count(),
+            'inactive' => User::where('active', false)->count(),
         ];
 
         $categoryCounts = [
@@ -40,7 +40,7 @@ class AdminDashboardController extends Controller
         return response()->json([
             'order_status_counts' => $orderStatusCounts,
             'product_counts' => $productCounts,
-            'customer_counts' => $customerCounts,
+            'user_counts' => $userCounts,
             'category_counts' => $categoryCounts,
             'total_income' => $totalIncome,
         ]);

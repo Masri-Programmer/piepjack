@@ -2,198 +2,210 @@
 
 namespace App\Http\Controllers\API\V1;
 
+
+use Exception;
 use Stripe\Stripe;
+use App\Models\User;
 use App\Models\Order;
-use App\Models\Customer;
+use App\Models\Address;
 use App\Models\ProductItem;
+use Illuminate\Support\Str;
 use App\Models\OrderProduct;
 use Stripe\Checkout\Session;
+use Illuminate\Http\Request;
 use UnexpectedValueException;
-use App\Models\CustomerDetail;
 use App\Mail\OrderConfirmation;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use Stripe\Webhook as StripeWebhook;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\API\V1\CheckoutRequest;
-use Illuminate\Support\Facades\DB;
-use Throwable;
+use Stripe\Exception\SignatureVerificationException;
 
 class CheckoutController extends Controller
 {
-    public function checkout(CheckoutRequest $request)
+    public function checkout(CheckoutRequest $request): JsonResponse
     {
+        $validated = $request->validated();
+
         DB::beginTransaction();
         try {
-            $validated = $request->validated();
-            $user = Customer::where('email', $request->email)->first();
-
-            if ($user && !$user->active) {
-                return response(['message' => 'You are banned from using this website.'], 403);
+            // Step 1: Find or create the user and their address
+            $user = $this->findOrCreateUser($validated);
+            if (!$user->active) {
+                return response()->json(['message' => 'You are banned from using this website.'], 403);
             }
+            $address = $this->createOrUpdateAddress($user, $validated);
 
-            if (!$user) {
-                $user = Customer::create(['email' => $request->email]);
+            // Step 2: Create the order
+            $order = $this->createOrder($user, $address);
+
+            // Step 3: Process products and calculate initial total
+            $lineItems = [];
+            $totalPrice = 0;
+            $this->processOrderProducts($order, $validated['products'], $lineItems, $totalPrice);
+
+            // Step 4: Calculate shipping and add to total and line items
+            $shippingCost = $this->calculateShippingCost($totalPrice, $validated);
+            if ($shippingCost > 0) {
+                $this->addShippingToLineItems($lineItems, $shippingCost);
             }
+            $finalTotalPrice = $totalPrice + $shippingCost;
+            $order->update(['total_price' => $finalTotalPrice]);
 
-            $customer_id = $user->id;
+            // Step 5: Create Stripe Checkout Session
+            $session = $this->createStripeSession($order, $user, $lineItems, $finalTotalPrice);
 
-            $customer_details = CustomerDetail::where('customer_id', $customer_id)->first();
+            DB::commit();
 
-            if (!$customer_details) {
-                $customer_details = CustomerDetail::create([
-                    'customer_id' => $customer_id,
-                    'first_name' => $validated['first_name'],
-                    'last_name' => $validated['last_name'],
-                    'address_line_one' => $validated['address_line_one'],
-                    'address_line_two' => $validated['address_line_two'],
-                ]);
-            } else {
-                $customer_details->update([
-                    'first_name' => $validated['first_name'],
-                    'last_name' => $validated['last_name'],
-                    'address_line_one' => $validated['address_line_one'],
-                    'address_line_two' => $validated['address_line_two'],
-                ]);
-            }
-
-
-            $order = Order::create([
-                'status' => 'pending',
-                'customer_details_id' => $customer_details->id,
-                'total_price' => 0,
+            return response()->json([
+                'id' => $session->id,
+                'url' => $session->url,
+                'order_number' => $order->order_number,
             ]);
-
-            $products = $validated['products'];
-            $line_items = [];
-            $total_price = 0;
-
-            $product_ids = array_column($products, 'id');
-            $product_items = ProductItem::with(['product', 'options.variation'])
-                ->whereIn('id', $product_ids)
-                ->get()
-                ->keyBy('id');
-
-            foreach ($products as $product) {
-                $product_id = $product['id'];
-
-                if (!isset($product_items[$product_id])) {
-                    throw new \Exception("Product with ID {$product_id} not found");
-                }
-
-                $_product = $product_items[$product_id];
-
-                if (isset($_product->stock) && $_product->stock < $product['quantity']) {
-                    DB::rollBack();
-                    return response([
-                        'message' => "Insufficient stock for {$_product->product->name}. Available: {$_product->stock}",
-                        'product_id' => $product_id
-                    ], 400);
-                }
-
-                $price_per_item = $_product->price;
-                $name = $_product->product->name;
-                $product_image = $_product->image ?? asset('images/logo_new_gray_bg_black.jpeg');
-
-                $options = $_product->options->map(function ($option) {
-                    return $option->variation->name . ': ' . $option->value;
-                })->toArray();
-
-                $description = !empty($options) ? implode(', ', $options) : 'No options selected';
-
-                array_push($line_items, [
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'product_data' => [
-                            'name' => $name,
-                            'images' => [$product_image],
-                            'description' => $description,
-                        ],
-                        'unit_amount' => $price_per_item * 100,
-                    ],
-                    'quantity' => $product['quantity'],
-                ]);
-
-                OrderProduct::create([
-                    'order_id' => $order->id,
-                    'product_item_id' => $product_id,
-                    'price_per_item' => $price_per_item,
-                    'quantity' => $product['quantity'],
-                ]);
-
-
-                $total_price += ($price_per_item * $product['quantity']);
-            }
-
-            $shipping_cost = $this->calculateShippingCost($total_price, $validated);
-            $total_price += $shipping_cost;
-
-            $order->update(['total_price' => $total_price]);
-
-            if ($shipping_cost > 0) {
-                array_push($line_items, [
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'product_data' => [
-                            'name' => 'Shipping Fee',
-                            'description' => 'Standard Shipping',
-                        ],
-                        'unit_amount' => $shipping_cost * 100,
-                    ],
-                    'quantity' => 1,
-                ]);
-            }
-
-            $success_url = env('VITE_FRONTEND_URL') . '/success?order_number=' . $order->order_number;
-            $cancel_url = env('VITE_FRONTEND_URL') . '/checkout?order_number=' . $order->order_number;
-
-            Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
-
-            try {
-                $session = Session::create(
-                    [
-                        'mode' => 'payment',
-                        'line_items' => $line_items,
-                        'metadata' => [
-                            'order_number' => $order->order_number,
-                            'order_id' => $order->id,
-                            'payment_type' => 'checkout',
-                            'email' => $user->email,
-                            'total_price' => $total_price,
-                        ],
-                        'success_url' => $success_url,
-                        'cancel_url' => $cancel_url,
-                        'payment_intent_data' => [
-                            'metadata' => [
-                                'order_id' => $order->id,
-                                'order_number' => $order->order_number,
-                            ],
-                        ],
-                    ],
-                    ['idempotency_key' => $order->order_number . '-' . time()]
-                );
-
-                DB::commit();
-
-                return response([
-                    'id' => $session->id,
-                    'url' => $session->url,
-                    'order_number' => $order->order_number,
-                ], 200);
-            } catch (\Stripe\Exception\ApiErrorException $e) {
-                DB::rollBack();
-                Log::error('Stripe API Error: ' . $e->getMessage(), [
-                    'order_number' => $order->order_number,
-                    'error' => $e->getMessage(),
-                ]);
-                return response(['message' => 'Payment processing error: ' . $e->getMessage()], 500);
-            }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Checkout error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return response(['message' => 'An error occurred during checkout. Please try again.'], 500);
+            Log::error('Checkout error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Find an existing user or create a new one.
+     */
+    private function findOrCreateUser(array $data): User
+    {
+        return User::firstOrCreate(
+            ['email' => $data['email']],
+            [
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'password' => Hash::make(Str::random(24)),
+                'active' => true,
+            ]
+        );
+    }
+
+    /**
+     * Create or update the address for the user.
+     */
+    private function createOrUpdateAddress(User $user, array $data): Address
+    {
+        return Address::create([
+            'user_id' => $user->id,
+            'street_address' => $data['street_address'],
+            'city' => $data['city'],
+            'state_province' => $data['state_province'],
+            'postal_code' => $data['postal_code'],
+            'country_code' => $data['country_code'],
+            'label' => 'Checkout Address',
+        ]);
+    }
+
+    /**
+     * Create the initial order record.
+     */
+    private function createOrder(User $user, Address $address): Order
+    {
+        return Order::create([
+            'user_id' => $user->id,
+            'shipping_address_id' => $address->id,
+            'billing_address_id' => $address->id, 
+            'status' => 'pending',
+            'total_price' => 0,
+        ]);
+    }
+
+    /**
+     * Process products, check stock, create order items, and build Stripe line items.
+     */
+    private function processOrderProducts(Order $order, array $products, array &$lineItems, float &$totalPrice): void
+    {
+        $productIds = array_column($products, 'id');
+        $productItems = ProductItem::with('product')->whereIn('id', $productIds)->get()->keyBy('id');
+
+        foreach ($products as $product) {
+            $productItem = $productItems->get($product['id']);
+
+            if (!$productItem) {
+                throw new Exception("Product with ID {$product['id']} not found.");
+            }
+
+            if (isset($productItem->stock) && $productItem->stock < $product['quantity']) {
+                throw new Exception("Insufficient stock for {$productItem->product->name}. Available: {$productItem->stock}");
+            }
+
+            $pricePerItem = $productItem->price;
+            $lineItems[] = [
+                'price_data' => [
+                    'currency' => 'eur',
+                    'product_data' => [
+                        'name' => $productItem->product->name,
+                        'images' => [$productItem->image ?? asset('images/logo_new_gray_bg_black.jpeg')],
+                    ],
+                    'unit_amount' => $pricePerItem * 100,
+                ],
+                'quantity' => $product['quantity'],
+            ];
+
+            OrderProduct::create([
+                'order_id' => $order->id,
+                'product_item_id' => $product['id'],
+                'price_per_item' => $pricePerItem,
+                'quantity' => $product['quantity'],
+            ]);
+
+            $totalPrice += ($pricePerItem * $product['quantity']);
+        }
+    }
+
+    /**
+     * Add the shipping cost as a line item for Stripe.
+     */
+    private function addShippingToLineItems(array &$lineItems, float $shippingCost): void
+    {
+        $lineItems[] = [
+            'price_data' => [
+                'currency' => 'eur',
+                'product_data' => [
+                    'name' => 'Shipping Fee',
+                ],
+                'unit_amount' => $shippingCost * 100,
+            ],
+            'quantity' => 1,
+        ];
+    }
+
+    /**
+     * Create and return a Stripe Checkout Session.
+     */
+    private function createStripeSession(Order $order, User $user, array $lineItems, float $totalPrice): Session
+    {
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+
+        return Session::create(
+            [
+                'mode' => 'payment',
+                'line_items' => $lineItems,
+                'success_url' => env('VITE_FRONTEND_URL') . '/success?order_number=' . $order->order_number,
+                'cancel_url' => env('VITE_FRONTEND_URL') . '/checkout?order_number=' . $order->order_number,
+                'metadata' => [
+                    'order_id' => $order->id,
+                    'payment_type' => 'checkout',
+                    'email' => $user->email,
+                ],
+                'payment_intent_data' => [
+                    'metadata' => [
+                        'order_id' => $order->id,
+                        'order_number' => $order->order_number,
+                    ],
+                ],
+            ],
+            ['idempotency_key' => $order->order_number . '-' . time()]
+        );
     }
 
     private function calculateShippingCost($total_price, $validated)
@@ -205,238 +217,127 @@ class CheckoutController extends Controller
 
     /**
      * Handle Stripe webhook events
-     */
-    public function handleWebhook()
+    */
+    // cd "C:\Program Files\Stripe CLI\stripe_1.23.5_windows_x86_64"
+    // stripe login
+    // stripe listen --forward-to localhost:8000/api/V1/shop/webhook/stripe
+    // $endpointSecret = 'whsec_1ec88b1f8be092cb44234aa740821ceb154cd06bdd5fe05b996b09ef79d33a94';
+    public function handleWebhook(Request $request): JsonResponse
     {
+        $payload = $request->getContent();
+        $sigHeader = $request->server('HTTP_STRIPE_SIGNATURE');
         $endpointSecret = env('STRIPE_WEBHOOK_SECRET');
-        // cd "C:\Program Files\Stripe CLI\stripe_1.23.5_windows_x86_64"
-        // stripe login
-        // stripe listen --forward-to localhost:8000/api/V1/shop/webhook/stripe
-        // $endpointSecret = 'whsec_1ec88b1f8be092cb44234aa740821ceb154cd06bdd5fe05b996b09ef79d33a94';
-        $payload = @file_get_contents('php://input');
-        $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
 
         try {
-            $event = \Stripe\Webhook::constructEvent($payload, $sig_header, $endpointSecret);
-        } catch (UnexpectedValueException $e) {
-            Log::error('Webhook error: Invalid payload', [
-                'error' => $e->getMessage(),
-            ]);
-            return response()->json(['message' => 'Invalid payload'], 400);
-        } catch (\Stripe\Exception\SignatureVerificationException $e) {
-            Log::error('Webhook error: Invalid signature', [
-                'error' => $e->getMessage(),
-            ]);
-            return response()->json(['message' => 'Invalid signature'], 400);
+            $event = StripeWebhook::constructEvent($payload, $sigHeader, $endpointSecret);
+        } catch (UnexpectedValueException | SignatureVerificationException $e) {
+            Log::error('Stripe webhook error: Invalid signature or payload.', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Invalid request'], 400);
         }
 
         $session = $event->data->object;
         $orderId = $session->metadata->order_id ?? null;
 
         if (!$orderId) {
-            Log::error('Webhook error: Order ID not found in metadata', [
-                'event' => $event->type,
-                'metadata' => $session->metadata ?? 'No metadata',
-            ]);
-            return response()->json(['message' => 'Order ID not found in metadata'], 400);
+            Log::error('Webhook error: Order ID not found in metadata.', ['event' => $event->type]);
+            return response()->json(['message' => 'Order ID not found'], 400);
         }
 
-        try {
-            $order = Order::findOrFail($orderId);
-
-            // Check for valid order status transition
-            $validTransitions = [
-                'pending' => ['paid', 'canceled'],
-                'processing' => ['paid', 'canceled'],
-                'canceled' => ['pending', 'paid'],
-                'paid' => []
-            ];
-
-            switch ($event->type) {
-                case 'checkout.session.async_payment_failed':
-                case 'checkout.session.expired':
-                    if (in_array('canceled', $validTransitions[$order->status] ?? [])) {
-                        $order->update(['status' => 'canceled']);
-                    }
-                    break;
-
-                case 'checkout.session.completed':
-                    if (in_array('paid', $validTransitions[$order->status] ?? [])) {
-                        DB::beginTransaction();
-                        try {
-                            $order->update([
-                                'status' => 'paid',
-                                // 'payment_id' => $session->payment_intent ?? null,
-                                // 'paid_at' => now(),
-                            ]);
-
-                            // Update product stock
-                            $orderProducts = OrderProduct::where('order_id', $order->id)->get();
-
-                            // foreach ($orderProducts as $orderProduct) {
-                            //     $productItem = ProductItem::find($orderProduct->product_item_id);
-
-                            //     if ($productItem) {
-                            //         // Decrement the quantity
-                            //         $newQuantity = max(0, $productItem->quantity - $orderProduct->quantity);
-                            //         $productItem->update(['quantity' => $newQuantity]);
-
-                            //         // If stock is depleted, potentially mark as inactive
-                            //         if ($newQuantity === 0) {
-                            //             $productItem->update(['active' => false]);
-                            //             Log::info("Product item ID {$productItem->id} marked as inactive due to zero stock");
-                            //         }
-                            //     }
-                            // }
-
-                            $customerDetail = CustomerDetail::find($order->customer_details_id);
-                            $customer = $customerDetail ? Customer::find($customerDetail->customer_id) : null;
-
-                            if ($customer) {
-                                if ($orderProducts->isEmpty()) {
-                                    Log::error('Order has no products', ['order_id' => $order->id]);
-                                }
-
-                                $orderItems = ProductItem::with(['product', 'options.variation'])
-                                    ->whereIn('id', $orderProducts->pluck('product_item_id'))
-                                    ->get();
-
-                                $orderData = [
-                                    'order' => $order->toArray(),
-                                    'customer' => $customerDetail->toArray(),
-                                    'products' => $orderProducts->map(fn($orderProduct) => [
-                                        'quantity' => $orderProduct->quantity,
-                                        'price_per_item' => $orderProduct->price_per_item,
-                                    ]),
-                                    'items' => $orderItems->map(fn($item) => [
-                                        'name' => $item->product->name,
-                                        'image' => $item->image ?? asset('images/logo_new_gray_bg_black.jpeg'),
-                                        'price' => $item->price,
-                                        'options' => $item->options->map(fn($option) => [
-                                            'name' => $option->variation->name,
-                                            'value' => $option->value,
-                                        ])->toArray(),
-                                    ]),
-                                ];
-
-                                Mail::to($customer->email)->send(new OrderConfirmation($orderData));
-                            }
-
-                            DB::commit();
-                        } catch (\Exception $e) {
-                            DB::rollBack();
-                            Log::error('Error processing paid order', [
-                                'order_id' => $order->id,
-                                'error' => $e->getMessage(),
-                                'trace' => $e->getTraceAsString(),
-                            ]);
-                            throw $e;
-                        }
-                    } else {
-                        Log::warning("Invalid order status transition attempted", [
-                            'order_id' => $order->id,
-                            'current_status' => $order->status,
-                            'attempted_status' => 'paid',
-                        ]);
-                    }
-                    break;
-
-                case 'payment_intent.payment_failed':
-                    if (in_array('canceled', $validTransitions[$order->status] ?? [])) {
-                        $order->update(['status' => 'canceled']);
-                    }
-                    break;
-
-                case 'payment_intent.succeeded':
-                    // This is a backup in case the checkout.session.completed event doesn't trigger
-                    if ($order->status !== 'paid' && in_array('paid', $validTransitions[$order->status] ?? [])) {
-                        DB::beginTransaction();
-                        try {
-                            $order->update(['status' => 'paid', 'paid_at' => now()]);
-
-                            // Update product stock here too as a backup
-                            $orderProducts = OrderProduct::where('order_id', $order->id)->get();
-
-                            foreach ($orderProducts as $orderProduct) {
-                                $productItem = ProductItem::find($orderProduct->product_item_id);
-
-                                if ($productItem) {
-                                    $newQuantity = max(0, $productItem->quantity - $orderProduct->quantity);
-                                    $productItem->update(['quantity' => $newQuantity]);
-
-                                    if ($newQuantity === 0) {
-                                        $productItem->update(['active' => false]);
-                                    }
-                                }
-                            }
-
-                            DB::commit();
-                        } catch (\Exception $e) {
-                            DB::rollBack();
-                            Log::error('Error updating stock on payment_intent.succeeded', [
-                                'order_id' => $order->id,
-                                'error' => $e->getMessage()
-                            ]);
-                        }
-                    }
-                    break;
-
-                default:
-                    return response()->json(['message' => 'Unhandled event type: ' . $event->type], 200);
-            }
-
-            return response()->json(['message' => 'Webhook handled successfully']);
-        } catch (\Exception $e) {
-            Log::error('Webhook processing error', [
-                'event' => $event->type,
-                'order_id' => $orderId,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json(['message' => 'Error processing webhook: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function sendTestEmail($orderId)
-    {
         $order = Order::find($orderId);
-        if (! $order) {
+
+        if (!$order) {
+            Log::error('Webhook error: Order not found in database.', ['order_id' => $orderId]);
             return response()->json(['message' => 'Order not found'], 404);
         }
 
-        // Simulating customer and product details for the test
-        $customerDetail = CustomerDetail::find($order->customer_details_id);
-        $customer = $customerDetail ? Customer::find($customerDetail->customer_id) : null;
+        switch ($event->type) {
+            case 'checkout.session.completed':
+                if ($order->status === 'pending') {
+                    $this->handleSuccessfulPayment($order);
+                }
+                break;
 
-        if (! $customer) {
-            return response()->json(['message' => 'Customer not found'], 404);
+            case 'checkout.session.expired':
+                if ($order->status === 'pending') {
+                    $order->update(['status' => 'canceled']);
+                }
+                break;
         }
 
-        $orderProducts = OrderProduct::where('order_id', $order->id)->get();
-        $orderItems = ProductItem::with(['product', 'options.variation'])
-            ->whereIn('id', $orderProducts->pluck('product_item_id'))
-            ->get();
+        return response()->json(['message' => 'Webhook handled successfully']);
+    }
+    /**
+     * Handle the logic for a successful payment.
+     */
+    private function handleSuccessfulPayment(Order $order): void
+    {
+        DB::beginTransaction();
+        try {
+            $order->update(['status' => 'paid']);
+
+            // Decrement stock for each product
+            // foreach ($order->products as $orderProduct) {
+            //     ProductItem::where('id', $orderProduct->product_item_id)
+            //         ->decrement('quantity', $orderProduct->quantity);
+            // }
+
+            $this->sendOrderConfirmationEmail($order);
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to process successful payment.', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+    }
+    /**
+     * Send the order confirmation email.
+     */
+    private function sendOrderConfirmationEmail(Order $order): void
+    {
+        $order->load('user', 'shippingAddress', 'products.productItem.product', 'products.productItem.options.variation');
 
         $orderData = [
-            'order' => $order->toArray(),
-            'customer' => array_merge($customer->toArray(), $customerDetail->toArray()),
-            'products' => $orderProducts->map(fn($orderProduct) => [
-                'quantity' => $orderProduct->quantity,
-                'price_per_item' => $orderProduct->price_per_item,
-            ]),
-            'items' => $orderItems->map(fn($item) => [
-                'name' => $item->product->name,
-                'image' => $item->image ?? asset('images/logo_new_gray_bg_black.jpeg'),
-                'price' => $item->price,
-                'options' => $item->options->map(fn($option) => [
-                    'name' => $option->variation->name,
-                    'value' => $option->value,
-                ])->toArray(),
-            ]),
+            'order' => $order,
+            'user' => $order->user,
+            'address' => $order->shippingAddress,
+            'products' => $order->products->map(function ($orderProduct) {
+                $productItem = $orderProduct->productItem;
+                return [
+                    'name' => $productItem->product->name,
+                    'image' => $productItem->image ?? asset('images/logo_new_gray_bg_black.jpeg'),
+                    'quantity' => $orderProduct->quantity,
+                    'price_per_item' => $orderProduct->price_per_item,
+                    'options' => $productItem->options->map(fn($option) => [
+                        'name' => $option->variation->name,
+                        'value' => $option->value,
+                    ])->toArray(),
+                ];
+            }),
         ];
 
-        Mail::to($customer->email)->send(new OrderConfirmation($orderData));
+        Mail::to($order->user->email)->send(new OrderConfirmation($orderData));
+    }
 
-        return response()->json(['message' => 'Test email sent successfully']);
+    /**
+     * A public endpoint to manually trigger a test email for a given order.
+     */
+    public function sendTestEmail($orderId): JsonResponse
+    {
+        $order = Order::find($orderId);
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        try {
+            $this->sendOrderConfirmationEmail($order);
+            return response()->json(['message' => 'Test email sent successfully']);
+        } catch (Exception $e) {
+            Log::error('Failed to send test email.', ['order_id' => $orderId, 'error' => $e->getMessage()]);
+            return response()->json(['message' => 'Failed to send test email.'], 500);
+        }
     }
 }

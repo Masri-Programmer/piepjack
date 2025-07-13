@@ -123,13 +123,6 @@
                     />
                 </template>
             </Accordion>
-            <Accordion
-                id="product_reviews"
-                :label="$t('common.product.reviews')"
-                iconName="star"
-            >
-                <template #content>hello </template>
-            </Accordion>
         </div>
     </aside>
 </template>
@@ -138,6 +131,7 @@
 import { ref, computed } from "vue";
 import Lens from "@ui/Lens.vue";
 import Accordion from "@ui/Accordion.vue";
+import ProductReview from "./ProductReview.vue";
 import { apiQuery } from "@lib/helpers";
 import VueEasyLightbox from "vue-easy-lightbox";
 import ProductVariations from "./ProductVariations.vue";
@@ -146,19 +140,13 @@ import Table from "@ui/Table.vue";
 const props = defineProps({
     data: { type: Object, required: true },
 });
-const id = computed(() => props.data?.category_id);
-const productId = computed(() => props.data?.id);
+const categoryId = computed(() => props.data?.category_id);
 
 const {
     data: variants,
     error,
     isLoading,
-} = apiQuery("category-variations").useGetById(id);
-const {
-    data: reviews,
-    error: reviewsErrors,
-    isLoading: reviewsIsLoading,
-} = apiQuery("products-reviews").useGetById(productId);
+} = apiQuery("category-variations").useGetById(categoryId);
 
 const visibleRef = ref(false);
 const indexRef = ref(0);

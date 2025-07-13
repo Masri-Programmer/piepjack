@@ -7,11 +7,9 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\ProductConfiguration;
 use App\Models\ProductItem;
-use App\Models\User;
 use App\Models\Variation;
 use App\Models\VariationOption;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Database\Seeders\ProductCommentSeeder;
 use Database\Seeders\ProductReviewSeeder;
 
@@ -19,13 +17,11 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'info@piepjack-clothing.de',
-            'password' => Hash::make('asdQWE@34104758'),
+        $this->call([
+            RoleSeeder::class,
+            UserSeeder::class,
+            AddressSeeder::class,
         ]);
-
-        User::factory()->count(10)->create();
 
         $categoryNames = ['t-shirts', 'sweaters', 'jackets', 'sports', 'accessories', 'underwear',];
         $categories = collect();

@@ -56,7 +56,7 @@ class ProductCommentSeeder extends Seeder
 
                 $replyComments[] = [
                     'user_id' => $users->random(),
-                    'product_id' => $parentComment->product_id, // Reply is for the same product
+                    'product_id' => $parentComment->product_id,
                     'parent_id' => $parentComment->id,
                     'comment' => fake()->paragraph(1),
                     'is_approved' => fake()->boolean(90),

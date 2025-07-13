@@ -11,11 +11,9 @@
       {{ $t("validation.error.message") }}
     </p>
     <div class="flex flex-col justify-center items-center">
-      <div class="view-all text-xs mt-12">
+      <router-link to="/collections" class="view-all text-xs mt-12">
         {{ $t("validation.error.continueShopping") }}
-      </div>
+      </router-link>
     </div>
   </div>
 </template>
-
-<script setup></script>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +26,7 @@ class AdminAuthController extends Controller
 
         $request->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($credentials)) {
+        if (!Auth::attempt($credentials)) {
             RateLimiter::hit($request->throttleKey());
 
             return response()->json([
@@ -36,16 +37,21 @@ class AdminAuthController extends Controller
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        // $request->session()->regenerate();
-        // $user->tokens()->delete();
+
+        if (!$user->hasRole('Admin')) {
+            Auth::logout();
+            return response()->json([
+                'message' => 'You do not have permission to access this area.',
+            ], 403);
+        }
 
         $user->tokens()->delete();
-        $token = $user->createToken('main')->plainTextToken;
+        $token = $user->createToken('admin-token')->plainTextToken;
 
         RateLimiter::clear($request->throttleKey());
 
         return response()->json([
-            'user' => $user->only(['id', 'name', 'email']),
+            'user' => $user->only(['id', 'first_name', 'last_name', 'email']),
             'remember' => $request['remember'],
             'token' => $token,
         ]);
@@ -53,29 +59,35 @@ class AdminAuthController extends Controller
 
     public function show(Request $request)
     {
-        return response()->json($request->user()->only('id', 'name', 'email'));
+        // FIX: Return first_name and last_name instead of name.
+        return response()->json($request->user()->only('id', 'first_name', 'last_name', 'email'));
     }
 
     public function register(Request $request): JsonResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
+        $adminRole = Role::where('name', 'Admin')->firstOrFail();
+        $user->roles()->attach($adminRole);
+
         event(new Registered($user));
 
-        $token = $user->createToken('main')->plainTextToken;
+        $token = $user->createToken('admin-token')->plainTextToken;
 
         return response()->json([
-            'user' => $user->only(['id', 'name', 'email']),
+            'user' => $user->only(['id', 'first_name', 'last_name', 'email']),
             'token' => $token,
         ], 201);
     }
@@ -83,8 +95,6 @@ class AdminAuthController extends Controller
     public function logout(Request $request): Response
     {
         $user = $request->user();
-        // $user->session()->invalidate();
-        // $request->session()->regenerate();
         $user->tokens()->delete();
 
         return response('', 204);

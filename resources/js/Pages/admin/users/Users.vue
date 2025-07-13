@@ -146,14 +146,14 @@ const page = computed({
 });
 
 const { data, error, isError, isLoading, isPreviousData, isFetching, refetch } =
-  apiQuery("customers").useGet(usersParams);
+  apiQuery("users").useGet(usersParams);
 
 const {
   mutate: deleteUser,
   isLoading: deleteLoading,
   isSuccess: deleteSuccess,
   error: deleteErrorMessage,
-} = apiQuery("customers").useDelete();
+} = apiQuery("users").useDelete();
 
 const handleDelete = async (id) => {
   if (confirm("Are you sure you want to delete this user?")) deleteUser(id);

@@ -1,11 +1,11 @@
 // composables/useArea.js
 import { ref, readonly, watch } from 'vue';
-import { useStorage } from '@vueuse/core';
+import { useSessionStorage } from '@vueuse/core';
 
 const VITE_API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, "");
 
-const initialArea = localStorage.getItem('area') || 'shop';
-const _area = useStorage('area', initialArea);
+const initialArea = sessionStorage.getItem('area') || 'shop';
+const _area = useSessionStorage('area', initialArea);
 const _apiUrl = ref('');
 
 const _updateApiUrl = (currentAreaValue) => {

@@ -22,7 +22,8 @@
         "spatie/laravel-responsecache": "^7.7",
         "stripe/stripe-php": "^17.2",
         "symfony/http-client": "^7.2",
-        "tightenco/ziggy": "^2.0"
+        "tightenco/ziggy": "^2.0",
+        "umpirsky/country-list": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",

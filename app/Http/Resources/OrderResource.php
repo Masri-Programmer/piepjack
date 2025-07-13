@@ -10,16 +10,17 @@ class OrderResource extends JsonResource
     public function toArray($request)
     {
         $returnItems = $this->returning ? $this->returning->items->pluck('quantity', 'order_product_id') : collect();
-        // Log::info(parent::toArray($request));
 
         return [
             'id' => $this->id,
-            'customer_details_id' => $this->customer_details_id,
             'total_price' => $this->total_price,
             'status' => $this->status,
+            'user' => new UserResource($this->whenLoaded('user')),
+            'shipping_address' => new AddressResource($this->whenLoaded('shippingAddress')),
+            'billing_address' => new AddressResource($this->whenLoaded('billingAddress')),
             'created_at' => $this->created_at,
+            'order_number' => $this->order_number,
             'updated_at' => $this->updated_at,
-            'customer_detail' => new CustomerDetailResource($this->whenLoaded('customerDetail')),
             'returning' => $this->returning,
             'products' => $this->products ? $this->products->map(function ($product) use ($returnItems) {
                 return [

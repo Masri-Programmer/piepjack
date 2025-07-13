@@ -14,13 +14,12 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
-            $table->unsignedTinyInteger('rating'); // 1-5 stars
+            $table->unsignedTinyInteger('rating');
             $table->string('title')->nullable();
             $table->text('comment');
-            $table->boolean('is_approved')->default(false); // For moderation
+            $table->boolean('is_approved')->default(false);
             $table->timestamps();
-
-            $table->unique(['user_id', 'product_id']); // A user can only review a product once
+            $table->unique(['user_id', 'product_id']);
         });
     }
 

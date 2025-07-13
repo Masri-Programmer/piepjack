@@ -4,57 +4,70 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductReviewRequest;
-// use App\Http\Requests\UpdateProductReviewRequest; // You'll need to create this request class
 use App\Models\Product;
-use App\Models\ProductReview; // Import the ProductReview model
+use App\Models\User;
+use App\Models\ProductReview; 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductReviewController extends Controller
 {
-    /**
-     * Instantiate a new controller instance.
-     */
-    // public function __construct()
-    // {
-    //     // Protect all methods except 'index' and 'show' with auth middleware
-    //     // A user must be authenticated to create, update, or delete a review
-    //     $this->middleware('auth:sanctum')->except(['index', 'show']);
-    // }
-
-    /**
-     * Display a paginated list of approved reviews for a specific product.
-     */
     public function index(Product $product): JsonResponse
     {
         $reviews = $product->reviews()
-            ->where('is_approved', true) // Only show approved reviews to the public
-            ->with('user:id,name')      // Eager load user's id and name to prevent N+1 queries
-            ->latest()                  // Order by most recent
+            ->where('is_approved', true) 
+            ->with('user:id,first_name,last_name')
+            ->latest()
             ->paginate(10);
 
         return response()->json($reviews);
     }
 
-    /**
-     * Store a newly created review in storage.
-     * The review will be pending approval by default.
-     */
-    public function store(StoreProductReviewRequest $request, Product $product): JsonResponse
+
+    public function store(StoreProductReviewRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'No user found with that email address.'], 404);
+        }
+
+        $product = Product::find($validated['product_id']);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found.'], 404);
+        }
+
+        $canReview = $user->orders()
+            ->where('status', 'delivered')
+            ->whereHas('products.productItem.product', function ($query) use ($product) {
+                $query->where('id', $product->id);
+            })
+            ->exists();
+
+        if (!$canReview) {
+            return response()->json([
+                'message' => 'You can only review products from a delivered order.'
+            ], 403);
+        }
+
+        $hasAlreadyReviewed = $product->reviews()->where('user_id', $user->id)->exists();
+
+        if ($hasAlreadyReviewed) {
+            return response()->json(['message' => 'You have already submitted a review for this product.'], 409);
+        }
+
         $review = $product->reviews()->create([
-            'user_id' => $request->user()->id,
+            'user_id' => $user->id,
             'rating' => $validated['rating'],
             'title' => $validated['title'] ?? null,
             'comment' => $validated['comment'],
-            // All new reviews require moderation.
-            'is_approved' => false,
+            'is_approved' => true,
         ]);
 
-        // Eager load the user for the response so the frontend can display it immediately
-        $review->load('user:id,name');
+        $review->load('user:id,first_name,last_name');
 
         return response()->json([
             'message' => 'Thank you for your review! It is pending approval.',
@@ -62,18 +75,10 @@ class ProductReviewController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified review.
-     */
+
     public function show(ProductReview $review): JsonResponse
     {
-        // You might want to add authorization here if reviews can be private
-        // For now, we'll assume any approved review can be seen.
-        // if (!$review->is_approved && auth()->id() !== $review->user_id) {
-        //     abort(404); // Or 403 Forbidden
-        // }
-
-        $review->load('user:id,name');
+        $review->load('user:id,first_name,last_name');
         return response()->json($review);
     }
 

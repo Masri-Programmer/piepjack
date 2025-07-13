@@ -2,41 +2,46 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Models\User;
 use App\Models\Order;
-use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderListResource;
 use App\Http\Resources\PublicOrderListResource;
+use Illuminate\Http\JsonResponse;
 
 class PublicOrderController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of orders for a given email.
+     */
+    public function index(Request $request): JsonResponse
     {
-        $email = $request->query('email');
+        $request->validate([
+            'email' => 'required|email',
+        ]);
 
-        if (!$email) {
-            return response()->json(['message' => 'Email is required'], 400);
+        $user = User::where('email', $request->query('email'))->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'No user found with that email address.'], 404);
         }
 
-        $customer = Customer::where('email', $email)
-            ->with(['details.orders.products'])
-            ->first();
-
-        if (! $customer) {
-            return response()->json(['message' => 'Customer not found'], 404);
-        }
-
-        $orders = $customer->details?->orders ?? collect();
+        $orders = $user->orders()->with('products')->get();
 
         return response()->json(OrderListResource::collection($orders));
     }
 
-    public function show($orderNumber)
+    /**
+     * Display the specified order.
+     */
+    public function show(string $orderNumber): PublicOrderListResource
     {
         $order = Order::with([
-            'products.productItem.configurations.variationOption.variation',
-            'customerDetail',
+            'products.productItem.product',
+            'user',
+            'shippingAddress',
+            'billingAddress',
         ])
             ->where('order_number', $orderNumber)
             ->firstOrFail();

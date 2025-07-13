@@ -1,27 +1,55 @@
 <template>
     <PageLayout
         :data="links"
-        :title="'Order # ' + data?.id"
+        :title="'Order # ' + (data?.order_number || '')"
         :isLoading="isLoading"
         :error="error"
     >
-        <div class="pb-4">
-            <h3 class="font-semibold text-accent_dark">Customer Details</h3>
-            <p class="text-accent_dark">
-                {{ data?.customer_detail.first_name }}
-                {{ data?.customer_detail.last_name }}
-            </p>
-            <p class="text-accent_dark">
-                {{ data?.customer_detail.address_line_one }}
-            </p>
-            <p class="text-accent_dark">
-                {{ data?.customer_detail.address_line_two }}
-            </p>
-            <p class="text-accent_dark">
-                Email: {{ data?.customer_detail.customer.email }}
-            </p>
+        <!-- Customer & Address Details -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
+            <!-- Customer Info -->
+            <div>
+                <h3 class="font-semibold text-accent_dark">Customer Details</h3>
+                <p class="text-accent_dark">
+                    <!-- FIX: Get the name from the user object, which should be loaded with the order -->
+                    {{ data?.user.first_name }}
+                    {{ data?.user.last_name }}
+                </p>
+                <p class="text-accent_dark">Email: {{ data?.user.email }}</p>
+            </div>
+            <!-- Shipping Address -->
+            <div>
+                <h3 class="font-semibold text-accent_dark">Shipping Address</h3>
+                <p class="text-accent_dark">
+                    {{ data?.shipping_address.street_address }}
+                </p>
+                <p class="text-accent_dark">
+                    {{ data?.shipping_address.postal_code }}
+                    {{ data?.shipping_address.city }}
+                </p>
+                <p class="text-accent_dark">
+                    {{ data?.shipping_address.state_province }},
+                    {{ data?.shipping_address.country_name }}
+                </p>
+            </div>
+            <!-- Billing Address (only if different) -->
+            <div v-if="data?.billing_address && data?.billing_address.id !== data?.shipping_address.id">
+                <h3 class="font-semibold text-accent_dark">Billing Address</h3>
+                <p class="text-accent_dark">
+                    {{ data?.billing_address.street_address }}
+                </p>
+                <p class="text-accent_dark">
+                    {{ data?.billing_address.postal_code }}
+                    {{ data?.billing_address.city }}
+                </p>
+                <p class="text-accent_dark">
+                    {{ data?.billing_address.state_province }},
+                    {{ data?.billing_address.country_name }}
+                </p>
+            </div>
         </div>
 
+        <!-- Order Details -->
         <div class="py-4 border-t">
             <h3 class="font-semibold text-accent_dark">Order Details</h3>
             <p class="text-accent_dark">
@@ -39,6 +67,7 @@
             </p>
         </div>
 
+        <!-- Return Details -->
         <div v-if="data?.returning" class="py-4 border-t">
             <h3 class="font-semibold text-accent_dark">Return Details</h3>
             <p class="text-accent_dark">
@@ -55,6 +84,7 @@
             </p>
         </div>
 
+        <!-- Products List -->
         <div class="py-4 border-t">
             <h3 class="font-semibold text-accent_dark">Products</h3>
             <div

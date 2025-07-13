@@ -16,7 +16,7 @@ class PublicOrderListResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'customer_name' => $this->customerDetail->first_name . ' ' . $this->customerDetail->last_name,
+            'user_name' => $this->user->first_name . ' ' . $this->user->last_name,
             'total_price' => $this->total_price,
             'order_number' => $this->order_number,
             'order_notes' => $this->order_notes,

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\AdminAuthController;
-use App\Http\Controllers\API\V1\AdminCustomerController;
+use App\Http\Controllers\API\V1\AdminUserController;
 use App\Http\Controllers\API\V1\AdminDashboardController;
 use App\Http\Controllers\API\V1\CategoryController;
 use App\Http\Controllers\API\V1\ImageController;
@@ -24,14 +24,14 @@ Route::prefix('admin')->middleware('auth:sanctum')->as('admin.')->group(function
     Route::apiResource('variations', VariationController::class);
     Route::get('all-categories', [CategoryController::class, 'all']);
     Route::get('category-variations/{category}', [VariationController::class, 'categoryVariations']);
-    Route::get('customers', [AdminCustomerController::class, 'index']);
-    Route::get('customers/{customer}', [AdminCustomerController::class, 'show']);
+    Route::get('users', [AdminUserController::class, 'index']);
+    Route::get('users/{user}', [AdminUserController::class, 'show']);
     Route::get('dashboard', [AdminDashboardController::class, 'stats']);
-    Route::get('user', [AdminAuthController::class, 'show'])->middleware('auth:sanctum');
-    Route::post('ban/{customer}', [AdminCustomerController::class, 'ban']);
+    Route::get('user', [AdminAuthController::class, 'show']);
+    Route::post('ban/{user}', [AdminUserController::class, 'ban']);
     Route::post('logout', [AdminAuthController::class, 'logout']);
     Route::post('save', [ImageController::class, 'store']);
-    Route::post('unban/{customer}', [AdminCustomerController::class, 'unban']);
+    Route::post('unban/{user}', [AdminUserController::class, 'unban']);
 });
 Route::prefix('admin')->group(
     function () {

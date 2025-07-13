@@ -3,72 +3,100 @@
 namespace App\Models;
 
 use App\Traits\HasFilters;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
-    use HasFilters,  SoftDeletes;
+    use HasFactory, HasFilters, SoftDeletes;
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($order) {
-            $lastOrder = self::latest()->withTrashed()
-                ->latest('id')
-                ->first();
-            $nextNumber = $lastOrder ? $lastOrder->id + 1 : 1;
-            $order->order_number = 'ORD-' . date('Ym') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
-            //  ORD-202502-00001
-        });
-    }
-
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'customer_details_id',
+        'user_id',
+        'shipping_address_id',
+        'billing_address_id',
         'total_price',
         'status',
         'order_notes',
     ];
 
-    protected $rules = [
-        'status' => ['in:not_requested,requested,approved,rejected'],
-    ];
-    public static function getStatusOptions()
+    /**
+     * Setup model event hooks
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically generate an order number when creating a new order.
+        static::creating(function ($order) {
+            $lastOrder = self::latest('id')->withTrashed()->first();
+            $nextNumber = $lastOrder ? $lastOrder->id + 1 : 1;
+            $order->order_number = 'ORD-' . date('Ym') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        });
+    }
+
+    /**
+     * Get the valid status options for an order.
+     */
+    public static function getStatusOptions(): array
     {
         return ['pending', 'paid', 'canceled', 'shipped', 'delivered'];
     }
 
+    /**
+     * Get the user that placed the order.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the shipping address for the order.
+     */
+    public function shippingAddress(): BelongsTo
+    {
+        return $this->belongsTo(Address::class, 'shipping_address_id');
+    }
+
+    /**
+     * Get the billing address for the order.
+     */
+    public function billingAddress(): BelongsTo
+    {
+        return $this->belongsTo(Address::class, 'billing_address_id');
+    }
+
+    /**
+     * Get the primary address for the order (shipping).
+     * This is a convenience method for controllers that need a single address.
+     */
+    public function address(): BelongsTo
+    {
+        return $this->shippingAddress();
+    }
+
+    /**
+     * Get all of the products for the order.
+     */
     public function products(): HasMany
     {
         return $this->hasMany(OrderProduct::class, 'order_id');
     }
 
-    public function customer(): HasOne
-    {
-        return $this->hasOne(CustomerDetail::class, 'id');
-    }
-
-    public function customerDetail()
-    {
-        return $this->belongsTo(CustomerDetail::class, 'customer_details_id');
-    }
-
+    /**
+     * Get the return associated with the order.
+     */
     public function returning(): HasOne
     {
         return $this->hasOne(Returning::class, 'order_id');
     }
-
-    // public static function getPaymentStatusOptions()
-    // {
-    //     return ['pending', 'completed', 'failed'];
-    // }
-
-    // public static function getShippingStatusOptions()
-    // {
-    //     return ['not_shipped', 'shipped', 'delivered'];
-    // }
 }

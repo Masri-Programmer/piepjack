@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\CustomerDetail;
+use App\Models\User;
+use App\Models\Address;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,9 +13,11 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_number')->unique()->index();
-            $table->foreignIdFor(CustomerDetail::class, 'customer_details_id');
+            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(Address::class, 'shipping_address_id')->nullable()->constrained('addresses')->nullOnDelete();
+            $table->foreignIdFor(Address::class, 'billing_address_id')->nullable()->constrained('addresses')->nullOnDelete();
             $table->decimal('total_price', 10, 2);
-            $table->enum('status', ['pending', 'paid', 'canceled', 'shipped', 'delivered']);
+            $table->enum('status', ['pending', 'paid', 'canceled', 'shipped', 'delivered'])->default('pending');
             $table->text('order_notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
