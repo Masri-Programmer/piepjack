@@ -1,0 +1,25 @@
+@reference './app.css';
+
+.about-container {
+    @apply flex flex-col items-center justify-center w-full h-full px-4 space-y-8;
+}
+
+.about-title {
+    @apply text-center text-3xl font-extrabold sm:text-4xl md:text-5xl lg:text-6xl;
+}
+
+.about-description {
+    @apply text-center text-base leading-relaxed text-gray md:text-lg lg:text-xl md:w-2/3;
+}
+
+.about-description-2 {
+    @apply text-center text-base leading-relaxed text-gray md:text-sm lg:text-lg md:w-2/3;
+}
+
+.about-link {
+    @apply text-lg font-bold;
+}
+
+.about-link a {
+    @apply text-main hover:text-gray underline transition-colors;
+}

@@ -1,0 +1,119 @@
+@reference '../app.css';
+
+.return-order-container {
+    @apply grid place-content-center gap-4 relative;
+}
+
+.return-order-button {
+    @apply ml-auto absolute top-0 left-0 text-accent bg-main hover:text-main hover:bg-gray flex items-center h-[35px] w-[35px] text-base font-medium leading-normal text-center align-middle cursor-pointer rounded-3xl transition-colors duration-200 ease-in-out shadow-none border-0 justify-center;
+}
+
+.return-order-chevron {
+    @apply flex items-center justify-center p-0 m-0 leading-none shrink-0;
+}
+
+.return-order-title {
+    @apply flex items-center text-2xl font-extrabold text-center mb-2;
+}
+
+.return-order-form {
+    @apply w-full bg-gray p-5 grid gap-3;
+}
+
+.return-order-input {
+    @apply shadow appearance-none border text-accent py-2 px-3 leading-tight w-full focus:outline-none;
+}
+
+.return-order-button-submit {
+    @apply text-sm font-bold w-full;
+}
+
+.return-order-grid {
+    @apply grid gap-4 pb-5;
+}
+
+.return-order-product-card {
+    @apply border cursor-pointer;
+}
+
+.return-order-product-selected {
+    @apply border-blue-500;
+}
+
+.return-order-reason-textarea {
+    @apply shadow appearance-none border text-accent py-2 px-3 leading-tight w-full focus:outline-none;
+}
+
+.return-order-button-back {
+    @apply text-sm font-bold w-full my-2;
+}
+
+.return-order-button-next {
+    @apply text-sm font-bold w-full;
+}
+
+.return-order-shipping-option {
+    @apply border p-4 mb-4;
+}
+
+.return-order-insurance-option {
+    @apply mb-2;
+}
+
+.return-order-insurance-info {
+    @apply text-sm text-gray mt-1;
+}
+
+.return-order-total {
+    @apply text-base;
+}
+
+.return-order-terms {
+    @apply flex items-center mt-4;
+}
+
+.return-order-flex-between {
+    @apply flex justify-between mt-6;
+}
+
+.return-order-button-final {
+    @apply text-sm font-bold w-full my-2;
+}
+
+.return-order-product-card.is-selected {
+    border: 2px solid #007bff;
+}
+
+.return-order-radio {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.return-order-price {
+    margin-left: auto;
+    color: #6c757d;
+}
+
+.return-order-info {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.return-order-summary {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+}
+
+.return-order-total-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.return-order-checkbox {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 1rem;
+}

@@ -1,0 +1,53 @@
+@reference '../app.css';
+
+.contact-form {
+    @apply w-full;
+}
+
+.contact-form-section {
+    @apply mb-3 relative;
+}
+
+.contact-form-title {
+    @apply text-xl text-main font-extrabold pt-3;
+}
+
+.contact-form-label {
+    @apply block mb-2 text-sm text-main;
+}
+
+.contact-form-input {
+    @apply block w-full p-3 border focus:outline-none focus:ring-2 text-accent_dark;
+}
+
+.contact-form-error {
+    @apply border-red-500;
+}
+
+.contact-form-error-message {
+    @apply text-red-500 text-sm mt-1;
+}
+
+.contact-form-placeholder {
+    @apply pt-3;
+}
+
+.contact-form-option {
+    @apply flex items-center gap-2;
+}
+
+.contact-form-grid {
+    @apply grid grid-cols-2 gap-6 mb-3;
+}
+
+.contact-form-footer {
+    @apply flex justify-between items-center mt-6 mb-3 border-t pt-3 text-xs md:text-sm;
+}
+
+.contact-form-back-link {
+    @apply text-main flex items-center gap-3;
+}
+
+.contact-form-loading {
+    @apply flex justify-center;
+}
