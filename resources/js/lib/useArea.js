@@ -3,7 +3,6 @@ import { ref, readonly, watch } from 'vue';
 import { useSessionStorage } from '@vueuse/core';
 
 const VITE_API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, "");
-console.log(import.meta.env.VITE_ADMIN_URL);
 const initialArea = sessionStorage.getItem('area') || 'shop';
 const _area = useSessionStorage('area', initialArea);
 const _apiUrl = ref('');
