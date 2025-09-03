@@ -1,13 +1,13 @@
 <template>
   <GuestLayout
-    title="Sign in to your account"
+    :title="$t('pages.login.title')"
     class="bg-accent min-h-screen overflow-hidden text-center"
   >
     <form class="mt-8 space-y-6" method="POST" @submit.prevent="login">
       <input type="hidden" name="rem" value="true" />
       <div class="rounded-md shadow-md space-y-4">
         <div>
-          <label for="email-address" class="sr-only">Email address</label>
+          <label for="email-address" class="sr-only">{{ $t('common.forms.emailLabel') }}</label>
           <input
             id="email-address"
             name="email"
@@ -17,11 +17,11 @@
             required=""
             v-model="user.email"
             class="block w-full p-3 border focus:outline-none focus:ring-2 text-accent_dark"
-            placeholder="Email address"
+            :placeholder="$t('common.forms.emailPlaceholder')"
           />
         </div>
         <div>
-          <label for="password" class="sr-only">Password</label>
+          <label for="password" class="sr-only">{{ $t('pages.login.password') }}</label>
           <input
             id="password"
             name="password"
@@ -30,7 +30,7 @@
             required=""
             v-model="user.password"
             class="block w-full p-3 border focus:outline-none focus:ring-2 text-accent_dark"
-            placeholder="Password"
+            :placeholder="$t('pages.login.password')"
           />
         </div>
       </div>
@@ -45,15 +45,12 @@
             class="h-4 w-4 text-gray focus:ring-main border-gray rounded"
           />
           <label for="remember-me" class="ml-2 block text-sm text-gray-300">
-            Remember me
+            {{ $t('pages.login.rememberMe') }}
           </label>
         </div>
 
         <div class="text-sm">
-          <!-- <router-link to="/" class="font-medium text-gray hover:text-main">
-            Forgot your password?
-          </router-link> -->
-        </div>
+          </div>
       </div>
 
       <div>
@@ -91,7 +88,7 @@
             <Lock class="h-5 w-5 text-accent" aria-hidden="true" />
           </span>
           <div v-if="isLoading"><Spinner class="w-6 h-5" /></div>
-          <div v-if="!isLoading" class="text-accent">Sign in</div>
+          <div v-if="!isLoading" class="text-accent">{{ $t('components.buttons.signIn') }}</div>
         </button>
       </div>
     </form>
