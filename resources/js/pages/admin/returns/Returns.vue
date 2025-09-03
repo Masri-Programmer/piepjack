@@ -1,6 +1,5 @@
 <template>
-    <PageLayout :data="links" title="Return">
-        <!-- card header -->
+    <PageLayout :data="links" :title="$t('admin.returns.title')">
         <div
             class="flex justify-between items-stretch flex-wrap min-h-[70px] pb-6 text-accent"
         >
@@ -8,17 +7,19 @@
                 class="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark"
             >
                 <span class="mr-3 font-semibold text-dark"
-                    >All Returns ({{ data?.meta.total }})</span
+                    >{{ $t('admin.returns.allReturns') }} ({{
+                        data?.meta.total
+                    }})</span
                 >
                 <span class="mt-1 font-medium text-gray text-lg/normal"
-                    >Exlusive from Piepjackclothing</span
+                    >{{ $t('admin.returns.subtitle') }}</span
                 >
             </h3>
-            <SearchField v-model="searchTerm" :placeholder="'Return #'" />
+            <SearchField
+                v-model="searchTerm"
+                :placeholder="$t('admin.returns.searchPlaceholder')"
+            />
         </div>
-        <!-- end card header -->
-
-        <!-- card body  -->
         <div class="flex-auto block text-accent">
             <div class="overflow-x-auto">
                 <table
@@ -26,27 +27,29 @@
                 >
                     <thead class="align-bottom">
                         <tr class="font-semibold text-[0.95rem] text-gray">
-                            <th class="px-1 pb-3 uppercase text-start">ID</th>
                             <th class="px-1 pb-3 uppercase text-start">
-                                ORDER ID
+                                {{ $t('admin.returns.headers.id') }}
+                            </th>
+                            <th class="px-1 pb-3 uppercase text-start">
+                                {{ $t('admin.returns.headers.orderId') }}
                             </th>
                             <th
                                 class="pb-3 px-1 text-start uppercase min-w-[120px]"
                             >
-                                STATUS
+                                {{ $t('admin.returns.headers.status') }}
                             </th>
                             <th class="px-1 pb-3 uppercase text-start">
-                                REASON
+                                {{ $t('admin.returns.headers.reason') }}
                             </th>
                             <th
                                 class="pb-3 px-1 text-start min-w-[150px] uppercase"
                             >
-                                CREATED AT
+                                {{ $t('admin.returns.headers.createdAt') }}
                             </th>
                             <th
                                 class="pb-3 px-1 text-start min-w-[150px] uppercase"
                             >
-                                UPDATE AT
+                                {{ $t('admin.returns.headers.updatedAt') }}
                             </th>
                         </tr>
                     </thead>
@@ -55,7 +58,9 @@
                             v-if="!data?.data.length && !isLoading && !isError"
                             class="my-6 text-xl font-bold"
                         >
-                            No Returns Found
+                            {{
+                                $t('admin.returns.noReturnsFound')
+                            }}
                         </tr>
                         <ProductsShowSkeleton v-if="isLoading" />
                         <tr
@@ -138,8 +143,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <!-- </router-link> -->
-                                </td>
+                                    </td>
                                 <td class="p-3 text-sm text-start text-pretty">
                                     {{ returning.reason }}
                                 </td>
@@ -216,6 +220,9 @@ import { Trash2, ChevronRight } from "lucide-vue-next";
 import SearchField from "@components/admin/SearchField.vue";
 import { formatDate, apiQuery } from "@lib/helpers";
 import ProductsShowSkeleton from "../products/ProductsShowSkeleton.vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const searchTerm = computed({
     get: () => returnsParams.value.search,
@@ -268,9 +275,9 @@ const handlePageChange = (newPage, action) => {
     }
 };
 
-const links = ref([
-    { title: "Home", link: "/" },
-    { title: "Products", current: true, link: "/products" },
+const links = computed(() => [
+    { title: t('admin.links.home'), link: "/" },
+    { title: t('admin.links.products'), current: true, link: "/products" },
 ]);
 
 const [value, toggle] = useToggle();

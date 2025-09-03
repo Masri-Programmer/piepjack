@@ -1,41 +1,41 @@
 <template>
-  <PageLayout :data="links" :title="$t('dashboard.title')">
+  <PageLayout :data="links" :title="$t('admin.dashboard.title')">
     <div class="dashboard grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
       <div class="card text-accent grid">
         <h1 class="text-base font-bold mb-3">
-          {{ $t('dashboard.users') }} <span>{{ Dashboard?.user_counts }}</span>
+          {{ $t('admin.dashboard.users') }} <span>{{ Dashboard?.user_counts }}</span>
         </h1>
         <p v-if="isLoadingDashboard"><Spinner class="w-8" /></p>
       </div>
       <div class="card text-accent grid">
         <h1 class="text-base font-bold mb-3">
-          {{ $t('dashboard.products') }} <span>{{ Dashboard?.product_counts }}</span>
+          {{ $t('admin.dashboard.products') }} <span>{{ Dashboard?.product_counts }}</span>
         </h1>
         <p v-if="isLoadingDashboard"><Spinner class="w-8" /></p>
       </div>
       <div class="card text-accent grid">
         <h1 class="text-base font-bold mb-3">
-          {{ $t('dashboard.orders') }} <span>{{ Dashboard?.order_status_counts }}</span>
+          {{ $t('admin.dashboard.orders') }} <span>{{ Dashboard?.order_status_counts }}</span>
         </h1>
         <p v-if="isLoadingDashboard"><Spinner class="w-8" /></p>
       </div>
       <div class="card text-accent grid">
         <h1 class="text-base font-bold mb-3">
-          {{ $t('dashboard.categories') }} <span>{{ Dashboard?.category_counts }}</span>
+          {{ $t('admin.dashboard.categories') }} <span>{{ Dashboard?.category_counts }}</span>
         </h1>
         <p v-if="isLoadingDashboard"><Spinner class="w-8" /></p>
       </div>
       <div class="card text-accent grid">
         <h1 class="text-base font-bold mb-3">
-          {{ $t('dashboard.totalIncome') }} <span>{{ Dashboard?.total_income }} €</span>
+          {{ $t('admin.dashboard.totalIncome') }} <span>{{ Dashboard?.total_income }} €</span>
         </h1>
         <p v-if="isLoadingDashboard"><Spinner class="w-8" /></p>
       </div>
       <div class="card text-accent grid">
-        <h1 class="text-base font-bold mb-3">{{ $t('dashboard.noData') }}</h1>
+        <h1 class="text-base font-bold mb-3">{{ $t('admin.dashboard.noData') }}</h1>
       </div>
       <div class="card text-accent grid">
-        <h1 class="text-base font-bold mb-3">{{ $t('dashboard.bestSellingProducts') }}</h1>
+        <h1 class="text-base font-bold mb-3">{{ $t('admin.dashboard.bestSellingProducts') }}</h1>
         <p v-if="isLoadingDashboard"><Spinner class="w-8" /></p>
         <div>
           <Pie
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="card text-accent grid">
-        <h1 class="text-base font-bold mb-3">{{ $t('dashboard.incomeLast3Months') }}</h1>
+        <h1 class="text-base font-bold mb-3">{{ $t('admin.dashboard.incomeLast3Months') }}</h1>
         <p v-if="isLoadingDashboard"><Spinner class="w-8" /></p>
         <div>
           <Line
@@ -55,14 +55,14 @@
         </div>
       </div>
       <div class="card text-accent grid">
-        <h1 class="text-base font-bold mb-3">{{ $t('dashboard.latestCompletedOrders') }}</h1>
+        <h1 class="text-base font-bold mb-3">{{ $t('admin.dashboard.latestCompletedOrders') }}</h1>
         <p v-if="isLoadingDashboard"><Spinner class="w-8" /></p>
         <div>
           <Bar
             id="Latest_Orders"
             :options="options"
             :data="Dashboard?.latest_completed_orders ?? data"
-            :name="$t('dashboard.latestOrders')"
+            :name="$t('admin.dashboard.latestOrders')"
           />
         </div>
       </div>
@@ -116,7 +116,7 @@ const links = computed(() => [
     link: "",
   },
   {
-    title: t('dashboard.title'),
+    title: t('admin.dashboard.title'),
     current: true,
     link: "",
   },

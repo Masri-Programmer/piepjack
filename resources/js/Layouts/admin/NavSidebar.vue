@@ -37,7 +37,7 @@
               <div class="absolute inset-0 -left-1 flex items-center">
                 <div class="h-2 w-2 rotate-45 bg-accent"></div>
               </div>
-              {{ $t('sidebar.dashboard') }}
+              {{ $t('admin.sidebar.dashboard') }}
             </div>
           </div>
         </router-link>
@@ -64,7 +64,7 @@
               <div class="absolute inset-0 -left-1 flex items-center">
                 <div class="h-2 w-2 rotate-45 bg-accent"></div>
               </div>
-              {{ $t('sidebar.products') }}
+              {{ $t('admin.sidebar.products') }}
             </div>
           </div>
         </router-link>
@@ -91,7 +91,7 @@
               <div class="absolute inset-0 -left-1 flex items-center">
                 <div class="h-2 w-2 rotate-45 bg-accent"></div>
               </div>
-              {{ $t('sidebar.categories') }}
+              {{ $t('admin.sidebar.categories') }}
             </div>
           </div>
         </router-link>
@@ -118,7 +118,7 @@
               <div class="absolute inset-0 -left-1 flex items-center">
                 <div class="h-2 w-2 rotate-45 bg-accent"></div>
               </div>
-              {{ $t('sidebar.orders') }}
+              {{ $t('admin.sidebar.orders') }}
             </div>
           </div>
         </router-link>
@@ -145,7 +145,7 @@
               <div class="absolute inset-0 -left-1 flex items-center">
                 <div class="h-2 w-2 rotate-45 bg-accent"></div>
               </div>
-              {{ $t('sidebar.returns') }}
+              {{ $t('admin.sidebar.returns') }}
             </div>
           </div>
         </router-link>
@@ -172,7 +172,7 @@
               <div class="absolute inset-0 -left-1 flex items-center">
                 <div class="h-2 w-2 rotate-45 bg-accent"></div>
               </div>
-              {{ $t('sidebar.users') }}
+              {{ $t('admin.sidebar.users') }}
             </div>
           </div>
         </router-link>
@@ -199,7 +199,7 @@
               <div class="absolute inset-0 -left-1 flex items-center">
                 <div class="h-2 w-2 rotate-45 bg-accent"></div>
               </div>
-              {{ $t('sidebar.reports') }}
+              {{ $t('admin.sidebar.reports') }}
             </div>
           </div>
         </router-link>
@@ -226,7 +226,7 @@
               <div class="absolute inset-0 -left-1 flex items-center">
                 <div class="h-2 w-2 rotate-45 bg-accent"></div>
               </div>
-              {{ $t('sidebar.settings') }}
+              {{ $t('admin.sidebar.settings') }}
             </div>
           </div>
         </router-link>
@@ -249,10 +249,10 @@
         >
           <button class="w-full mb-3">
             <a :href="SHOP_LINK" target="_blank" rel="noopener noreferrer">
-              {{ $t('sidebar.shop') }}</a
+              {{ $t('admin.sidebar.shop') }}</a
             >
           </button>
-          <button :disabled="loading" class="" @click="logout">{{ $t('sidebar.logout') }}</button>
+          <button :disabled="loading" class="" @click="logout">{{ $t('admin.sidebar.logout') }}</button>
         </div>
       </div>
     </aside>

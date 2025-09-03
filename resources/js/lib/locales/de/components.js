@@ -41,4 +41,9 @@ export default {
         totalAmount: "Gesamt: {total}",
         yourItems: "Deine ausgewählten Artikel sind jetzt in deinem Warenkorb.",
     },
+    searchField: {
+        placeholder: {
+            order: "Bestellnummer",
+        },
+    },
 };

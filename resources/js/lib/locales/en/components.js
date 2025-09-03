@@ -37,4 +37,9 @@ export default {
     totalAmount: "Total: {total}",
     yourItems: "Your selected items are now in your cart."
   },
+   searchField: {
+    placeholder: {
+      order: "Order #"
+    }
+  }
 };

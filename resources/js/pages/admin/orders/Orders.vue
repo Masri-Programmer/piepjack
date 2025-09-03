@@ -1,43 +1,45 @@
 <template>
-  <PageLayout
-    :data="links"
-    title="Orders"
-  >
-    <!-- card header -->
+  <PageLayout :data="links" :title="$t('admin.orders.title')">
     <div
       class="flex justify-between items-stretch flex-wrap min-h-[70px] pb-6 text-accent"
     >
       <h3
         class="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark"
       >
-        <span class="mr-3 font-semibold text-dark"
-          >All Orders ({{ data?.meta.total }})</span
-        >
-        <span class="mt-1 font-medium text-gray text-lg/normal"
-          >Exlusive from Piepjackclothing</span
-        >
+        <span class="mr-3 font-semibold text-dark">{{
+          $t("admin.orders.allOrders", { total: data?.meta.total ?? 0 })
+        }}</span>
+        <span class="mt-1 font-medium text-gray text-lg/normal">{{
+          $t("admin.orders.exclusiveFrom")
+        }}</span>
       </h3>
-      <SearchField v-model="searchTerm" :placeholder="'Order #'" />
+      <SearchField
+        v-model="searchTerm"
+        :placeholder="$t('components.searchField.placeholder.order')"
+      />
     </div>
-    <!-- end card header -->
-
-    <!-- card body  -->
     <div class="flex-auto block text-accent">
       <div class="overflow-x-auto">
         <table class="w-full my-0 align-middle text-dark border-neutral-200">
           <thead class="align-bottom">
             <tr class="font-semibold text-[0.95rem] text-gray">
-              <th class="pb-3 px-1 text-start uppercase">ID</th>
-              <th class="pb-3 px-1 text-start uppercase">NUMBER</th>
+              <th class="pb-3 px-1 text-start uppercase">
+                {{ $t("admin.orders.table.id") }}
+              </th>
+              <th class="pb-3 px-1 text-start uppercase">
+                {{ $t("admin.orders.table.number") }}
+              </th>
               <th class="pb-3 px-1 text-start uppercase min-w-[120px]">
-                STATUS
+                {{ $t("admin.orders.table.status") }}
               </th>
-              <th class="pb-3 px-1 text-start uppercase">TOTAL</th>
-              <th class="pb-3 px-1 text-start min-w-[150px] uppercase">
-                CREATED AT
+              <th class="pb-3 px-1 text-start uppercase">
+                {{ $t("admin.orders.table.total") }}
               </th>
               <th class="pb-3 px-1 text-start min-w-[150px] uppercase">
-                UPDATE AT
+                {{ $t("admin.orders.table.createdAt") }}
+              </th>
+              <th class="pb-3 px-1 text-start min-w-[150px] uppercase">
+                {{ $t("admin.orders.table.updatedAt") }}
               </th>
             </tr>
           </thead>
@@ -46,21 +48,22 @@
               v-if="!data?.data.length && !isLoading && !isError"
               class="font-bold text-xl my-6"
             >
-              No Orders Found
+              {{
+                $t("admin.orders.noOrdersFound")
+              }}
             </tr>
             <ProductsShowSkeleton v-if="isLoading" />
             <tr
               class="border-b border-neutral-200 ont-bold text-xl my-6"
               v-if="error"
             >
-              {{
-                error
-              }}
+              {{ error }}
             </tr>
             <template v-if="!isLoading && data?.data">
               <tr
                 class="border-b border-dashed last:border-b-0 border-main"
                 v-for="order in data?.data"
+                :key="order.id"
               >
                 <td>{{ order.id }}</td>
                 <td>{{ order.order_number }}</td>
@@ -105,7 +108,6 @@
                       </span>
                     </div>
                   </div>
-                  <!-- </router-link> -->
                 </td>
                 <td class="p-3 text-start">
                   <div class="relative">
@@ -123,7 +125,7 @@
                             parseFloat(e.target.value)
                           )
                       "
-                      placeholder="Enter total price"
+                      :placeholder="$t('admin.orders.table.enterTotalPrice')"
                     />
                     <span
                       class="absolute left-2 top-1/2 transform -translate-y-1/2 text-xl"
@@ -183,6 +185,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { ordersParams } from "@lib/store/admin";
 import { useToggle } from "@vueuse/core";
 import { useDebounceFn } from "@vueuse/core";
@@ -192,6 +195,8 @@ import Pagination from "@layouts/admin/Pagination.vue";
 import { Trash2, ChevronRight } from "lucide-vue-next";
 import SearchField from "@components/admin/SearchField.vue";
 import ProductsShowSkeleton from "../products/ProductsShowSkeleton.vue";
+
+const { t } = useI18n();
 
 const searchTerm = computed({
   get: () => ordersParams.value.search,
@@ -243,9 +248,9 @@ const handlePageChange = (newPage, action) => {
   }
 };
 
-const links = ref([
-  { title: "Home", link: "/" },
-  { title: "Products", current: true, link: "/products" },
+const links = computed(() => [
+  { title: t("admin.menu.home"), link: "/" },
+  { title: t("admin.menu.products"), current: true, link: "/products" },
 ]);
 
 const [value, toggle] = useToggle();
