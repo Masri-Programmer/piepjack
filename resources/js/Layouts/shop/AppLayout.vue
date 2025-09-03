@@ -7,7 +7,9 @@
             <router-view />
         </main>
     </div>
+  
     <Cookies />
+    <WhatsappIcon />
     <Footer />
 </template>
 <script setup>
@@ -17,6 +19,7 @@ import { onMounted } from "vue";
 import Footer from "./Footer.vue";
 import Cookies from "./Cookies.vue";
 import Navigation from "./Navigation.vue";
+import WhatsappIcon from "@components/shop/Icons/WhatsappIcon.vue";
 
 onMounted(() => {
     AOS.init();
