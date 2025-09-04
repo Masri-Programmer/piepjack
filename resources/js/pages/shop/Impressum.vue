@@ -4,30 +4,35 @@
       IMPRESSUM
     </h1>
     <div class="prose text-pretty text-start sm:text-left max-w-2xl">
-      <p>massive group GmbH</p>
-      <p><strong>PIEP JACK CLOTHING</strong></p>
+      <p>Angaben gemäß § 5 TMG</p>
+      <p><strong>PIEPJACK Clothing</strong></p>
       <p>
-        Otto-Hahn-Str. 34<br />85521 Hohenbrunn OT Riemerling<br />Deutschland
+        Inhaber: Marvin Pieprzyk<br />
+        Schollendamm 122a<br />
+        27751 Delmenhorst<br />
+        Deutschland
       </p>
-      <p><strong>Geschäftsführer:</strong> Mert Mehmet Bulut</p>
+
+      <h2>Kontakt</h2>
       <p>
-        <strong>Amtsgericht München</strong><br />
-        Registernummer: HRB 193552<br />
-        <strong>Umsatzsteueridentifikationsnummer:</strong> DE 279 196 402
+        <strong>E-Mail: </strong>
+        <a href="mailto:info@piepjack-clothing.de" class="text-blue-500 hover:underline">info@piepjack-clothing.de</a>
       </p>
-      <p><em>(DIES IST NICHT DIE RÜCKSENDEADRESSE!)</em></p>
       <p>
-        <strong>E-Mail:</strong>
-        <a href="mailto:email" class="text-blue-500 hover:underline">email</a>
+        <strong>Website: </strong>
+        <a href="https://www.piepjack-clothing.de" class="text-blue-500 hover:underline">www.piepjack-clothing.de</a>
       </p>
-      <p>Die Antwort kann 2-4 Werktage dauern.</p>
+
+      <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:</h2>
       <p>
-        <strong>Alternative Streitbeilegung:</strong><br />
-        Die Europäische Kommission stellt eine Plattform für die außergerichtliche
-        Online-Streitbeilegung (OS-Plattform) bereit, aufrufbar unter
-        <a href="https://ec.europa.eu/consumers/odr" class="text-blue-500 hover:underline">
-          https://ec.europa.eu/consumers/odr
-        </a>.
+        Marvin Pieprzyk<br />
+        Schollendamm 122a<br />
+        27751 Delmenhorst
+      </p>
+
+      <h2>Markenrechtlicher Hinweis</h2>
+      <p>
+        PIEPJACK ist eine eingetragene Marke (Nr. 30 2025 105 590) beim Deutschen Patent- und Markenamt.
       </p>
     </div>
   </div>

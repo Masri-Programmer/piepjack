@@ -34,13 +34,13 @@
     </a>
 
     <a
-      href="https://twitter.com/piepjack"
+      href="https://Facebook.com/piepjack"
       target="_blank"
       rel="noopener noreferrer"
       class="social-media-button"
-      aria-label="Visit our Twitter"
+      aria-label="Visit our Facebook"
     >
-      <Twitter />
+      <Facebook />
     </a>
   </div>
   <footer
