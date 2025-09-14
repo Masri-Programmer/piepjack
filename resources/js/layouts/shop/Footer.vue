@@ -13,7 +13,7 @@
     </a>
 
     <a
-      href="https://www.tiktok.com/@piepjack"
+      href="https://www.tiktok.com/@piepjack?_t=ZN-8zbZSkrIpz5&_r=1"
       target="_blank"
       rel="noopener noreferrer"
       class="social-media-button"
