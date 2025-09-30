@@ -12,7 +12,7 @@ import PublicNotFoundLayout from "./layouts/shop/NotFound.vue";
 import { useArea } from "@lib/useArea.js";
 import { setAppArea } from "@lib/useArea";
 const { updateArea } = useArea();
-const BASE_TITLE = "PIEPJACK CLOTHING";
+const BASE_TITLE = env("APP_NAME");
 
 const isAuthenticated = () => {
     const userLocal = useStorage("user", {});
