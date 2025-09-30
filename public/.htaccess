@@ -1,12 +1,26 @@
+# HANDLE PREFLIGHT CORS REQUESTS
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=204,L]
+</IfModule>
+
+# ADD CORS HEADERS TO ALL RESPONSES
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "https://testing.piepjack-clothing.de"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Origin, Content-Type, X-Auth-Token, Authorization, X-Requested-With"
+</IfModule>
+
+# ----------------------------------------------------------------------
+# STANDARD LARAVEL .htaccess RULES BELOW
+# ----------------------------------------------------------------------
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
 
     RewriteEngine On
-
-    # Allow access to the storage directory
-    RewriteRule ^storage/(.*)$ - [L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
