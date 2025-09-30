@@ -57,9 +57,9 @@ echo "✅  Configuration cached."
 
 # Restart queue workers if you use them
 # If you don't use Laravel Queues, you can safely remove this line.
-echo "🔄  Restarting queue workers..."
-php artisan queue:restart
-echo "✅  Queue workers restarted."
+# echo "🔄  Restarting queue workers..."
+# php artisan queue:restart
+# echo "✅  Queue workers restarted."
 
 # Exit maintenance mode
 php artisan up
