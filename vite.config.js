@@ -6,33 +6,33 @@ import path from "path";
 
 export default defineConfig({
     plugins: [
-        // laravel({
-        //     input: ['resources/js/app.js'],
-        //     refresh: true,
-        //     // detectTls: 'piepjack.test',
-        // }),
+        laravel({
+            input: ["resources/js/app.js"],
+            refresh: true,
+            // detectTls: 'piepjack.test',
+        }),
         tailwindcss(),
         vue(),
-        // {
-        //     template: {
-        //         transformAssetUrls: {
-        //             base: null,
-        //             includeAbsolute: false,
-        //         },
-        //     },
-        // }
-    ],
-    root: "resources/js",
-    build: {
-        outDir: "../../public/build",
-        emptyOutDir: true,
-        manifest: false,
-        target: "esnext",
-        rollupOptions: {
-            input: {
-                app: "./resources/js/index.html",
+        {
+            template: {
+                transformAssetUrls: {
+                    base: null,
+                    includeAbsolute: false,
+                },
             },
         },
+    ],
+    // root: "resources/js",
+    build: {
+        // outDir: "../../public/build",
+        // emptyOutDir: true,
+        // manifest: false,
+        target: "esnext",
+        // rollupOptions: {
+        //     input: {
+        //         app: "./resources/js/index.html",
+        //     },
+        // },
     },
     resolve: {
         alias: {

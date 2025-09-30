@@ -4,13 +4,13 @@
     "paths": {
       "@/*": ["resources/*"],
       "@lib/*": ["resources/js/lib/*"],
-      "@assets/*": ["resources/assets/*"],
+      "@assets/*": ["resources/assets/*"], // This line was missing a comma
       "@img/*": ["resources/assets/img/*"],
       "@components/*": ["resources/js/components/*"],
       "@pages/*": ["resources/js/pages/*"],
       "@layouts/*": ["resources/js/layouts/*"],
       "@ui/*": ["resources/js/components/ui/*"],
-      "@/lib/utils": ["resources/js/lib/utils.js"]
+      "@/lib/utils": ["resources/js/lib/utils.ts"]
     },
     "target": "esnext",
     "module": "esnext",
