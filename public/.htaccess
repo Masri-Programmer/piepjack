@@ -1,38 +1,23 @@
-# HANDLE PREFLIGHT CORS REQUESTS
 <IfModule mod_rewrite.c>
+    Options -MultiViews -Indexes
     RewriteEngine On
-    RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteRule ^(.*)$ $1 [R=204,L]
-</IfModule>
 
-# ADD CORS HEADERS TO ALL RESPONSES
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "https://testing.piepjack-clothing.de"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header set Access-Control-Allow-Headers "Origin, Content-Type, X-Auth-Token, Authorization, X-Requested-With"
-</IfModule>
-
-# ----------------------------------------------------------------------
-# STANDARD LARAVEL .htaccess RULES BELOW
-# ----------------------------------------------------------------------
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
-    RewriteEngine On
+    # Set the base path
+    RewriteBase /
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # Redirect Trailing Slashes
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
+    # Handle Front Controller...
+    # Only run the rule if this is the initial request (prevents loop)
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    RewriteRule .* /index.php [L]
 </IfModule>
