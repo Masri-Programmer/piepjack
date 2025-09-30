@@ -3,7 +3,7 @@ set -e
 
 UBERSPACE_USER="piepjack"
 
-PROJECT_DIR="testing.piepjack-clothing.de"
+PROJECT_DIR="piepjack-clothing"
 
 GIT_BRANCH="main"
 
