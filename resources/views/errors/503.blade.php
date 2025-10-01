@@ -25,7 +25,7 @@
     <div class="relative flex items-center justify-center min-h-screen overflow-hidden">
         <!-- Background Video -->
         <video autoplay loop muted class="absolute z-0 w-auto min-w-full min-h-full max-w-none">
-            <source src="{{ asset('59987c28-310f-4558-8aad-d15af2ae8265.mp4') }}" type="video/mp4">
+            <source src="{{ asset('/img/59987c28-310f-4558-8aad-d15af2ae8265.mp4') }}" type="video/mp4">
             Ihr Browser unterstützt das Video-Tag nicht.
         </video>
 
