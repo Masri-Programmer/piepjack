@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\API\V1\CheckoutController;
-use App\Http\Controllers\API\V1\ShutdownController;
 use App\Http\Controllers\API\V1\VariationController;
 use App\Http\Controllers\API\V1\PublicProductController;
 use App\Http\Controllers\API\V1\ProductReviewController;
@@ -19,14 +18,11 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::post('products-reviews', [ProductReviewController::class, 'store']);
     Route::get('categories', [PublicCategoryController::class, 'index']);
     Route::get('category-variations/{category}', [VariationController::class, 'categoryVariations']);
-    Route::get('generate-shutdown-code', [ShutdownController::class, 'generateShutdownCode']);
-    Route::get('shutdown-code', [ShutdownController::class, 'getShutdownCode']);
     Route::post('checkout', [CheckoutController::class, 'checkout']);
     Route::get('sendTestEmail/{orderId}', [CheckoutController::class, 'sendTestEmail']);
     Route::get('sendReturnTestEmail/{returnId}', [PublicReturningController::class, 'sendReturnEmailTest']);
     Route::post('webhook/stripe', [CheckoutController::class, 'handleWebhook']);
     Route::post('webhook/return-items', [PublicReturningController::class, 'handleWebhook']);
-    Route::post('shutdown', [ShutdownController::class, 'shutdown']);
     Route::post('update-order-status', [CheckoutController::class, 'updateOrderStatus']);
     Route::middleware('auth:sanctum')->group(function () {});
 

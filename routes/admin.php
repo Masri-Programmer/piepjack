@@ -9,7 +9,6 @@ use App\Http\Controllers\API\V1\OrderController;
 use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\ProductItemController;
 use App\Http\Controllers\API\V1\ReturningController;
-use App\Http\Controllers\API\V1\ShutdownController;
 use App\Http\Controllers\API\V1\VariationController;
 use App\Http\Controllers\API\V1\VariationOptionController;
 use Illuminate\Support\Facades\Route;
@@ -38,7 +37,6 @@ Route::prefix('admin')->group(
         Route::get('/sanctum/csrf-cookie', function () {
             return response()->json(['message' => 'CSRF cookie set']);
         });
-        Route::get('shutdown-code', [ShutdownController::class, 'getShutdownCode'])->middleware('guest');
         Route::post('login', [AdminAuthController::class, 'login'])->middleware('guest');
     }
 );

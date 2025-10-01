@@ -1,35 +1,35 @@
-import { createI18n } from 'vue-i18n';
-import { apiRequest } from './helpers';
-import de from './locales/de/index'
-import en from './locales/en/index'
-import { nextTick } from 'vue';
-import { SUPPORT_LOCALES } from './constants';
+import { createI18n } from "vue-i18n";
+import { apiRequest } from "./helpers";
+import de from "./locales/de/index";
+import en from "./locales/en/index";
+import { nextTick } from "vue";
+import { SUPPORT_LOCALES } from "./constants";
 
-const getSavedLocale = () => localStorage.getItem('lang') || 'de';
+const getSavedLocale = () => localStorage.getItem("lang") || "de";
 
 export function setupI18n(options = { locale: getSavedLocale() }) {
     const i18n = createI18n({
         locale: options.locale,
         fallbackLocale: options.locale,
         messages: { en, de },
-        ...options
+        ...options,
     });
 
     setI18nLanguage(i18n, options.locale);
     return i18n;
 }
 export function setI18nLanguage(i18n, locale) {
-    if (i18n.mode === 'legacy') {
+    if (i18n.mode === "legacy") {
         i18n.global.locale = locale;
     } else {
         i18n.global.locale.value = locale;
     }
 
     // Set HTML lang attribute
-    document.querySelector('html').setAttribute('lang', locale);
+    document.querySelector("html").setAttribute("lang", locale);
 
     // Store in localStorage
-    localStorage.setItem('lang', locale);
+    localStorage.setItem("lang", locale);
 
     return locale;
 }
@@ -38,7 +38,7 @@ export async function loadLocaleMessages(i18n, locale) {
     if (!i18n.global.availableLocales.includes(locale)) {
         try {
             const messages = await import(
-        /* webpackChunkName: "locale-[request]" */ `./locales/${locale}/index.js`
+                /* webpackChunkName: "locale-[request]" */ `./locales/${locale}/index.js`
             );
             i18n.global.setLocaleMessage(locale, messages.default);
         } catch (error) {
@@ -73,7 +73,7 @@ export const createQueryClient = (QueryClient) => {
 
 // Shared Toast options
 export const toastOptions = {
-    position: 'top-right',
+    position: "top-right",
     timeout: 2000,
     closeOnClick: true,
     pauseOnFocusLoss: true,
@@ -82,17 +82,10 @@ export const toastOptions = {
     draggablePercent: 0.6,
     showCloseButtonOnHover: false,
     hideProgressBar: true,
-    closeButton: 'button',
+    closeButton: "button",
     icon: true,
     rtl: false,
-    transition: 'Vue-Toastification__bounce',
+    transition: "Vue-Toastification__bounce",
     maxToasts: 20,
     newestOnTop: true,
-};
-
-export const checkShutdownCode = async () => {
-    const response = await apiRequest('get', '/shutdown-code');
-    if (response.shutdown_code === null) {
-        document.body.innerHTML = '';
-    }
 };
