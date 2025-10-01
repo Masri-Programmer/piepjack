@@ -12,15 +12,14 @@ export default defineConfig({
             // detectTls: 'piepjack.test',
         }),
         tailwindcss(),
-        vue(),
-        {
+        vue({
             template: {
                 transformAssetUrls: {
                     base: null,
                     includeAbsolute: false,
                 },
             },
-        },
+        }),
     ],
     // root: "resources/js",
     build: {
