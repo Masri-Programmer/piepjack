@@ -25,7 +25,7 @@
     <div class="relative flex items-center justify-center min-h-screen overflow-hidden">
         <!-- Background Video -->
         <video autoplay loop muted class="absolute z-0 w-auto min-w-full min-h-full max-w-none">
-            <source src="/img/59987c28-310f-4558-8aad-d15af2ae8265.mp4" type="video/mp4">
+            <source src="{{ asset('59987c28-310f-4558-8aad-d15af2ae8265.mp4') }}" type="video/mp4">
             Ihr Browser unterstützt das Video-Tag nicht.
         </video>
 
@@ -39,20 +39,13 @@
 
             <!-- Title -->
             <h1 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Dienst vorübergehend nicht verfügbar
+                Wir befinden uns im Wartungsmodus
             </h1>
 
             <!-- Message -->
             <p class="mt-6 text-base leading-7 text-gray-300">
-                Wir führen zurzeit geplante Wartungsarbeiten durch. Wir sollten in Kürze wieder online sein. Vielen Dank für Ihre Geduld!
+                Wir sind für kurze Zeit im Wartungsmodus. Bitte schauen Sie in Kürze wieder vorbei.
             </p>
-
-            <!-- Action Button -->
-            <div class="mt-10">
-                <a href="/" class="rounded-md bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-colors duration-200">
-                    Zurück zur Startseite
-                </a>
-            </div>
 
         </div>
     </div>
