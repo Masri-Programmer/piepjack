@@ -71,16 +71,10 @@ class SpecificProductSeeder extends Seeder
         // 4. Generate all possible combinations (Cartesian product) of the variation options
         $combinations = $this->getCombinations($optionsCollection->all());
 
-        // 5. Create a unique ProductItem (SKU) for each combination
+        // 5. Create a unique ProductItem for each combination
         foreach ($combinations as $combination) {
-            // Generate a unique SKU from the product name and variation values
-            $sku = 'HOTS-' . collect($combination)->pluck('value')->map(function ($value) {
-                return strtoupper(substr($value, 0, 3));
-            })->implode('-');
-
             $productItem = ProductItem::create([
                 'product_id' => $product->id,
-                'sku'        => $sku, // e.g., HOTS-S-BLA
                 'quantity'   => 100,
                 'price'      => 39.00,
                 'active'     => true,
