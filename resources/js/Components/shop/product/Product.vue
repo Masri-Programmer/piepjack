@@ -23,38 +23,22 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import { useRoute } from "vue-router";
-import { onMounted, watch, ref } from "vue";
+import { computed } from "vue";
 import Spinner from "@components/ui/Spinner.vue";
-import { useArea } from "@lib/useArea.js";
 import ProductContent from "./ProductContent.vue";
 import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
 import ProductReview from "./ProductReview.vue";
-const { getApiUrl } = useArea();
+import { apiQuery } from "@lib/helpers";
 
 const route = useRoute();
-const product = ref(null);
-const error = ref(null);
-const isLoading = ref(true);
-const fetchProduct = async (id) => {
-    isLoading.value = true;
-    try {
-        const response = await axios.get(`${getApiUrl()}/products/${id}`);
-        product.value = response.data.data;
-        error.value = null;
-    } catch (err) {
-        error.value = err.response?.message || "Failed to get product by id";
-        product.value = null;
-    } finally {
-        isLoading.value = false;
-    }
-};
-onMounted(() => fetchProduct(route.params.id));
-watch(
-    () => route.params.id,
-    (newId) => {
-        if (newId) fetchProduct(newId);
-    }
-);
+const productId = computed(() => route.params.id);
+
+const {
+    data: productData,
+    error,
+    isLoading,
+} = apiQuery("products").useGetById(productId);
+
+const product = computed(() => productData.value?.data);
 </script>

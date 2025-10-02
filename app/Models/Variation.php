@@ -26,4 +26,8 @@ class Variation extends Model
     {
         return $this->hasMany(VariationOption::class, 'variation_id');
     }
+    public function variationOptions(): HasMany
+    {
+        return $this->hasMany(VariationOption::class);
+    }
 }
