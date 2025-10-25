@@ -1,6 +1,6 @@
 <template>
-     <a
-        href="https://wa.me/4915750124343"
+    <a
+        href="https://wa.me/4915756421797"
         id="wp-chat"
         class="wp-chat"
         target="_blank"

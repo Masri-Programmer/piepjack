@@ -113,7 +113,7 @@ class CheckoutController extends Controller
         return Order::create([
             'user_id' => $user->id,
             'shipping_address_id' => $address->id,
-            'billing_address_id' => $address->id, 
+            'billing_address_id' => $address->id,
             'status' => 'pending',
             'total_price' => 0,
         ]);
@@ -210,14 +210,14 @@ class CheckoutController extends Controller
 
     private function calculateShippingCost($total_price, $validated)
     {
-        $shipping_cost = $total_price >= 100 || $validated['promo_code'] === 'pickup' ? 0 : 5.90;
+        $shipping_cost = $total_price >= 70 || $validated['promo_code'] === 'pickup' ? 0 : 5.90;
 
         return $shipping_cost;
     }
 
     /**
      * Handle Stripe webhook events
-    */
+     */
     // cd "C:\Program Files\Stripe CLI\stripe_1.23.5_windows_x86_64"
     // stripe login
     // stripe listen --forward-to localhost:8000/api/V1/shop/webhook/stripe
