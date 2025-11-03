@@ -17,7 +17,7 @@
             :key="size.id"
         >
             <button
-                class="border border-gray-300 w-11 h-11 grid place-content-center relative text-xs"
+                class="border border-gray-300 w-11 h-11 grid place-content-center relative text-xs break-all"
                 @click="handlePick('size', size.value)"
                 :class="{
                     'bg-main text-accent font-bold shadow-md border-gray border-3':
