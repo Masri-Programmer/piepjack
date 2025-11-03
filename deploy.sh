@@ -63,6 +63,8 @@ echo "✅  Configuration cached."
 
 # Exit maintenance mode
 php artisan up
+rm -rf storage/framework/cache/data/
+
 echo "✅  Application is now live."
 
 echo "🎉  Deployment finished successfully!"
