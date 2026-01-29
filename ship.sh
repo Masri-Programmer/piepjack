@@ -72,8 +72,8 @@ if [ "$BUMP" != "none" ]; then
     git commit -m "chore: shipment release $(node -p "require('./package.json').version")"
 fi
 
-echo "🌍 Syncing Translations Locally..."
-"$LOCAL_PHP_BIN" artisan translate:local --all
+# echo "🌍 Syncing Translations Locally..."
+# "$LOCAL_PHP_BIN" artisan translate:local --all
 
 echo "🛠️  Building Assets (SSR Mode)..."
 export NODE_OPTIONS="--max-old-space-size=4096"
