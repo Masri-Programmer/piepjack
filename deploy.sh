@@ -2,7 +2,7 @@
 set -e
 cd /var/www/virtual/masri/piepjack
 
-echo "🚀 Starting Remote Logic..."
+echo "🚀 Starting Deployment Logic..."
 
 # Ensure we have the code we just pushed
 git fetch --all
@@ -17,7 +17,11 @@ php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
-rm -rf storage/framework/cache/data/
+
+# Sync translations on server if needed (Comment out if not using translation package)
+# php artisan translate:sync --all 
+
+# Bring Online
 php artisan up
 
 echo "✅ Server tasks complete!"

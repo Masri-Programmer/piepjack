@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c55d497f668d1a8760e0dbe22dd52a50",
+    "content-hash": "b2e08721a917564f73793bcf8651062f",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2373,6 +2373,50 @@
                 }
             ],
             "time": "2024-12-08T08:18:47+00:00"
+        },
+        {
+            "name": "masri/deployer",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Masri-Programmer/masri-deployer.git",
+                "reference": "d227c21d62f6a7374c455e0122e027e59c7a2a51"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Masri-Programmer/masri-deployer/zipball/d227c21d62f6a7374c455e0122e027e59c7a2a51",
+                "reference": "d227c21d62f6a7374c455e0122e027e59c7a2a51",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Masri\\Deployer\\DeployerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Masri\\Deployer\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Masri",
+                    "email": "you@example.com"
+                }
+            ],
+            "description": "Automated deployment scripts for Masri projects",
+            "support": {
+                "source": "https://github.com/Masri-Programmer/masri-deployer/tree/release",
+                "issues": "https://github.com/Masri-Programmer/masri-deployer/issues"
+            },
+            "time": "2026-01-29T15:58:31+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -11551,12 +11595,14 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "masri/deployer": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

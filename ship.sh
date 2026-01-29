@@ -72,8 +72,8 @@ if [ "$BUMP" != "none" ]; then
     git commit -m "chore: shipment release $(node -p "require('./package.json').version")"
 fi
 
-# echo "🌍 Syncing Translations Locally..."
-# "$LOCAL_PHP_BIN" artisan translate:local --all
+echo "🌍 Syncing Translations Locally..."
+"$LOCAL_PHP_BIN" artisan translate:local --all || echo "⚠️ Translation command skipped (not found)"
 
 echo "🛠️  Building Assets (SSR Mode)..."
 export NODE_OPTIONS="--max-old-space-size=4096"
@@ -124,7 +124,6 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" "bash ${REMOTE_DEPLOY_SCRIPT}"
 
 # --- STEP 7: CLEANUP & RELOAD ---
 echo "🔄 Reloading SSR Process..."
-ssh "${REMOTE_USER}@${REMOTE_HOST}" "rm -rf ${REMOTE_APP_PATH}/public/build_backup" 
-# && $PM2_PATH reload "$SSR_PROCESS"
+ssh "${REMOTE_USER}@${REMOTE_HOST}" "rm -rf ${REMOTE_APP_PATH}/public/build_backup && pm2 reload $SSR_PROCESS" 
 
 echo "✅ DEPLOYMENT SUCCESSFUL!"
