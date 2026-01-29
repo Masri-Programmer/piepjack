@@ -277,10 +277,10 @@ class CheckoutController extends Controller
             $order->update(['status' => 'paid']);
 
             // Decrement stock for each product
-            // foreach ($order->products as $orderProduct) {
-            //     ProductItem::where('id', $orderProduct->product_item_id)
-            //         ->decrement('quantity', $orderProduct->quantity);
-            // }
+            foreach ($order->products as $orderProduct) {
+                ProductItem::where('id', $orderProduct->product_item_id)
+                    ->decrement('quantity', $orderProduct->quantity);
+            }
 
             $this->sendOrderConfirmationEmail($order);
 
