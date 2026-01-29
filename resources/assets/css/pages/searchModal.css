@@ -1,0 +1,65 @@
+@reference "../app.css";
+
+.search-modal-title {
+    @apply text-3xl font-extrabold text-start m-4 uppercase;
+}
+
+.search-modal-container {
+    @apply grid m-4;
+}
+
+.search-modal-input-wrapper {
+    @apply w-full;
+}
+
+.search-modal-input-container {
+    @apply inline-flex flex-col justify-center relative text-main w-full;
+}
+
+.search-modal-input-box {
+    @apply relative w-full;
+}
+
+.search-modal-input {
+    @apply p-2 w-full pl-8 rounded border border-gray bg-accent_dark focus:bg-accent_light focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent;
+}
+
+.search-modal-icon {
+    @apply w-4 h-4 absolute left-2.5 top-3.5;
+}
+
+.search-modal-tabs {
+    @apply border-b border-b-gray my-6;
+}
+
+.search-modal-tabs-list {
+    @apply -mb-px flex items-center gap-4 text-sm;
+}
+
+.search-modal-tab {
+    @apply flex-1;
+}
+
+.search-modal-tab-link {
+    @apply relative flex items-center justify-center gap-2 px-1 py-3 uppercase text-main hover:text-gray;
+}
+
+.search-modal-tab-active {
+    @apply text-gray after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:bg-gray;
+}
+
+.search-modal-content {
+    @apply mt-6 overflow-auto;
+}
+
+.search-modal-image {
+    @apply h-80 w-full;
+}
+
+.search-modal-category-list {
+    @apply flex flex-col gap-4;
+}
+
+.search-modal-category-link {
+    @apply hover:text-white;
+}

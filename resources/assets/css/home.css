@@ -1,0 +1,299 @@
+.hero {
+    position: relative;
+    margin: -1rem;
+    padding-bottom: 1rem;
+    margin-top: -4rem;
+    overflow: hidden;
+}
+
+.hero-container {
+    background-color: #000;
+    display: grid;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.hero-content {
+    margin-bottom: 0.5rem;
+    color: gray;
+    text-align: center;
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    font-weight: 800;
+    display: grid;
+    z-index: 10;
+    width: 100%;
+    gap: 0.5rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.hero-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: clamp(45px, 7vw, 70px);
+    font-size: clamp(0.8rem, 0.9vw + 0.4rem, 1.15rem);
+    padding: clamp(0.2em, 0.25vw + 0.1em, 0.9em) clamp(0.4em, 1.8vw + 0.8em, 1.8em);
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    position: relative;
+    color: var(--main);
+    overflow: hidden;
+    background-size: 100% 200%;
+    background-position: top;
+    transition: background-position 0.6s ease-in-out, color 0.4s ease-in-out;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.hero-btn:hover {
+    color: var(--accent_dark);
+    border-color: var(--accent_dark);
+    background-position: bottom;
+    animation: wave 0.3s;
+}
+
+.hero-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    transition: background-color 0.4s ease-in-out;
+}
+
+.hero-btn:hover::before {
+    background-color: var(--main);
+}
+
+.hero-btn::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    bottom: 50%;
+    left: 0;
+    right: 0;
+    border-left: 2px solid var(--main);
+    border-right: 2px solid var(--main);
+    opacity: 0;
+    transition: top 0.4s ease, bottom 0.4s ease, opacity 0.6s ease;
+}
+
+.hero-btn:hover::after {
+    top: 0;
+    bottom: 0;
+    opacity: 1;
+}
+
+@keyframes wave {
+
+    0%,
+    100% {
+        background-image: linear-gradient(to bottom, black 50%, var(--main) 50%);
+    }
+
+    50% {
+        background-image: linear-gradient(to bottom, black 40%, var(--main) 60%);
+    }
+}
+
+@media (min-width: 640px) {
+    .hero-content {
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .hero {
+        margin: -2rem;
+        padding-bottom: 2rem;
+    }
+
+    .hero-container {
+        max-height: 100vh;
+        padding-bottom: 2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-content {
+        gap: 2rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    .hero {
+        margin: -4rem;
+        padding-bottom: 4rem;
+    }
+
+    .hero-container {
+        padding-bottom: 4rem;
+    }
+}
+
+#piepjack-hero {
+    height: 80vh;
+    background-image: url('@assets/img/hintergrund.jpg');
+    background-position: center;
+    background-size: cover;
+    position: relative;
+    background-repeat: no-repeat;
+
+    .view-all {
+        border: 1px solid white;
+        background-color: transparent;
+        transition: color 0.4s ease-in-out;
+    }
+
+    @media (min-width:1200px) {
+        background-image: url('@assets/img/hintergrund-wide.jpg');
+    }
+
+    @media (max-width:1200px) {
+        background-image: url('@assets/img/hintergrund-tablet.jpg');
+    }
+
+    @media (max-width:768px) {
+        /* height: 70vh; */
+        background-image: url('@assets/img/hintergrund-mobile-2.jpg');
+    }
+}
+
+#piepjack-hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    /* Adjust the opacity here */
+    z-index: 1;
+}
+
+
+
+.home-categories-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 1rem;
+    column-gap: 2rem;
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 1.5rem;
+    line-height: 2rem;
+}
+
+.home-categories-item {
+    overflow: hidden;
+    position: relative;
+}
+
+.home-categories-item-content {
+    transition-property: transform;
+    transition-duration: 500ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.home-categories-item-content:hover {
+    transform: scale(1.1);
+}
+
+.home-categories-item-image {
+    filter: brightness(0.75);
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.home-categories-item-title {
+    position: relative;
+    left: 1.25rem;
+    bottom: 2.5rem;
+    margin-bottom: 0px;
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+.home-products-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.home-products-error {
+    color: #ef4444;
+}
+
+.home-products-list {
+    width: 100%;
+    display: grid;
+    column-gap: 0.75rem;
+    row-gap: 3rem;
+    background-color: var(--accent);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-products-item {
+    list-style-type: none;
+    display: grid;
+    justify-content: center;
+}
+
+@media (min-width: 640px) {
+    /* No sm-specific overrides from the provided snippet that differ from base */
+}
+
+@media (min-width: 768px) {
+    .home-categories-container {
+        row-gap: 2rem;
+        column-gap: 4rem;
+    }
+
+    .home-categories-item-title {
+        font-size: 1.5rem;
+        line-height: 2rem;
+        left: 3rem;
+        bottom: 4rem;
+    }
+
+    .home-products-list {
+        column-gap: 1.25rem;
+        row-gap: 1.5rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .home-categories-container {
+        gap: 2.5rem;
+    }
+
+    .home-products-list {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .home-products-list {
+        column-gap: 1.75rem;
+        row-gap: 1.25rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    .home-categories-container {
+        gap: 4rem;
+    }
+
+    .home-products-list {
+        row-gap: 2rem;
+    }
+}

@@ -1,0 +1,79 @@
+@reference './app.css';
+
+.accordion-table-container {
+    @apply pt-3 text-xs;
+}
+
+.accordion-table {
+    @apply overflow-auto;
+}
+
+.accordion-table th,
+.accordion-table td {
+    @apply p-1.5 text-left border border-gray;
+}
+
+.accordion-table td span {
+    @apply flex items-center gap-2 flex-wrap justify-center;
+}
+
+
+/* General table styles */
+.accordion-table th,
+.accordion-table td {
+    @apply p-1.5 text-left border border-gray;
+}
+
+/* Responsive table styles */
+@media (max-width: 768px) {
+    .accordion-table table {
+        width: 100%;
+    }
+
+    /* Hide table headers on small screens */
+    .accordion-table thead tr {
+        display: none;
+    }
+
+    /* Style table rows as blocks */
+    .accordion-table tbody tr {
+        margin-bottom: 1rem;
+        display: block;
+        border: 1px solid #ddd;
+        padding: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Style table cells as key-value pairs */
+    .accordion-table tbody td {
+        display: block;
+        text-align: start;
+        font-size: 0.9rem;
+        padding: 0.5rem 0;
+        border: none;
+    }
+
+    /* Display data labels from 'data-label' attribute */
+    .accordion-table tbody td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        margin-right: 0.5rem;
+    }
+}
+
+.country-flag {
+    width: 15px;
+    height: auto;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+    .country-flag {
+        width: 16px;
+        margin-right: 4px;
+    }
+}

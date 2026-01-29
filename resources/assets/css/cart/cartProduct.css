@@ -1,0 +1,71 @@
+@reference '../app.css';
+
+.cart-product-product {
+    @apply p-3;
+}
+
+.cart-product-product-info {
+    @apply flex flex-col md:flex-row items-center gap-4;
+}
+
+.cart-product-product-image {
+    @apply w-24 object-cover;
+}
+
+.cart-product-product-name {
+    @apply font-semibold;
+}
+
+.cart-product-product-options {
+    @apply flex flex-row items-start gap-2 text-sm;
+}
+
+.cart-product-product-id,
+.cart-product-option-name,
+.cart-product-option-value {
+    @apply opacity-55;
+}
+
+.cart-product-product-price {
+    @apply opacity-55;
+}
+
+
+
+.cart-product-total {
+    @apply p-3 text-main hidden sm:table-cell;
+}
+
+@media (min-width: 640px) {
+    table {
+        @apply border-collapse collapse;
+        @apply w-full;
+    }
+}
+
+thead {
+    @apply bg-[#f7f7f7];
+}
+
+thead th {
+    @apply uppercase;
+    @apply border-0;
+    @apply text-xs;
+}
+
+tbody td {
+    @apply border-0;
+    @apply p-3;
+}
+
+tbody tr {
+    @apply border-b border-gray;
+}
+
+button:hover {
+    @apply bg-gray cursor-pointer;
+}
+
+button:focus {
+    @apply outline-none;
+}

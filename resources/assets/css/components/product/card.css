@@ -1,0 +1,36 @@
+@reference "../../app.css";
+
+.product-card {
+    @apply ps-3 flex items-start gap-3 m-4 ms-0 relative;
+}
+
+.product-image {
+    @apply w-24 object-cover;
+}
+
+.product-details {
+    @apply grow flex flex-col items-start gap-2 text-xs max-w-[70%];
+}
+
+.product-id,
+.option-name,
+.option-value,
+.product-price {
+    @apply opacity-55;
+}
+
+.product-options {
+    @apply flex flex-wrap gap-4;
+}
+
+.option-item {
+    @apply flex flex-row gap-2;
+}
+
+.add-to-cart {
+    @apply underline;
+}
+
+.remove-item {
+    @apply text-xs underline text-center py-1 absolute end-0 capitalize;
+}

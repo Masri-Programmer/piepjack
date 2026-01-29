@@ -1,0 +1,60 @@
+@reference '../app.css';
+
+.stepper-container {
+    @apply relative hidden md:block;
+}
+
+.stepper-background {
+    @apply absolute inset-x-0 hidden xl:px-44 top-2 md:block md:px-20 lg:px-28;
+}
+
+.stepper-svg {
+    @apply w-full;
+}
+
+.stepper-path {
+    @apply stroke-current text-gray-300;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 1 12;
+}
+
+.stepper-grid {
+    @apply relative grid grid-cols-1 text-center gap-y-8 sm:gap-y-10 md:gap-y-12 md:grid-cols-3 gap-x-12;
+}
+
+.stepper-step {
+    @apply cursor-pointer;
+}
+
+.stepper-step-inner {
+    @apply flex items-center justify-center w-16 h-16 mx-auto rounded-full shadow;
+}
+
+.stepper-step-active {
+    @apply bg-accent dark:bg-gray-main border-2 border-main dark:border-main;
+}
+
+.stepper-step-inactive {
+    @apply bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700;
+}
+
+.stepper-step-number {
+    @apply text-xl font-semibold;
+}
+
+.stepper-step-number-active {
+    @apply text-main;
+}
+
+.stepper-step-number-inactive {
+    @apply text-gray;
+}
+
+.stepper-title {
+    @apply mt-4 sm:mt-6 text-xl font-semibold leading-tight text-gray-900 dark:text-white md:mt-10;
+}
+
+.stepper-description {
+    @apply mt-3 sm:mt-4 text-base text-gray-600 dark:text-gray-400;
+}

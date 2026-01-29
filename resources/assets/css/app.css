@@ -1,0 +1,36 @@
+
+
+@import './style.css';
+@import './home.css';
+@import './global.css';
+@import "tailwindcss";
+@config "../../../tailwind.config.js";
+
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    } }
+
+@font-face {
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    font-family: "AvenirNext-Regular";
+    src: url("../fonts/AvenirNextLTPro-Regular.otf") format("opentype");
+}
+
+@font-face {
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    font-family: "mustica-SemiBold";
+    src: url("../fonts/MusticaPro-SemiBold.otf") format("opentype");
+}
+
+body {
+    font-family: "AvenirNext-Regular";
+}

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["resources/*"],
+      "@lib/*": ["resources/js/lib/*"],
+      "@assets/*": ["resources/assets/*"],
+      "@img/*": ["resources/assets/img/*"],
+      "@components/*": ["resources/js/components/*"],
+      "@pages/*": ["resources/js/pages/*"],
+      "@layouts/*": ["resources/js/layouts/*"],
+      "@ui/*": ["resources/js/components/ui/*"],
+      "@/lib/utils": ["resources/js/lib/utils.js"]
+    },
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "preserve"
+  },
+  "include": [
+    "resources/**/*.js",
+    "resources/**/*.vue",
+    "resources/**/*.ts"
+  ],
+  "exclude": ["node_modules", "public"]
+}

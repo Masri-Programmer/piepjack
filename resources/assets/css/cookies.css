@@ -1,0 +1,16 @@
+@reference "./app.css";
+
+.cookie-notification {
+    @apply fixed bottom-0 w-full flex items-center justify-between px-5 py-2 z-50 tracking-normal bg-main text-sm;
+}
+
+.cookie-text {
+    @apply text-accent text-xs md:text-sm;
+}
+
+.cookie-link {
+    @apply underline opacity-60;
+}
+
+.cookie-button {
+    @apply bg-accent px-3 py-2 rounded border-0; }
