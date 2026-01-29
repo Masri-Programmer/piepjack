@@ -1,67 +1,95 @@
 @extends('emails.layout')
 
-@section('title', 'Auftragsbestätigung')
-@section('subtitle') #{{ $order->order_number }}@endsection
-@section('subtitle_2') Hallo {{ $user->first_name ?? '' }}, wir haben deine Bestellung erhalten und werden sie in Kürze
-bearbeiten.@endsection
+@section('title', 'Danke für deine Bestellung')
 
 @section('preheader')
-    Hallo {{ $user->first_name ?? '' }}, wir haben deine Bestellung erhalten und werden sie in Kürze bearbeiten.
+    Hallo {{ $user->first_name ?? '' }}, wir haben deine Bestellung #{{ $order->order_number }} erhalten.
 @endsection
 
 @section('content')
-    {{-- Call to Action Button --}}
+    {{-- Order Details Grid --}}
     <tr>
-        <td align="center" style="padding: 0 30px 30px 30px;">
+        <td style="padding: 40px 40px 20px 40px;">
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
                 <tr>
-                    <td align="center">
-                        <table border="0" cellspacing="0" cellpadding="0">
-                            <tr>
-                                <td align="center" style="border-radius: 5px;" bgcolor="#dddee0">
-                                    <a href="{{ config('app.url') }}/track-order/{{ $order->order_number }}" target="_blank"
-                                        style="font-size: 14px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #171717; text-decoration: none; text-transform: uppercase; font-weight: bold; border-radius: 5px; padding: 14px 25px; border: 1px solid #dddee0; display: inline-block;">Bestellung
-                                        ansehen</a>
-                                </td>
-                            </tr>
-                        </table>
+                    <td colspan="2"
+                        style="padding-bottom: 15px; border-bottom: 1px solid #eeeeee; font-size: 16px; font-weight: bold; color: #111111;">
+                        Bestelldetails <span class="accent-color" style="float: right;">#{{ $order->order_number }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    {{-- Left Column --}}
+                    <td valign="top" width="50%" style="padding-top: 15px; padding-right: 10px;">
+                        <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">Bestellung:</p>
+                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">#{{ $order->order_number }}</p>
+
+                        <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">Kunde:</p>
+                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">{{ $user->first_name }}
+                            {{ $user->last_name }}
+                        </p>
+                    </td>
+                    {{-- Right Column --}}
+                    <td valign="top" width="50%" style="padding-top: 15px; padding-left: 10px;">
+                        <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">Bestelldatum:</p>
+                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">
+                            {{ $order->created_at->format('d. F Y') }}
+                        </p>
+
+                        <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">E-Mail:</p>
+                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">{{ $user->email }}</p>
                     </td>
                 </tr>
             </table>
         </td>
     </tr>
 
-    {{-- Order Summary --}}
+    {{-- Product Table Headers --}}
     <tr>
-        <td style="padding: 0 30px;">
+        <td style="padding: 0 40px;">
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                {{-- Header --}}
-                <tr>
-                    <td class="section-header"
-                        style="padding-bottom: 20px; border-bottom: 1px solid #444444; color: #f5f5f5; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 20px; font-weight: bold;">
-                        Bestellübersicht
-                    </td>
+                <tr style="background-color: #f3f4f6;">
+                    <td style="padding: 10px; font-size: 12px; font-weight: bold; color: #111111; width: 50%;">Produkt</td>
+                    <td
+                        style="padding: 10px; font-size: 12px; font-weight: bold; color: #111111; text-align: center; width: 15%;">
+                        Menge</td>
+                    <td
+                        style="padding: 10px; font-size: 12px; font-weight: bold; color: #111111; text-align: right; width: 15%;">
+                        Preis</td>
+                    <td
+                        style="padding: 10px; font-size: 12px; font-weight: bold; color: #111111; text-align: right; width: 20%;">
+                        Total</td>
                 </tr>
-                {{-- Products Loop --}}
-                {{-- FIX: The product loop is now simpler as `$products` contains all needed data. --}}
-                @foreach ($products as $product)
-                    @include('emails.products', ['product' => $product])
+
+                {{-- Loop Products --}}
+                @foreach ($products as $index => $product)
+                    {{-- Pass index to stripe rows if needed, or keep clean white --}}
+                    @include('emails.products', ['product' => $product, 'last' => $loop->last])
                 @endforeach
-            </table>
-        </td>
-    </tr>
 
-    {{-- Totals --}}
-    <tr>
-        <td style="padding: 20px 30px;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                {{-- Totals Section --}}
                 <tr>
-                    <td width="75%" align="left"
-                        style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; color: #f5f5f5; padding-top: 10px;">
-                        Gesamtsumme
+                    <td colspan="4" style="padding-top: 15px; border-top: 1px solid #eeeeee;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td style="padding: 5px 10px; font-size: 13px; color: #666666; text-align: right;">Zwischensumme</td>
+                    <td style="padding: 5px 10px; font-size: 13px; color: #111111; text-align: right; font-weight: bold;">
+                        €{{ number_format($order->total_price, 2) }}
                     </td>
-                    <td width="25%" align="right"
-                        style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; color: #f5f5f5; padding-top: 10px;">
+                </tr>
+                {{-- Assuming tax is part of total or needs calculation, simplistic view here --}}
+                <tr>
+                    <td colspan="2"></td>
+                    <td style="padding: 5px 10px; font-size: 13px; color: #666666; text-align: right;">Versand</td>
+                    <td style="padding: 5px 10px; font-size: 13px; color: #111111; text-align: right;">Standard</td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td
+                        style="padding: 10px; font-size: 15px; color: #111111; text-align: right; font-weight: bold; border-top: 1px solid #eeeeee; margin-top: 5px;">
+                        Gesamtbetrag</td>
+                    <td class="accent-color"
+                        style="padding: 10px; font-size: 15px; text-align: right; font-weight: bold; border-top: 1px solid #eeeeee; margin-top: 5px;">
                         €{{ number_format($order->total_price, 2) }}
                     </td>
                 </tr>
@@ -69,20 +97,33 @@ bearbeiten.@endsection
         </td>
     </tr>
 
-    {{-- Shipping Address --}}
+    {{-- Bottom Info (Payment & Shipping) --}}
     <tr>
-        <td style="padding: 20px 30px; border-top: 1px solid #444444;">
-            <h3
-                style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 20px; font-weight: bold; color: #f5f5f5; margin:0 0 10px 0;">
-                Lieferadresse</h3>
-            {{-- FIX: Use the separate $user and $address objects to display details. --}}
-            <p
-                style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; color: #dddee0; margin: 0;">
-                {{ $user->first_name }} {{ $user->last_name }}<br>
-                {{ $address->street_address }}<br>
-                {{ $address->postal_code }} {{ $address->city }}<br>
-                {{ $address->state_province }}, {{ $address->country_name }}
-            </p>
+        <td style="padding: 30px 40px 40px 40px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td
+                        style="padding-bottom: 10px; border-bottom: 1px solid #eeeeee; font-size: 14px; font-weight: bold; color: #111111;">
+                        Zahlung & Versand
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 15px; font-size: 13px; line-height: 1.6; color: #666666;">
+                        <strong>Lieferadresse:</strong><br>
+                        {{ $address->street_address }}<br>
+                        {{ $address->postal_code }} {{ $address->city }}<br>
+                        {{ $address->country_name }}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 10px;">
+                        <a href="{{ env('APP_URL') }}/track-order/{{ $order->order_number }}"
+                            style="font-size: 13px; color: #4f46e5; text-decoration: none; font-weight: bold;">
+                            Status ansehen &rarr;
+                        </a>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
 @endsection
