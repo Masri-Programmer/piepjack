@@ -40,6 +40,6 @@ return [
         ],
     ],
 
-    'frontend_url' => env('VITE_FRONTEND_URL'),
+    'frontend_url' => env('APP_URL'),
 
 ];
