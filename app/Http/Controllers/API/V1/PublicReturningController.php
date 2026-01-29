@@ -252,7 +252,7 @@ class PublicReturningController extends Controller
                 'product_name' => $productItem->product->name,
                 'quantity' => $returnItem->quantity,
                 'price_per_item' => $orderProduct->price_per_item ?? null,
-                'image' => $productItem->image ?? asset('images/logo_new_gray_bg_black.jpeg'),
+                'image' => $productItem->image ?? config('services.branding.logo_url'),
                 'options' => $productItem->options->map(fn($option) => [
                     'name' => optional($option->variation)->name,
                     'value' => $option->value,

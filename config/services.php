@@ -40,6 +40,10 @@ return [
         ],
     ],
 
+    'branding' => [
+        'logo_url' => 'https://piepjack-clothing.de/logo_new_gray_bg_black.jpeg',
+    ],
+
     'frontend_url' => env('APP_URL'),
 
 ];

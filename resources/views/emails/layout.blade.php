@@ -65,8 +65,8 @@
                         <td align="center" style="padding: 40px 0 20px 0;">
                             {{-- Assuming you have a dark version of the logo for white paper, otherwise use the
                             existing one --}}
-                            <img src="https://testing.piepjack-clothing.de/images/logo_new_gray_bg_black.jpeg"
-                                alt="Piepjack Clothing" width="120" style="display: block; width: 120px;">
+                            <img src="{{ config('services.branding.logo_url') }}" alt="Piepjack Clothing" width="120"
+                                style="display: block; width: 120px;">
                         </td>
                     </tr>
 

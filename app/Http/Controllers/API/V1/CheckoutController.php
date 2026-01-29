@@ -144,7 +144,7 @@ class CheckoutController extends Controller
                     'currency' => 'eur',
                     'product_data' => [
                         'name' => $productItem->product->name,
-                        'images' => [$productItem->image ?? asset('images/logo_new_gray_bg_black.jpeg')],
+                        'images' => [$productItem->image ?? config('services.branding.logo_url')],
                     ],
                     'unit_amount' => $pricePerItem * 100,
                 ],
@@ -309,7 +309,7 @@ class CheckoutController extends Controller
                 $productItem = $orderProduct->productItem;
                 return [
                     'name' => $productItem->product->name,
-                    'image' => $productItem->image ?? asset('images/logo_new_gray_bg_black.jpeg'),
+                    'image' => $productItem->image ?? config('services.branding.logo_url'),
                     'quantity' => $orderProduct->quantity,
                     'price_per_item' => $orderProduct->price_per_item,
                     'options' => $productItem->options->map(fn($option) => [
