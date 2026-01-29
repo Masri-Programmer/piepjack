@@ -32,7 +32,7 @@
 
             <!-- Processing State -->
             <div v-else-if="orderStatus === 'pending'" class="text-center">
-                <Spinner />
+                <Spinner class="grid justify-center" />
                 <h3 class="text-xl mt-4 font-semibold text-accent">
                     {{ $t("validation.success.processingTitle") }}
                 </h3>
@@ -54,11 +54,11 @@
                         {{ $t("validation.success.timeoutCheckEmail") }}
                     </p>
                 </div>
-                <Spinner v-else />
+                <Spinner class="grid justify-center" v-else />
             </div>
         </div>
     </div>
-    <div v-else><Spinner /></div>
+    <div v-else class="grid justify-center"><Spinner /></div>
 
     <template v-if="data?.data">
         <template v-for="c in data.data">
@@ -97,14 +97,13 @@ const { data: orderData, isError } = useQuery({
         if (data?.data?.status === "paid" || isTimeout.value) {
             return false;
         }
-        return 3000; // Poll every 3 seconds
+        return 3000;
     },
     retry: false,
 });
 
 const orderStatus = computed(() => orderData.value?.data?.status || "pending");
 
-// Timeout logic: stop polling after 60 seconds if still pending
 onMounted(() => {
     if (orderId) {
         cartState.value.cartItems = [];
@@ -118,7 +117,7 @@ onMounted(() => {
 
 watch(orderStatus, (newStatus) => {
     if (newStatus === "paid") {
-        isTimeout.value = false; // Ensure timeout message doesn't show if it eventually pays
+        isTimeout.value = false;
     }
 });
 </script>

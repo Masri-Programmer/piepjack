@@ -58,5 +58,12 @@ export default {
         thankYou: "Vielen Dank für Ihre sichere Online-Zahlung.",
         checkEmail:
             "Sie können Ihre E-Mails überprüfen, um weitere Informationen zu Ihrer {payment} zu erhalten.",
+        processingTitle: "Zahlung wird verarbeitet...",
+        processingDesc:
+            "Bitte warten Sie, während wir Ihre Zahlung bestätigen.",
+        timeoutTitle: "Bestellung erhalten",
+        timeoutDesc:
+            "Wir haben Ihre Bestellung erhalten, aber die Zahlungsbestätigung dauert länger als erwartet.",
+        timeoutCheckEmail: "Bitte überprüfen Sie Ihre E-Mails auf Updates.",
     },
 };

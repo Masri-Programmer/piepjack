@@ -33,6 +33,12 @@ export default {
         thankYou: "Thank you for completing your secure online payment.",
         checkEmail:
             "You can check your email for more info about your {payment}.",
+        processingTitle: "Processing Payment...",
+        processingDesc: "Please wait while we confirm your payment.",
+        timeoutTitle: "Order Received",
+        timeoutDesc:
+            "We received your order, but payment confirmation is taking longer than expected.",
+        timeoutCheckEmail: "Please check your email for updates.",
     },
     form: {
         email: "Email address",
