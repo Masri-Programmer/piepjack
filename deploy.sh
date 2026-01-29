@@ -17,6 +17,7 @@ php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+rm -rf storage/framework/cache/data/
 php artisan up
 
 echo "✅ Server tasks complete!"
