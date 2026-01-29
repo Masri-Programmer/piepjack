@@ -22,22 +22,30 @@
             >
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="border border-gray px-4 py-2 text-center">
+                        <th
+                            class="border border-gray px-4 py-2 text-center text-accent"
+                        >
                             Land
                         </th>
-                        <th class="border border-gray px-4 py-2 text-center">
+                        <th
+                            class="border border-gray px-4 py-2 text-center text-accent"
+                        >
                             Lieferung
                         </th>
-                        <th class="border border-gray px-4 py-2 text-center">
+                        <th
+                            class="border border-gray px-4 py-2 text-center text-accent"
+                        >
                             Kosten
                         </th>
-                        <th class="border border-gray px-4 py-2 text-center">
+                        <th
+                            class="border border-gray px-4 py-2 text-center text-accent"
+                        >
                             Kostenlose Lieferung
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50 hover:text-accent">
                         <td class="border border-gray px-4 py-2 text-center">
                             Deutschland
                         </td>
@@ -51,7 +59,7 @@
                             bei Bestellungen über €70
                         </td>
                     </tr>
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50 hover:text-accent">
                         <td class="border border-gray px-4 py-2 text-center">
                             Österreich
                         </td>
@@ -65,7 +73,7 @@
                             bei Bestellungen über €70
                         </td>
                     </tr>
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50 hover:text-accent">
                         <td class="border border-gray px-4 py-2 text-center">
                             Schweiz & andere EU-Länder
                         </td>

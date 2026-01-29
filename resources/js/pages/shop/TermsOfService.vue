@@ -36,6 +36,22 @@
                 Unsere Angebote im Internet sind unverbindlich und kein
                 verbindliches Angebot zum Abschluss eines Vertrages.
             </p>
+
+            <p class="font-bold mt-4">§ 3 Umtausch und Rückgabe</p>
+            <p>
+                (1) Ein Umtausch ist möglich, stellt jedoch eine freiwillige
+                Serviceleistung dar. Ein Anspruch auf Umtausch besteht nicht.
+            </p>
+            <p>
+                (2) Bei mangelhafter oder beschädigter Ware übernehmen wir die
+                Rücksendekosten und leisten Ersatz oder Erstattung.
+            </p>
+            <p>
+                (3) Aus hygienischen Gründen sind versiegelte Waren vom Widerruf
+                ausgeschlossen, sofern die Versiegelung nach der Lieferung
+                entfernt wurde.
+            </p>
+
             <p>
                 (2) Sie können ein verbindliches Kaufangebot (Bestellung) über
                 das Online-Warenkorbsystem abgeben. Dabei werden die zum Kauf

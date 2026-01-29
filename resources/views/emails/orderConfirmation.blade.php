@@ -125,5 +125,26 @@
                 </tr>
             </table>
         </td>
+    <tr>
+        <td style="padding: 20px 40px; border-top: 1px solid #eeeeee;">
+            <p style="font-size: 14px; font-weight: bold; color: #111111; margin-bottom: 10px;">Widerrufsbelehrung</p>
+            <p style="font-size: 12px; color: #666666; line-height: 1.5;">
+                <strong>Widerrufsrecht</strong><br>
+                Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen. Die
+                Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter, der nicht
+                der Beförderer ist, die Waren in Besitz genommen haben bzw. hat.<br><br>
+                Um Ihr Widerrufsrecht auszuüben, müssen Sie uns mittels einer eindeutigen Erklärung (z. B. ein mit der Post
+                versandter Brief oder E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.<br><br>
+                <strong>Folgen des Widerrufs</strong><br>
+                Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben,
+                einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten, die sich daraus ergeben, dass Sie
+                eine andere Art der Lieferung als die von uns angebotene, günstigste Standardlieferung gewählt haben),
+                unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über
+                Ihren Widerruf dieses Vertrags bei uns eingegangen ist.<br><br>
+                Wir können die Rückzahlung verweigern, bis wir die Waren wieder zurückerhalten haben oder bis Sie den
+                Nachweis erbracht haben, dass Sie die Waren zurückgesandt haben.<br><br>
+                Der Kunde trägt die unmittelbaren Kosten der Rücksendung der Waren.
+            </p>
+        </td>
     </tr>
 @endsection

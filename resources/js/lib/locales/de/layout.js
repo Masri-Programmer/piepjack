@@ -6,10 +6,11 @@ export default {
         days: "Tage",
         hours: "Stunden",
         minutes: "Minuten",
-        seconds: "Sekunden"
+        seconds: "Sekunden",
     },
     footer: {
         productOverview: "PRODUKTÜBERSICHT",
+        widerrufsbelehrung: "Widerrufsbelehrung",
         support: "UNTERSTÜTZUNG",
         information: "INFORMATIONEN",
         shopAll: "Alle Produkte",
@@ -30,6 +31,6 @@ export default {
         oder: "oder",
         widerrufsrecht: "Widerrufsrecht",
         versand: "Versand",
-        datenschutzerklaerung: "Datenschutzerklärung"
+        datenschutzerklaerung: "Datenschutzerklärung",
     },
-}
+};

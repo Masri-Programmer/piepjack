@@ -124,6 +124,6 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" "bash ${REMOTE_DEPLOY_SCRIPT}"
 
 # --- STEP 7: CLEANUP & RELOAD ---
 echo "🔄 Reloading SSR Process..."
-ssh "${REMOTE_USER}@${REMOTE_HOST}" "rm -rf ${REMOTE_APP_PATH}/public/build_backup && pm2 reload $SSR_PROCESS" 
+ssh "${REMOTE_USER}@${REMOTE_HOST}" "source ~/.profile && rm -rf ${REMOTE_APP_PATH}/public/build_backup && pm2 reload $SSR_PROCESS" 
 
 echo "✅ DEPLOYMENT SUCCESSFUL!"
