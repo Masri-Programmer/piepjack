@@ -18,10 +18,7 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Sync translations on server if needed (Comment out if not using translation package)
-# php artisan translate:sync --all 
-
-# Bring Online
+rm -rf storage/framework/cache/data/
 php artisan up
 
 echo "✅ Server tasks complete!"
