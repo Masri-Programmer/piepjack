@@ -1,238 +1,243 @@
 {
-  "header": {
-    "readyForDrop": "READY FOR A NEW <strong>DROP</strong> ?",
-    "newCollectionDropsIn": "OUR NEW COLLECTION DROPS IN",
-    "countdown": "{days}D : {hours}H : {minutes}M",
-    "days": "days",
-    "hours": "hours",
-    "minutes": "minutes",
-    "seconds": "seconds"
-  },
-  "product": {
-    "size": "Size",
-    "new": "new",
-    "price": "49.99€",
-    "desc": "DESCRIPTION",
-    "addToCart": "Add to cart",
-    "otherProductPrice": "69.99€",
-    "secureAndFast": "Secure and fast",
-    "PairsWellWith": "PAIRS WELL WITH",
-    "title": "FOOTBALL MESH SHORTS PINK",
-    "ab": "From",
-    "maximum_quantity": "The product has reached it's maximum quantity",
-    "notFound": "NO PRODUCTS FOUND",
-    "productOutofStock": "product Out of Stock",
-    "otherProductTitle": "MORE LOVE MESH JERSEY GREEN",
-    "creditAndMobile": "All credit cards & mobile payments",
-    "modelDescription": "Model is {height} cm tall weighs {weight} kg and wears size {size}.",
-    "shipping": "Shipping & Returns",
-    "polyester": "100% Polyester",
-    "embroideredPatch": "Embroidered Patch",
-    "wovenPatch": "Woven patch on waistband",
-    "femaleModel": "Female Model is {height} cm tall weighs {weight} kg and wears size {size}.",
-    "shippingInfo": {
-      "country": "Country",
-      "deliveryTime": "Delivery Time",
-      "shippingCost": "Shipping Cost",
-      "freeShipping": "Free Shipping",
-      "germany": "Germany",
-      "austria": "Austria",
-      "switzerland": "Switzerland & other European Countries",
-      "usa": "USA",
-      "restOfWorld": "Rest of the World",
-      "germanyDelivery": "2-4 working days",
-      "austriaDelivery": "2-4 working days",
-      "switzerlandDelivery": "3-5 working days",
-      "usaDelivery": "8-10 working days",
-      "restWorldDelivery": "8-10 working days",
-      "returnsInfo": "You can return your order within 14 days through our",
-      "returnsPortal": "returns portal"
-    }
-  },
-  "titles": {
-    "peopleAlsoLiked": "PEOPLE ALSO LIKED",
-    "return&exchange": "Return your products from Piepjack-Clothing here"
-  },
-  "menu": {
-    "shopAll": "SHOP ALL",
-    "mysteryBox": "MYSTERY BOX",
-    "collections": "COLLECTIONS",
-    "bestseller": "BESTSELLER",
-    "aboutUs": "ABOUT US",
-    "home": "HOME",
-    "close": "Close"
-  },
-  "categories": {
-    "jackets": "JACKETS",
-    "denim": "DENIM",
-    "zipper": "ZIPPER",
-    "tShirt": "T-SHIRT"
-  },
-  "footer": {
-    "productOverview": "PRODUCT OVERVIEW",
-    "support": "SUPPORT",
-    "information": "INFORMATION",
-    "shopAll": "Shop All",
-    "hoodiesZipper": "Hoodies & Zipper",
-    "jacketsVests": "Jackets & Vests",
-    "tShirtsLongsleeves": "T-Shirts & Longsleeves",
-    "pantsJoggers": "Pants & Joggers",
-    "shorts": "Shorts",
-    "accessories": "Accessories",
-    "faq": "FAQ",
-    "shipping": "Shipping",
-    "makeReturn": "Return and Exchange",
-    "trackOrder": "Track your Order",
-    "impressum": "Impressum",
-    "agb": "AGB",
-    "privacyPolicy": "Data protection",
-    "copyright": "© {year} - PIEPJACK - CLOTHING",
-    "oder": "or",
-    "widerrufsrecht": "Cancellation Policy",
-    "versand": "Shipping",
-    "datenschutzerklaerung": "Data Protection Declaration"
-  },
-  "error": {
-    "notFound": "404",
-    "message": "We could not find the page you were looking for. Please use the navigation or the button below to go back to our website.",
-    "continueShopping": "continue shopping"
-  },
-  "search": {
-    "title": "SEARCH",
-    "placeholder": "search...",
-    "locations": [
-      "Gar dameer - Italy",
-      "Gar da - Veneto - Italy",
-      "Gar da Hotel - Italy",
-      "Gar dena Resort - Italy"
-    ],
-    "tabs": ["Products", "Collections", "Pages"],
-    "productsContent": "Products content goes here",
-    "collectionsContent": "Collections content goes here",
-    "pagesContent": "Pages content goes here"
-  },
-  "cart": {
-    "checkout": "checkout",
-    "close": "Close",
-    "completeWith": "Complete With",
-    "freeShipping": "Super! Now enjoy your free shipping",
-    "product_invalid": "Product {id} is invalid and will be removed.",
-    "item_invalid": "Item {id} is invalid and will be removed.",
-    "guteWahl": "Good Choice!",
-    "inclTax": "incl. VAT",
-    "itemAdded": "Added {name} to cart successfully!",
-    "notReserved": "Items in the cart are not reserved",
-    "products": "Products",
-    "quantity": "Quantity",
-    "clearCart": "Are you sure you want to clear the cart?",
-    "remove": "remove",
-    "securePay": "Pay Securely",
-    "securePayPaypal": "Shop now.Pay in up to 30 days.",
-    "shippingCalc": "<span class=\"underline\">Shipping</span> calculated at checkout.",
-    "shippingFree": "Super! Now enjoy your <strong>free</strong> shipping",
-    "taxIncluded": "Tax included.",
-    "title": "Cart",
-    "total": "Total",
-    "totalAmount": "Total: {total}",
-    "yourItems": "Your selected items are now in your cart."
-  },
+    "header": {
+        "readyForDrop": "READY FOR A NEW <strong>DROP</strong> ?",
+        "newCollectionDropsIn": "OUR NEW COLLECTION DROPS IN",
+        "countdown": "{days}D : {hours}H : {minutes}M",
+        "days": "days",
+        "hours": "hours",
+        "minutes": "minutes",
+        "seconds": "seconds"
+    },
+    "product": {
+        "size": "Size",
+        "new": "new",
+        "price": "49.99€",
+        "desc": "DESCRIPTION",
+        "addToCart": "Add to cart",
+        "otherProductPrice": "69.99€",
+        "secureAndFast": "Secure and fast",
+        "PairsWellWith": "PAIRS WELL WITH",
+        "title": "FOOTBALL MESH SHORTS PINK",
+        "ab": "From",
+        "maximum_quantity": "The product has reached it's maximum quantity",
+        "notFound": "NO PRODUCTS FOUND",
+        "productOutofStock": "product Out of Stock",
+        "otherProductTitle": "MORE LOVE MESH JERSEY GREEN",
+        "creditAndMobile": "All credit cards & mobile payments",
+        "modelDescription": "Model is {height} cm tall weighs {weight} kg and wears size {size}.",
+        "shipping": "Shipping & Returns",
+        "polyester": "100% Polyester",
+        "embroideredPatch": "Embroidered Patch",
+        "wovenPatch": "Woven patch on waistband",
+        "femaleModel": "Female Model is {height} cm tall weighs {weight} kg and wears size {size}.",
+        "shippingInfo": {
+            "country": "Country",
+            "deliveryTime": "Delivery Time",
+            "shippingCost": "Shipping Cost",
+            "freeShipping": "Free Shipping",
+            "germany": "Germany",
+            "austria": "Austria",
+            "switzerland": "Switzerland & other European Countries",
+            "usa": "USA",
+            "restOfWorld": "Rest of the World",
+            "germanyDelivery": "2-4 working days",
+            "austriaDelivery": "2-4 working days",
+            "switzerlandDelivery": "3-5 working days",
+            "usaDelivery": "8-10 working days",
+            "restWorldDelivery": "8-10 working days",
+            "returnsInfo": "You can return your order within 14 days through our",
+            "returnsPortal": "returns portal"
+        }
+    },
+    "titles": {
+        "peopleAlsoLiked": "PEOPLE ALSO LIKED",
+        "return&exchange": "Return your products from Piepjack-Clothing here"
+    },
+    "menu": {
+        "shopAll": "SHOP ALL",
+        "mysteryBox": "MYSTERY BOX",
+        "collections": "COLLECTIONS",
+        "bestseller": "BESTSELLER",
+        "aboutUs": "ABOUT US",
+        "home": "HOME",
+        "close": "Close"
+    },
+    "categories": {
+        "jackets": "JACKETS",
+        "denim": "DENIM",
+        "zipper": "ZIPPER",
+        "tShirt": "T-SHIRT"
+    },
+    "footer": {
+        "productOverview": "PRODUCT OVERVIEW",
+        "support": "SUPPORT",
+        "information": "INFORMATION",
+        "shopAll": "Shop All",
+        "hoodiesZipper": "Hoodies & Zipper",
+        "jacketsVests": "Jackets & Vests",
+        "tShirtsLongsleeves": "T-Shirts & Longsleeves",
+        "pantsJoggers": "Pants & Joggers",
+        "shorts": "Shorts",
+        "accessories": "Accessories",
+        "faq": "FAQ",
+        "shipping": "Shipping",
+        "makeReturn": "Return and Exchange",
+        "trackOrder": "Track your Order",
+        "impressum": "Impressum",
+        "agb": "AGB",
+        "privacyPolicy": "Data protection",
+        "copyright": "© {year} - PIEPJACK - CLOTHING",
+        "oder": "or",
+        "widerrufsrecht": "Cancellation Policy",
+        "versand": "Shipping",
+        "datenschutzerklaerung": "Data Protection Declaration"
+    },
+    "error": {
+        "notFound": "404",
+        "message": "We could not find the page you were looking for. Please use the navigation or the button below to go back to our website.",
+        "continueShopping": "continue shopping"
+    },
+    "search": {
+        "title": "SEARCH",
+        "placeholder": "search...",
+        "locations": [
+            "Gar dameer - Italy",
+            "Gar da - Veneto - Italy",
+            "Gar da Hotel - Italy",
+            "Gar dena Resort - Italy"
+        ],
+        "tabs": ["Products", "Collections", "Pages"],
+        "productsContent": "Products content goes here",
+        "collectionsContent": "Collections content goes here",
+        "pagesContent": "Pages content goes here"
+    },
+    "cart": {
+        "checkout": "checkout",
+        "close": "Close",
+        "completeWith": "Complete With",
+        "freeShipping": "Super! Now enjoy your free shipping",
+        "product_invalid": "Product {id} is invalid and will be removed.",
+        "item_invalid": "Item {id} is invalid and will be removed.",
+        "guteWahl": "Good Choice!",
+        "inclTax": "incl. VAT",
+        "itemAdded": "Added {name} to cart successfully!",
+        "notReserved": "Items in the cart are not reserved",
+        "products": "Products",
+        "quantity": "Quantity",
+        "clearCart": "Are you sure you want to clear the cart?",
+        "remove": "remove",
+        "securePay": "Pay Securely",
+        "securePayPaypal": "Shop now.Pay in up to 30 days.",
+        "shippingCalc": "<span class=\"underline\">Shipping</span> calculated at checkout.",
+        "shippingFree": "Super! Now enjoy your <strong>free</strong> shipping",
+        "taxIncluded": "Tax included.",
+        "title": "Cart",
+        "total": "Total",
+        "totalAmount": "Total: {total}",
+        "yourItems": "Your selected items are now in your cart."
+    },
 
-  "forms": {
-    "emailLabel": "E-Mail",
-    "emailTooltip": "We'll use this email to send your order details.",
-    "contact": "Contact",
-    "deliveryAddress": "Delivery Address",
-    "emailPlaceholder": "Enter your email",
-    "subscribeLabel": "Receive news and offers via email",
-    "firstNameLabel": "First Name",
-    "firstNamePlaceholder": "Enter your first name",
-    "lastNameLabel": "Last Name",
-    "lastNamePlaceholder": "Enter your last name",
-    "addressLabel": "Address",
-    "addressPlaceholder": "Enter your address",
-    "zipLabel": "Postal Code",
-    "zipPlaceholder": "Enter your postal code",
-    "cityLabel": "City",
-    "cityPlaceholder": "Enter your city",
-    "phoneLabel": "Phone (optional)",
-    "phoneInfo": "If we have to contact you to order",
-    "phonePlaceholder": "Phone (optional)",
-    "backToCart": "Back to cart",
-    "continueToShipping": "Continue to shipping",
-    "landPlaceholder": "Please select a country",
-    "coupon": "Discount Code or gift Card",
-    "applyCode": "Apply Code"
-  },
-  "validation": {
-    "email": {
-      "required": "Please enter an email address",
-      "invalid": "Enter a valid email address"
+    "forms": {
+        "emailLabel": "E-Mail",
+        "emailTooltip": "We'll use this email to send your order details.",
+        "contact": "Contact",
+        "deliveryAddress": "Delivery Address",
+        "emailPlaceholder": "Enter your email",
+        "subscribeLabel": "Receive news and offers via email",
+        "firstNameLabel": "First Name",
+        "firstNamePlaceholder": "Enter your first name",
+        "lastNameLabel": "Last Name",
+        "lastNamePlaceholder": "Enter your last name",
+        "addressLabel": "Address",
+        "addressPlaceholder": "Enter your address",
+        "zipLabel": "Postal Code",
+        "zipPlaceholder": "Enter your postal code",
+        "cityLabel": "City",
+        "cityPlaceholder": "Enter your city",
+        "phoneLabel": "Phone (optional)",
+        "phoneInfo": "If we have to contact you to order",
+        "phonePlaceholder": "Phone (optional)",
+        "backToCart": "Back to cart",
+        "continueToShipping": "Continue to shipping",
+        "landPlaceholder": "Please select a country",
+        "coupon": "Discount Code or gift Card",
+        "applyCode": "Apply Code"
     },
-    "firstName": "Please enter a first name",
-    "lastName": "Please enter a last name",
-    "address": "Please enter an address",
-    "land": "Please select a country",
-    "zip": "Please enter a zip code",
-    "phone": "Format not available",
-    "city": "Please enter a city",
-    "error": "An error occurred"
-  },
-  "success": {
-    "title": "Payment Done!",
-    "thankYou": "Thank you for completing your secure online payment.",
-    "checkEmail": "You can check your email for more info about your order."
-  },
-  "return": {
-    "provide_reason": "Provide a reason for your return.",
-    "reason_placeholder": "Please provide a reason",
-    "back": "Back",
-    "next": "Next",
-    "reason": "Reason: {reason}",
-    "select_shipping": "CHOOSE SHIPPING PROVIDER",
-    "select_shipping_desc": "Select a transport service to return your packages",
-    "dhl": "DHL Parcel Shop",
-    "insurance": "Return Shipping Insurance",
-    "insurance_yes": "Yes, I want to add insurance",
-    "insurance_no": "No, I don't want to add insurance",
-    "insurance_info": "The coverage amount is {amount}€ and protects against damage or loss.",
-    "insurance_warning": "If the package is lost or damaged, you may lose your refund.",
-    "total_amount": "Total Amount: {total} €",
-    "terms": "I accept the terms and conditions.*",
-    "back_products": "Back to products",
-    "next_step": "Proceed to the next step"
-  },
-  "alerts": {
-    "orderNotFound": "Order not found.",
-    "fillAllFields": "Please fill out all fields.",
-    "selectAtLeastOneProduct": "Please select at least one product.",
-    "provideReason": "Please provide a reason for your return.",
-    "returnSuccess": "Return request succeeded",
-    "trackSuccess": "Order tracking initiated successfully"
-  },
-  "cookieNotification": {
-    "message": "This website uses cookies to ensure you get the best experience on our website.",
-    "learnMore": "Learn more",
-    "understood": "Got it"
-  },
-  "api": {
-    "get": {
-      "success": "{resource} retrieved successfully",
-      "error": "Failed to get {resource}"
+    "validation": {
+        "email": {
+            "required": "Please enter an email address",
+            "invalid": "Enter a valid email address"
+        },
+        "firstName": "Please enter a first name",
+        "lastName": "Please enter a last name",
+        "address": "Please enter an address",
+        "land": "Please select a country",
+        "zip": "Please enter a zip code",
+        "phone": "Format not available",
+        "city": "Please enter a city",
+        "error": "An error occurred"
     },
-    "post": {
-      "success": "{resource} created successfully",
-      "error": "Failed to create {resource}"
+    "success": {
+        "title": "Payment Done!",
+        "thankYou": "Thank you for completing your secure online payment.",
+        "checkEmail": "You can check your email for more info about your order.",
+        "processingTitle": "Processing Payment...",
+        "processingDesc": "Please wait while we confirm your payment.",
+        "timeoutTitle": "Order Received",
+        "timeoutDesc": "We received your order, but payment confirmation is taking longer than expected.",
+        "timeoutCheckEmail": "Please check your email for updates."
     },
-    "put": {
-      "success": "{resource} updated successfully",
-      "error": "Failed to update {resource}"
+    "return": {
+        "provide_reason": "Provide a reason for your return.",
+        "reason_placeholder": "Please provide a reason",
+        "back": "Back",
+        "next": "Next",
+        "reason": "Reason: {reason}",
+        "select_shipping": "CHOOSE SHIPPING PROVIDER",
+        "select_shipping_desc": "Select a transport service to return your packages",
+        "dhl": "DHL Parcel Shop",
+        "insurance": "Return Shipping Insurance",
+        "insurance_yes": "Yes, I want to add insurance",
+        "insurance_no": "No, I don't want to add insurance",
+        "insurance_info": "The coverage amount is {amount}€ and protects against damage or loss.",
+        "insurance_warning": "If the package is lost or damaged, you may lose your refund.",
+        "total_amount": "Total Amount: {total} €",
+        "terms": "I accept the terms and conditions.*",
+        "back_products": "Back to products",
+        "next_step": "Proceed to the next step"
     },
-    "delete": {
-      "cancel": "Delete {resource} cancelled",
-      "confirm": "Are you sure you want to delete {resource}",
-      "success": "{resource} deleted successfully",
-      "error": "Failed to delete {resource}"
+    "alerts": {
+        "orderNotFound": "Order not found.",
+        "fillAllFields": "Please fill out all fields.",
+        "selectAtLeastOneProduct": "Please select at least one product.",
+        "provideReason": "Please provide a reason for your return.",
+        "returnSuccess": "Return request succeeded",
+        "trackSuccess": "Order tracking initiated successfully"
     },
-    "error": "An error occurred"
-  }
+    "cookieNotification": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "learnMore": "Learn more",
+        "understood": "Got it"
+    },
+    "api": {
+        "get": {
+            "success": "{resource} retrieved successfully",
+            "error": "Failed to get {resource}"
+        },
+        "post": {
+            "success": "{resource} created successfully",
+            "error": "Failed to create {resource}"
+        },
+        "put": {
+            "success": "{resource} updated successfully",
+            "error": "Failed to update {resource}"
+        },
+        "delete": {
+            "cancel": "Delete {resource} cancelled",
+            "confirm": "Are you sure you want to delete {resource}",
+            "success": "{resource} deleted successfully",
+            "error": "Failed to delete {resource}"
+        },
+        "error": "An error occurred"
+    }
 }
