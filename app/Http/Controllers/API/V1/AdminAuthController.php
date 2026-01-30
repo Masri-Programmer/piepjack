@@ -63,34 +63,7 @@ class AdminAuthController extends Controller
         return response()->json($request->user()->only('id', 'first_name', 'last_name', 'email'));
     }
 
-    public function register(Request $request): JsonResponse
-    {
-        $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $adminRole = Role::where('name', 'Admin')->firstOrFail();
-        $user->roles()->attach($adminRole);
-
-        event(new Registered($user));
-
-        $token = $user->createToken('admin-token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user->only(['id', 'first_name', 'last_name', 'email']),
-            'token' => $token,
-        ], 201);
-    }
 
     public function logout(Request $request): Response
     {

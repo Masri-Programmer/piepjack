@@ -100,9 +100,9 @@ const applyPromoCode = () => {
             cartState.value.promoCode = "pickup";
             promoApplied.value = true;
             freeShipping.value = true;
-        } else {
-            promoApplied.value = false;
             promoDiscount.value = 10;
+        } else {
+            promoError.value = true;
         }
     } else {
         promoError.value = true;
