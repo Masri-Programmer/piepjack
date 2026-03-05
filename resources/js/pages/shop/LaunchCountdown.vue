@@ -324,7 +324,9 @@ const register = async () => {
         isSubmitting.value = false;
     }
 };
-
+// const { mutate: triggerOnlineNotification, isLoading } = apiQuery(
+//     "trigger-online-notification",
+// ).useStore();
 const updateCountdown = () => {
     const now = new Date().getTime();
     const distance = targetDate - now;
@@ -333,9 +335,9 @@ const updateCountdown = () => {
         if (!isLaunched.value) {
             isLaunched.value = true;
             triggerConfetti();
-            // Trigger backend notification emails
-            apiRequest("post", "/trigger-online-notification")
-                .catch((e) => console.error("Notification trigger failed", e));
+            apiRequest("post", "/trigger-online-notification").catch((e) =>
+                console.error("Notification trigger failed", e),
+            );
         }
         isHeartbeat.value = false;
         countdown.value = { days: 0, hours: 0, minutes: 0, seconds: 0 };

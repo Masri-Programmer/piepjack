@@ -56,12 +56,13 @@ class LaunchRegistrationController extends Controller
     public function triggerOnlineNotification(Request $request)
     {
         $launchDate = config('app.launch_date');
-        $now = Carbon::now();
-        $target = Carbon::parse($launchDate);
+        $now = Carbon::now('Europe/Berlin');
+        $target = Carbon::parse($launchDate, 'Europe/Berlin');
 
         \Illuminate\Support\Facades\Log::info("triggerOnlineNotification called. Now: {$now}, Target: {$target}");
-        
-        if ($now->lt($target)) {
+
+        // Add a 1-minute buffer for client-server drift
+        if ($now->addMinute()->lt($target)) {
             \Illuminate\Support\Facades\Log::warning("Launch date not reached yet. Difference: " . $now->diffForHumans($target));
             return response()->json([
                 'message' => 'Launch date has not been reached yet.',
@@ -76,7 +77,8 @@ class LaunchRegistrationController extends Controller
 
         if ($pendingCount === 0) {
             return response()->json([
-                'message' => 'All registrants have already been notified.'
+                'message' => 'All registrants have already been notified.',
+                'count' => 0
             ]);
         }
 
