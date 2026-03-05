@@ -9,6 +9,7 @@ import AdminAppLayout from "./layouts/admin/AppLayout.vue";
 import AdminLoginLayout from "./layouts/admin/Login.vue";
 import AdminNotFoundLayout from "./layouts/admin/NotFound.vue";
 import PublicNotFoundLayout from "./layouts/shop/NotFound.vue";
+import LaunchCountdown from "./pages/shop/LaunchCountdown.vue";
 import { useArea } from "@lib/useArea.js";
 import { setAppArea } from "@lib/useArea";
 const { updateArea } = useArea();
@@ -339,6 +340,12 @@ const routes = [
     },
 
     {
+        path: "/launch",
+        name: "Launch",
+        component: LaunchCountdown,
+        meta: { title: "Launching Soon" },
+    },
+    {
         path: "/:pathMatch(.*)*",
         name: "GlobalNotFound",
         component: PublicNotFoundLayout,
@@ -378,6 +385,33 @@ router.beforeEach((to, from, next) => {
         (record) => record.meta.requiresGuest,
     );
     const loggedIn = isAuthenticated();
+
+    const targetDate = new Date(import.meta.env.VITE_LAUNCH_DATE || "2026-05-01T18:00:00").getTime();
+
+    const now = new Date().getTime();
+    const isPastLaunch = now >= targetDate;
+    const isLaunchEnabled = import.meta.env.VITE_LAUNCH_PAGE_ENABLED === "true";
+    const isBypass = to.query.preview === "true";
+
+    // Show launch page ONLY if it's enabled in ENV AND we haven't reached the date yet.
+    // However, if we've passed the date, we never show it.
+    const shouldShowLaunch = !isPastLaunch && isLaunchEnabled;
+
+    if (
+        shouldShowLaunch &&
+        !isBypass &&
+        !to.path.startsWith("/admin") &&
+        to.name !== "Launch" &&
+        to.name !== "admin.login"
+    ) {
+        return next({ name: "Launch" });
+    }
+
+    // If we shouldn't show the launch page (either passed the date or disabled in env),
+    // and the user tries to visit /launch directly, redirect them home.
+    if (!shouldShowLaunch && to.name === "Launch") {
+        return next({ name: "Home" });
+    }
 
     if (requiresAuth && !loggedIn) {
         if (to.name !== "admin.login") {
