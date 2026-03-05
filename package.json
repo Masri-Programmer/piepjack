@@ -38,6 +38,7 @@
         "@vueuse/core": "^13.2.0",
         "@vueuse/motion": "^3.0.3",
         "aos": "^2.3.4",
+        "canvas-confetti": "^1.9.4",
         "chart.js": "^4.4.9",
         "lodash": "^4.17.21",
         "lucide-vue-next": "^0.511.0",

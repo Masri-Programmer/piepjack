@@ -23,5 +23,7 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::get('sendReturnTestEmail/{returnId}', [PublicReturningController::class, 'sendReturnEmailTest']);
     Route::post('webhook/stripe', [CheckoutController::class, 'handleWebhook']);
     Route::post('webhook/return-items', [PublicReturningController::class, 'handleWebhook']);
+    Route::post('launch-registration', [\App\Http\Controllers\API\V1\LaunchRegistrationController::class, 'store']);
+    Route::post('trigger-online-notification', [\App\Http\Controllers\API\V1\LaunchRegistrationController::class, 'triggerOnlineNotification']);
     Route::middleware('auth:sanctum')->group(function () { });
 });
