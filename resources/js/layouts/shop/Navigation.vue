@@ -1,6 +1,6 @@
 <template>
     <header ref="navigation" class="border-b bg-accent_dark border-gray">
-        <TopBanner />
+        <!-- <TopBanner /> -->
         <div class="navigation-bar">
             <button class="menu-button" @click="toggleNav">
                 <svg
