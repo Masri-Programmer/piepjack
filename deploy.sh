@@ -18,6 +18,8 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# rm -rf storage/framework/views/*
+# rm -rf bootstrap/cache/*
 rm -rf storage/framework/cache/data/
 php artisan up
 

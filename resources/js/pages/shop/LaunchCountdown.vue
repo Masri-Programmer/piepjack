@@ -9,7 +9,7 @@
             v-motion-fade
             style="position: absolute; top: 18px; left: 18px; z-index: 20"
         >
-            <img :src="logoCircle" alt="Piepjack Logo" class="h-16" />
+            <img :src="logoCircle" alt="Piepjack Logo" class="h-10 md:h-16" />
         </router-link>
 
         <!-- Background Accents -->
