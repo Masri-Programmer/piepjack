@@ -1,18 +1,15 @@
 <template>
     <div
-        class="launch-countdown min-h-screen bg-neutral-950 flex flex-col items-center justify-center p-4 relative overflow-hidden font-manrope selection:bg-main/20 selection:text-white"
+        class="launch-countdown min-h-[100dvh] bg-neutral-950 flex flex-col items-center justify-center p-4 relative overflow-x-hidden font-manrope selection:bg-main/20 selection:text-white"
     >
-        <!-- Branding Logo -->
         <router-link
             to="/"
-            class="logo-link"
+            class="logo-link absolute top-4 left-4 md:top-6 md:left-6 z-20"
             v-motion-fade
-            style="position: absolute; top: 18px; left: 18px; z-index: 20"
         >
             <img :src="logoCircle" alt="Piepjack Logo" class="h-10 md:h-16" />
         </router-link>
 
-        <!-- Background Accents -->
         <div
             class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden"
         >
@@ -27,8 +24,9 @@
             ></div>
         </div>
 
-        <!-- Content -->
-        <div class="relative z-10 w-full max-w-4xl text-center space-y-12">
+        <div
+            class="relative z-10 w-full max-w-4xl text-center space-y-12 my-auto pt-24 pb-12"
+        >
             <div class="space-y-4" v-motion-fade>
                 <div
                     class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-white/60 text-xs font-semibold uppercase tracking-widest animate-pulse"
@@ -52,7 +50,6 @@
                 </p>
             </div>
 
-            <!-- Countdown Grid -->
             <div
                 v-if="!isLaunched"
                 class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 pt-8 px-4"
@@ -81,32 +78,35 @@
                 </div>
             </div>
 
-            <!-- Registration Form Area -->
             <div
                 v-if="!isLaunched"
                 v-motion-fade
                 class="max-w-md mx-auto pt-10 space-y-6"
             >
-                <div v-if="!isRegistered" class="space-y-4">
+                <div v-if="!isRegistered" class="space-y-4 px-4 md:px-0">
                     <p
                         class="text-white/40 text-xs font-bold tracking-[0.2em] uppercase"
                     >
                         Registrieren, um benachrichtigt zu werden
                     </p>
-                    <form @submit.prevent="register" class="space-y-4">
+                    <form
+                        @submit.prevent="register"
+                        class="space-y-4"
+                        novalidate
+                    >
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <input
                                 v-model="form.name"
                                 type="text"
                                 placeholder="Name"
-                                class="bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-main transition-colors"
+                                class="bg-white/10 border border-white/40 rounded-xl px-5 py-3 text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-all"
                                 required
                             />
                             <input
                                 v-model="form.email"
                                 type="email"
                                 placeholder="E-Mail"
-                                class="bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-main transition-colors"
+                                class="bg-white/10 border border-white/40 rounded-xl px-5 py-3 text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-all"
                                 required
                             />
                         </div>
@@ -131,7 +131,7 @@
                 </div>
                 <div
                     v-else
-                    class="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl animate-in fade-in zoom-in duration-500"
+                    class="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl animate-in fade-in zoom-in duration-500 mx-4 md:mx-0"
                 >
                     <div
                         class="w-12 h-12 bg-main/20 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -159,7 +159,6 @@
                 </div>
             </div>
 
-            <!-- Action Button (Visible when launched) -->
             <div class="pt-8" v-motion-fade>
                 <router-link
                     v-if="isLaunched"
@@ -206,9 +205,9 @@
                 </div>
             </div>
         </div>
-        <!-- Footer Stats -->
+
         <div
-            class="absolute bottom-12 left-0 w-full px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-white/20 text-[10px] font-bold uppercase tracking-[0.3em] z-10"
+            class="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-white/20 text-[10px] font-bold uppercase tracking-[0.3em] z-10 relative mt-auto pb-6"
         >
             <div>© 2026 PIEPJACK CLOTHING</div>
             <div class="flex gap-8">
@@ -216,7 +215,7 @@
                     href="https://www.instagram.com/piepjack"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="social-media-button"
+                    class="social-media-button hover:text-white transition-colors"
                     aria-label="Besuche uns auf Instagram"
                 >
                     <Instagram />
@@ -226,7 +225,7 @@
                     href="https://www.tiktok.com/@piepjack"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="social-media-button"
+                    class="social-media-button hover:text-white transition-colors"
                     aria-label="Besuche uns auf TikTok"
                 >
                     <svg
@@ -247,7 +246,7 @@
                     href="https://Facebook.com/piepjack"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="social-media-button"
+                    class="social-media-button hover:text-white transition-colors"
                     aria-label="Besuche uns auf Facebook"
                 >
                     <Facebook />
@@ -307,9 +306,29 @@ const translateUnit = (unit) => {
     return map[unit] || unit;
 };
 
+// Simple Regex for verifying email format on the client side
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
 const register = async () => {
-    isSubmitting.value = true;
+    // Reset Error Message
     errorMsg.value = "";
+
+    // 1. Basic validation required fields check
+    if (!form.value.name.trim() || !form.value.email.trim()) {
+        errorMsg.value = "Bitte fülle alle Felder aus.";
+        return;
+    }
+
+    // 2. Strict Email format validation
+    if (!isValidEmail(form.value.email)) {
+        errorMsg.value = "Bitte gib eine gültige E-Mail-Adresse ein.";
+        return;
+    }
+
+    isSubmitting.value = true;
     try {
         await axios.post("/api/V1/shop/launch-registration", form.value);
         isRegistered.value = true;
@@ -324,9 +343,7 @@ const register = async () => {
         isSubmitting.value = false;
     }
 };
-// const { mutate: triggerOnlineNotification, isLoading } = apiQuery(
-//     "trigger-online-notification",
-// ).useStore();
+
 const updateCountdown = () => {
     const now = new Date().getTime();
     const distance = targetDate - now;
@@ -398,13 +415,9 @@ const triggerConfetti = () => {
 
 onMounted(() => {
     const isPastLaunch = Date.now() >= targetDate;
-    const isLaunchEnabled = import.meta.env.VITE_LAUNCH_PAGE_ENABLED === "true";
 
-    // If we are past launch or launch is disabled, we should redirect to home
-    // EXCEPT if we are on the /launch page itself and just want to show the celebration
     if (isPastLaunch) {
         isLaunched.value = true;
-        // Don't auto-redirect if we just hit zero, let user see the button
     } else {
         updateCountdown();
         timer = setInterval(updateCountdown, 1000);
@@ -417,14 +430,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.launch-countdown {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
-}
+/* Removed the fixed positioning here so the page can scroll natively on small screens */
 
 @keyframes heartbeat {
     0% {

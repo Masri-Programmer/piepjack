@@ -19,7 +19,7 @@
             </p>
             <p
                 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #374151; margin: 20px 0;">
-                Bereite dich auf den Drop vor – es wird legendär.
+                Bereite dich auf den Drop vor.
             </p>
 
             {{-- CTA Button --}}

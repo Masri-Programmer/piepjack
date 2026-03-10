@@ -9,6 +9,8 @@ const getSavedLocale = () => localStorage.getItem("lang") || "de";
 
 export function setupI18n(options = { locale: getSavedLocale() }) {
     const i18n = createI18n({
+        legacy: false,
+        globalInjection: true,
         locale: options.locale,
         fallbackLocale: options.locale,
         messages: { en, de },
