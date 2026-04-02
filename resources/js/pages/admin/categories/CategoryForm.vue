@@ -4,7 +4,7 @@
     class="mt-3 text-sm font-bold text-accent"
   >
     <div class="mb-4">
-      <label for="name" class="block">Name</label>
+      <label for="name" class="block">{{ $t('admin.categories.form.name') }}</label>
       <input
         v-model="form.name"
         type="text"
@@ -37,7 +37,7 @@
             id="active"
             class="mr-2"
           />
-          Active
+          {{ $t('admin.categories.form.active') }}
         </label>
       </div>
       <div class="mb-4">
@@ -48,17 +48,18 @@
             id="promoted"
             class="mr-2"
           />
-          Promoted
+          {{ $t('admin.categories.form.promoted') }}
         </label>
       </div>
     </div>
     <div class="flex items-center gap-3 mb-3">
       <button
+        type="button"
         @click="handleDelete"
         :disabled="deleteLoading"
         class="w-full p-2 text-white transition duration-200 bg-red-500 rounded-md hover:bg-red-600"
       >
-        <span v-if="!deleteLoading">Delete Category</span>
+        <span v-if="!deleteLoading">{{ $t('admin.categories.form.delete') }}</span>
         <span v-if="deleteLoading"><Spinner /></span>
       </button>
       <button
@@ -66,7 +67,7 @@
         :disabled="updateLoading"
         class="w-full p-2 text-white transition duration-200 rounded-md bg-accent_dark hover:bg-accent_light"
       >
-        <span v-if="!updateLoading">Update Category</span>
+        <span v-if="!updateLoading">{{ $t('admin.categories.form.update') }}</span>
         <span v-if="updateLoading"><Spinner /></span>
       </button>
     </div>
@@ -76,6 +77,12 @@
 <script setup>
 import { reactive, onMounted } from "vue";
 import { apiQuery } from "@lib/helpers";
+import { useI18n } from 'vue-i18n';
+import { useRouter } from "vue-router";
+import Spinner from "@components/admin/Spinner.vue"; // Assuming Spinner exists or use it if it's already used elsewhere
+
+const { t } = useI18n();
+const router = useRouter();
 
 const props = defineProps({
   data: { required: true },
@@ -106,7 +113,9 @@ const handleSubmit = async () => {
   await updateCategory({ id: form.id, data: form });
 };
 const handleDelete = async () => {
-  deleteCategory(id);
-  router.push("/categories");
+  if (confirm(t('admin.common.confirmDelete'))) {
+    deleteCategory(form.id);
+    router.push("/admin/categories");
+  }
 };
 </script>

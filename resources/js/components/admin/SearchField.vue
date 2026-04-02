@@ -4,7 +4,7 @@
       <input
         name="search"
         type="search"
-        :placeholder="placeholder || 'Search'"
+        :placeholder="placeholder || $t('admin.common.search')"
         v-model="searchTerm"
         @input="updateSearch"
         class="border-2 border-gray bg-main h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"

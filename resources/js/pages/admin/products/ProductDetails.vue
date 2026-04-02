@@ -4,14 +4,14 @@
       <table class="w-full my-0 align-middle text-dark border-neutral-200">
         <thead class="align-bottom">
           <tr class="font-semibold text-[0.95rem] text-gray">
-            <th class="py-3 uppercase text-start">ID</th>
-            <th class="p-3 text-start min-w-[95px] uppercase">IMG</th>
-            <th class="p-3 text-start min-w-[175px] uppercase">NAME</th>
+            <th class="py-3 uppercase text-start">{{ $t("admin.orders.table.id") }}</th>
+            <th class="p-3 text-start min-w-[95px] uppercase">{{ $t("admin.products.table.img") }}</th>
+            <th class="p-3 text-start min-w-[175px] uppercase">{{ $t("admin.products.table.name") }}</th>
             <th
               class="p-3 text-start min-w-[135px] uppercase"
               v-if="!data?.items && !variations"
             >
-              options
+              {{ $t("admin.variants.title") }}
             </th>
 
             <template v-else-if="data.items.length">
@@ -30,9 +30,9 @@
                 {{ option.name }}
               </th>
             </template>
-            <th class="p-3 uppercase text-start">PUBLISHED</th>
-            <th class="p-3 text-start uppercase min-w-[95px]">price</th>
-            <th class="p-3 text-start uppercase min-w-[95px]">quantity</th>
+            <th class="p-3 uppercase text-start">{{ $t("admin.products.table.published") }}</th>
+            <th class="p-3 text-start uppercase min-w-[95px]">{{ $t("admin.variants.optionPlaceholder") }} ({{ $currency }})</th>
+            <th class="p-3 text-start uppercase min-w-[95px]">{{ $t("admin.dashboard.orders").replace(':','') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -105,7 +105,7 @@
               <td class="pr-0 text-start">
                 <input
                   v-model="product.price"
-                  placeholder="Price"
+                  :placeholder="$t('admin.variants.optionPlaceholder')"
                   type="Number"
                   id="price"
                   @change="
@@ -117,7 +117,7 @@
               <td class="p-3 pr-2 text-start">
                 <input
                   v-model="product.quantity"
-                  placeholder="Quantity"
+                  :placeholder="$t('admin.dashboard.orders').replace(':','')"
                   type="Number"
                   id="quantity"
                   @change="

@@ -276,8 +276,8 @@ const handlePageChange = (newPage, action) => {
 };
 
 const links = computed(() => [
-    { title: t('admin.links.home'), link: "/" },
-    { title: t('admin.links.products'), current: true, link: "/products" },
+    { title: t('admin.menu.home'), link: "/" },
+    { title: t('admin.menu.returns'), current: true, link: "/Returns" },
 ]);
 
 const [value, toggle] = useToggle();

@@ -1,5 +1,5 @@
 <template>
-  <PageLayout :data="links" title="Add Product">
+  <PageLayout :data="links" :title="$t('admin.products.add.title')">
     <div class="space-y-6">
       <form @submit.prevent="submitForm">
         <div class="grid grid-cols-6 gap-6">
@@ -7,7 +7,7 @@
             <label
               for="name"
               class="text-sm font-medium text-accent_dark block mb-2"
-              >Product Name</label
+              >{{ $t('admin.products.add.name') }}</label
             >
             <input
               type="text"
@@ -15,7 +15,7 @@
               id="name"
               class="shadow-md border border-gray text-accent_dark sm:text-sm rounded-lg focus:ring-accent_dark focus:border-accent_dark block w-full p-2.5"
               :class="{ 'border-red-500': errors.name }"
-              placeholder="Name”"
+              :placeholder="$t('admin.products.add.namePlaceholder')"
             />
             <p v-if="errors.name" class="text-red-500 text-sm">
               {{ errors.name }}
@@ -26,7 +26,7 @@
             <label
               for="category_id"
               class="text-sm font-medium text-accent_dark block mb-2"
-              >Category</label
+              >{{ $t('admin.products.add.category') }}</label
             >
             <select
               v-model="form.category_id"
@@ -34,7 +34,7 @@
               class="shadow-md border border-gray text-accent_dark sm:text-sm rounded-lg focus:ring-accent_dark focus:border-accent_dark block w-full p-2.5"
               :class="{ 'border-red-500': errors.category_id }"
             >
-              <option value="" disabled>Select a category</option>
+              <option value="" disabled>{{ $t('admin.products.add.selectCategory') }}</option>
               <option
                 v-for="category in data"
                 :key="category.id"
@@ -52,7 +52,7 @@
             <label
               for="description"
               class="text-sm font-medium text-accent_dark block mb-2"
-              >Product Details</label
+              >{{ $t('admin.products.add.details') }}</label
             >
             <textarea
               v-model="form.description"
@@ -60,7 +60,7 @@
               rows="6"
               class="border border-gray text-accent_dark sm:text-sm rounded-lg focus:ring-accent_dark focus:border-accent_dark block w-full p-4"
               :class="{ 'border-red-500': errors.description }"
-              placeholder="Details"
+              :placeholder="$t('admin.products.add.detailsPlaceholder')"
             ></textarea>
             <p v-if="errors.description" class="text-red-500 text-sm">
               {{ errors.description }}
@@ -71,7 +71,7 @@
             <label
               for="image"
               class="text-sm font-medium text-accent_dark block mb-2"
-              >Image</label
+              >{{ $t('admin.products.add.image') }}</label
             >
             <input
               type="file"
@@ -93,7 +93,7 @@
             <label
               for="active"
               class="text-sm font-medium text-accent_dark mb-2"
-              >Active</label
+              >{{ $t('admin.products.add.active') }}</label
             >
             <p v-if="errors.active" class="text-red-500 text-sm">
               {{ errors.active }}
@@ -105,7 +105,7 @@
             class="text-white bg-accent_dark hover:bg-accent_light focus:ring-4 focus:ring-accent_light font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             type="submit"
           >
-            Save all
+            {{ $t('admin.products.add.save') }}
           </button>
         </div>
       </form>
@@ -114,11 +114,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import * as yup from "yup";
 import { useRouter } from "vue-router";
 import PageLayout from "@layouts/admin/PageLayout.vue";
 import { apiQuery } from "@lib/helpers";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const { data } = apiQuery("all-categories").useGet({});
 const form = ref({
   name: "",
@@ -137,19 +140,19 @@ const errors = ref({
 });
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required("Product name is required").max(1024),
+  name: yup.string().required(t('admin.products.add.validation.nameRequired')).max(1024),
   category_id: yup
     .number()
     .nullable()
-    .typeError("Category must be a valid number"),
+    .typeError(t('admin.products.add.validation.categoryNumber')),
   description: yup.string().nullable(),
   image: yup
     .mixed()
     .nullable()
-    .test("fileType", "Only image files are allowed", (value) => {
+    .test("fileType", t('admin.products.add.validation.imageType'), (value) => {
       return value ? ["image/jpeg", "image/png"].includes(value.type) : true;
     }),
-  active: yup.boolean().required("Active status is required"),
+  active: yup.boolean().required(t('admin.products.add.validation.activeRequired')),
 });
 const {
   mutate: storeProduct,
@@ -176,18 +179,18 @@ const handleImageUpload = (e) => {
   const file = e.target.files[0];
   form.value.image = file;
 };
-const links = ref([
+const links = computed(() => [
   {
-    title: "Home",
+    title: t("admin.links.home"),
     link: "/",
   },
   {
-    title: "Products",
+    title: t("admin.links.products"),
     current: true,
     link: "/products",
   },
   {
-    title: "Add Product",
+    title: t("admin.products.add.title"),
     current: true,
     link: "",
   },

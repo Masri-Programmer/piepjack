@@ -1,6 +1,6 @@
 <template>
   <tr class="border-b border-dashed last:border-b-0 border-main">
-    <td>ID</td>
+    <td>{{ $t('admin.orders.table.id') }}</td>
     <td class="p-3">
       <div class="relative inline-block shrink-0 rounded-2xl me-3">
         <ProductImg
@@ -12,7 +12,7 @@
     <td class="p-3">
       <textarea
         v-model="newProduct.name"
-        placeholder="Product Name"
+        :placeholder="$t('admin.products.add.namePlaceholder')"
         ref="ProductInput"
         type="text"
         id="name"
@@ -25,7 +25,7 @@
         type="text"
         id="description"
         class="block w-full p-2 mt-1 font-bold rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
-        placeholder="No description"
+        :placeholder="$t('admin.products.add.detailsPlaceholder')"
       />
     </td>
     <td class="p-3 text-start">
@@ -44,7 +44,7 @@
           @change="(e) => (newProduct.category_id = e.target.value)"
           class="shadow-md border border-gray text-accent_dark sm:text-sm rounded-lg focus:ring-accent_dark focus:border-accent_dark block w-full p-2.5"
         >
-          <option value="" disabled>Select a category</option>
+          <option value="" disabled>{{ $t('admin.products.selectCategory') }}</option>
           <option
             v-for="category in categoriesData?.data"
             :key="category.id"
@@ -65,7 +65,7 @@
         <span v-if="isLoadingStoring" class="flex justify-center"
           ><Spinner class="w-8 h-5"
         /></span>
-        <span v-else>Save</span>
+        <span v-else>{{ $t('admin.products.add.save') }}</span>
       </button>
     </td>
   </tr>

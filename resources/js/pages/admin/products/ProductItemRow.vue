@@ -1,6 +1,6 @@
 <template>
     <tr class="border-b border-dashed last:border-b-0 border-main">
-        <td>ID</td>
+        <td>{{ $t('admin.orders.table.id') }}</td>
         <td class="p-3">
             <div class="relative inline-block shrink-0 rounded-2xl me-3">
                 <ProductImg
@@ -25,7 +25,7 @@
                     ref="OptionSelect"
                     class="w-full p-2 border rounded"
                 >
-                    <option disabled value="">Select {{ v.name }}</option>
+                    <option disabled value="">{{ $t('admin.variants.selectVariant') }} {{ v.name }}</option>
                     <option
                         v-for="vo in v?.options"
                         :key="vo.id"
@@ -59,7 +59,7 @@
         <td class="p-3 text-start">
             <input
                 v-model="newProductItem.price"
-                placeholder="Price"
+                :placeholder="$t('admin.variants.optionPlaceholder')"
                 type="Number"
                 id="price"
                 class="block w-full p-2 mt-1 font-bold border-0 rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
@@ -68,7 +68,7 @@
         <td class="p-3 text-start">
             <input
                 v-model="newProductItem.quantity"
-                placeholder="Quantity"
+                :placeholder="$t('admin.dashboard.orders').replace(':','')"
                 type="Number"
                 id="quantity"
                 class="block w-full p-2 mt-1 font-bold border-0 rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
@@ -84,7 +84,7 @@
                 <span v-if="isLoadingStoring" class="flex justify-center"
                     ><Spinner class="w-8 h-5"
                 /></span>
-                <span v-else>Save</span>
+                <span v-else>{{ $t('admin.products.add.save') }}</span>
             </button>
         </td>
     </tr>

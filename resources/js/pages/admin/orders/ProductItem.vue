@@ -13,20 +13,20 @@
       <h4 class="text-xl font-semibold text-accent capitalize">
         {{ product.name }}
       </h4>
-      <p class="text-gray">ID:<span class="font-medium text-accent_dark"> {{ product.product_item_id }}</span></p>
+      <p class="text-gray">{{ $t('admin.orders.table.id') }}:<span class="font-medium text-accent_dark"> {{ product.product_item_id }}</span></p>
       <p class="text-gray">
-        Price:
+        {{ $t('admin.orderDetails.price') }}
         <span class="font-medium text-accent_dark"
           >€{{ product.price_per_item }}</span
         >
       </p>
       <p class="text-gray">
-        Quantity:
+        {{ $t('admin.orderDetails.quantity') }}
         <span class="font-medium text-accent_dark">{{ product.quantity }}</span>
       </p>
 
       <div v-if="product.options.length" class="mt-3">
-        <h5 class="font-semibold text-accent">Options</h5>
+        <h5 class="font-semibold text-accent">{{ $t('admin.orderDetails.options') }}</h5>
         <ul class="mt-1 space-y-1">
           <li
             v-for="(option, index) in product.options"
@@ -43,12 +43,12 @@
         class="mt-3 p-3 rounded-xl bg-red-50 border border-red-300"
       >
         <h5 class="text-red-600 font-semibold flex items-center gap-1">
-          <span class="text-sm">🔄</span> Returned Items
+          <span class="text-sm">🔄</span> {{ $t('admin.orderDetails.returnedItems') }}
         </h5>
         <div class="grid grid-cols-2 gap-2 mt-1 text-red-500 text-sm">
-          <p><strong>Qty:</strong> {{ product.returned_quantity }}</p>
-          <p><strong>ID:</strong> {{ product.return_id }}</p>
-          <p><strong>Reason:</strong> {{ product.return_reason }}</p>
+          <p><strong>{{ $t('admin.orderDetails.returnedQty') }}</strong> {{ product.returned_quantity }}</p>
+          <p><strong>{{ $t('admin.orders.table.id') }}:</strong> {{ product.return_id }}</p>
+          <p><strong>{{ $t('admin.orderDetails.returnedReason') }}</strong> {{ product.return_reason }}</p>
           <p
             :class="[
               'font-bold',
@@ -61,7 +61,7 @@
                 : 'text-red-500',
             ]"
           >
-            <strong>Status:</strong> {{ product.return_status }}
+            <strong>{{ $t('admin.returns.headers.status') }}:</strong> {{ product.return_status }}
           </p>
         </div>
       </div>

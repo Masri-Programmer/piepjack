@@ -17,17 +17,20 @@ import { useRoute } from "vue-router";
 import CategoryForm from "./CategoryForm.vue";
 import { apiQuery } from "@lib/helpers";
 import PageLayout from "@layouts/admin/PageLayout.vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const route = useRoute();
 const id = computed(() => route.params.id);
 const slug = route.params.slug;
 const { data, error, isLoading } = apiQuery("categories").useGetById(id);
-const links = ref([
+const links = computed(() => [
     {
-        title: "Home",
+        title: t("admin.links.home"),
         link: "/",
     },
     {
-        title: "Categories",
+        title: t("admin.links.categories"),
         link: "/categories",
     },
     {

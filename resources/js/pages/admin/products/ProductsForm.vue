@@ -4,7 +4,7 @@
         class="mt-3 text-sm font-bold text-accent"
     >
         <div class="mb-4">
-            <label for="name" class="block">Name</label>
+            <label for="name" class="block">{{ $t('admin.products.add.name') }}</label>
             <input
                 v-model="form.name"
                 type="text"
@@ -18,7 +18,7 @@
             <label
                 for="image"
                 class="block mb-2 text-sm font-medium text-accent_dark"
-                >Image</label
+                >{{ $t('admin.products.add.image') }}</label
             >
             <input
                 type="file"
@@ -37,7 +37,7 @@
         </div>
 
         <div class="mb-4">
-            <label for="description" class="block">Description</label>
+            <label for="description" class="block">{{ $t('admin.products.table.description') }}</label>
             <textarea
                 v-model="form.description"
                 id="description"
@@ -57,7 +57,7 @@
                     id="active"
                     class="mr-2"
                 />
-                Active
+                {{ $t('admin.products.add.active') }}
             </label>
         </div>
 
@@ -67,7 +67,7 @@
                 :disabled="deleteLoading"
                 class="w-full p-2 text-white transition duration-200 bg-red-500 rounded-md hover:bg-red-600"
             >
-                <span v-if="!deleteLoading">Delete Product</span>
+                <span v-if="!deleteLoading">{{ $t('admin.categories.form.delete') }}</span>
                 <span v-if="deleteLoading"><Spinner /></span>
             </button>
             <button
@@ -75,7 +75,7 @@
                 :disabled="updateLoading"
                 class="w-full p-2 text-white transition duration-200 rounded-md bg-accent_dark hover:bg-accent_light"
             >
-                <span v-if="!updateLoading">Update Product</span>
+                <span v-if="!updateLoading">{{ $t('admin.products.add.save') }}</span>
                 <span v-if="updateLoading"><Spinner /></span>
             </button>
         </div>

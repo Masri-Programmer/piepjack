@@ -304,13 +304,13 @@ const handleDelete = async (id) => {
     deleteCategory(id);
 };
 
-const links = ref([
+const links = computed(() => [
     {
-        title: t("common.menu.home"),
+        title: t("admin.menu.home"),
         link: "/",
     },
     {
-        title: t("admin.categories.title"),
+        title: t("admin.menu.categories"),
         current: true,
         link: "/categories",
     },

@@ -1,5 +1,5 @@
 <template>
-  <PageLayout :data="links" title="Users">
+  <PageLayout :data="links" :title="$t('admin.sidebar.users')">
     <!-- card header -->
     <div
       class="flex justify-between items-stretch flex-wrap min-h-[70px] pb-6 text-accent"
@@ -8,10 +8,10 @@
         class="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark"
       >
         <span class="mr-3 font-semibold text-dark"
-          >All Users ({{ data?.meta.total }})</span
+          >{{ $t('admin.sidebar.users') }} ({{ data?.meta.total }})</span
         >
         <span class="mt-1 font-medium text-gray text-lg/normal"
-          >Exlusive from Piepjackclothing</span
+          >{{ $t('admin.common.exclusiveFrom') }}</span
         >
       </h3>
       <SearchField v-model="searchTerm" :placeholder="'Email'" />
@@ -24,16 +24,16 @@
         <table class="w-full my-0 align-middle text-dark buser-neutral-200">
           <thead class="align-bottom">
             <tr class="font-semibold text-[0.95rem] text-gray">
-              <th class="pb-3 px-1 text-start uppercase">ID</th>
+              <th class="pb-3 px-1 text-start uppercase">{{ $t('admin.orders.table.id') }}</th>
               <th class="pb-3 px-1 text-start uppercase">EMAIL</th>
               <th class="pb-3 px-1 text-start min-w-[50px] uppercase">
-                ACTIVE
+                {{ $t('admin.returns.headers.status').toUpperCase() }}
               </th>
               <th class="pb-3 px-1 text-start min-w-[150px] uppercase">
-                CREATED AT
+                {{ $t('admin.orders.table.createdAt') }}
               </th>
               <th class="pb-3 px-1 text-start min-w-[150px] uppercase">
-                UPDATED AT
+                {{ $t('admin.orders.table.updatedAt') }}
               </th>
             </tr>
           </thead>
@@ -42,7 +42,7 @@
               v-if="!data?.data.length && !isLoading && !isError"
               class="font-bold text-xl my-6"
             >
-              No Data Found
+              {{ $t('admin.common.noData') }}
             </tr>
             <ProductsShowSkeleton v-if="isLoading" />
             <tr
@@ -159,6 +159,10 @@ const handleDelete = async (id) => {
   if (confirm("Are you sure you want to delete this user?")) deleteUser(id);
 };
 
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 const handlePageChange = (newPage, action) => {
   if (action === "increment" && !isPreviousData) {
     usersParams.value.page = usersParams.value.page + 1;
@@ -170,9 +174,9 @@ const handlePageChange = (newPage, action) => {
   }
 };
 
-const links = ref([
-  { title: "Home", link: "/" },
-  { title: "Users", current: true, link: "/users" },
+const links = computed(() => [
+  { title: t("admin.menu.home"), link: "/" },
+  { title: t("admin.sidebar.users"), current: true, link: "/users" },
 ]);
 
 const [value, toggle] = useToggle();

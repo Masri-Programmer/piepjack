@@ -1,6 +1,6 @@
 <template>
   <tr class="border-b border-dashed last:border-b-0 border-main">
-    <td>ID</td>
+    <td>{{ $t('admin.orders.table.id') }}</td>
     <td class="p-3">
       <div class="flex items-center">
         <div class="flex flex-col justify-start">
@@ -12,7 +12,7 @@
               type="text"
               ref="categoryInput"
               v-model="newCategory.name"
-              placeholder="Category Name"
+              :placeholder="$t('admin.products.add.namePlaceholder')"
               @change="(e) => (newCategory.name = e.target.value)"
               class="mt-1 block w-full p-2 border border-gray rounded-md focus:outline-none focus:ring focus:ring-accent_dark"
             />
@@ -43,7 +43,7 @@
         <span v-if="isLoading" class="flex justify-center"
           ><Spinner class="w-8 h-5"
         /></span>
-        <span v-else>Save</span>
+        <span v-else>{{ $t('admin.products.add.save') }}</span>
       </button>
     </td>
   </tr>
