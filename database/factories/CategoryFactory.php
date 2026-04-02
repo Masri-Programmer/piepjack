@@ -20,12 +20,12 @@ class CategoryFactory extends Factory
 
     public function definition(): array
     {
-        $name = $this->faker->word;
+        $name = fake()->word();
         return [
             'name' => ucfirst($name),
             'slug' => Str::slug($name),
             'active' => 1,
-            'promoted' => $this->faker->boolean,
+            'promoted' => fake()->boolean(),
             'parent_id' => null,
         ];
     }

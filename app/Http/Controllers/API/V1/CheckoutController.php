@@ -48,16 +48,24 @@ class CheckoutController extends Controller
             $totalPrice = 0;
             $this->processOrderProducts($order, $validated['products'], $lineItems, $totalPrice);
 
+            // Step 3.5: Apply 5% discount if subtotal is over 100 EUR
+            $discountAmount = 0;
+            if ($totalPrice > 100) {
+                $discountAmount = $totalPrice * 0.05;
+                // We use Stripe Coupons instead of line items for discounts now
+            }
+            $totalPriceAfterDiscount = $totalPrice - $discountAmount;
+
             // Step 4: Calculate shipping and add to total and line items
-            $shippingCost = $this->calculateShippingCost($totalPrice, $validated);
+            $shippingCost = $this->calculateShippingCost($totalPriceAfterDiscount, $validated);
             if ($shippingCost > 0) {
                 $this->addShippingToLineItems($lineItems, $shippingCost);
             }
-            $finalTotalPrice = $totalPrice + $shippingCost;
+            $finalTotalPrice = $totalPriceAfterDiscount + $shippingCost;
             $order->update(['total_price' => $finalTotalPrice]);
 
             // Step 5: Create Stripe Checkout Session
-            $session = $this->createStripeSession($order, $user, $lineItems, $finalTotalPrice);
+            $session = $this->createStripeSession($order, $user, $lineItems, $finalTotalPrice, $discountAmount);
 
             DB::commit();
 
@@ -182,29 +190,40 @@ class CheckoutController extends Controller
     /**
      * Create and return a Stripe Checkout Session.
      */
-    private function createStripeSession(Order $order, User $user, array $lineItems, float $totalPrice): Session
+    private function createStripeSession(Order $order, User $user, array $lineItems, float $totalPrice, float $discountAmount = 0): Session
     {
-
-
-        return Session::create(
-            [
-                'payment_method_types' => config('services.stripe.payment_methods'),
-                'mode' => 'payment',
-                'line_items' => $lineItems,
-                'success_url' => config('services.frontend_url') . '/success?order_number=' . $order->order_number,
-                'cancel_url' => config('services.frontend_url') . '/checkout?order_number=' . $order->order_number,
+        $sessionData = [
+            'payment_method_types' => config('services.stripe.payment_methods'),
+            'mode' => 'payment',
+            'line_items' => $lineItems,
+            'success_url' => config('services.frontend_url') . '/success?order_number=' . $order->order_number,
+            'cancel_url' => config('services.frontend_url') . '/checkout?order_number=' . $order->order_number,
+            'metadata' => [
+                'order_id' => $order->id,
+                'payment_type' => 'checkout',
+                'email' => $user->email,
+            ],
+            'payment_intent_data' => [
                 'metadata' => [
                     'order_id' => $order->id,
-                    'payment_type' => 'checkout',
-                    'email' => $user->email,
-                ],
-                'payment_intent_data' => [
-                    'metadata' => [
-                        'order_id' => $order->id,
-                        'order_number' => $order->order_number,
-                    ],
+                    'order_number' => $order->order_number,
                 ],
             ],
+        ];
+
+        // If there's a discount, we can use a dynamic coupon or just adjust the items.
+        // But adjusting items is complex. Let's try creating a temporary coupon for the 5% discount.
+        if ($discountAmount > 0) {
+            $coupon = \Stripe\Coupon::create([
+                'percent_off' => 5,
+                'duration' => 'once',
+                'name' => '5% Automatic Discount',
+            ]);
+            $sessionData['discounts'] = [['coupon' => $coupon->id]];
+        }
+
+        return Session::create(
+            $sessionData,
             ['idempotency_key' => $order->order_number . '-' . time()]
         );
     }

@@ -14,7 +14,7 @@ class VariationFactory extends Factory
     {
         return [
             'category_id' => Category::factory(),
-            'name' => $this->faker->word,
+            'name' => fake()->word(),
         ];
     }
 }

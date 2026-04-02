@@ -13,7 +13,7 @@ class ProductFactory extends Factory
 
     public function definition(): array
     {
-        $name = $this->faker->words(3, true);
+        $name = fake()->words(3, true);
 
         return [
             'name' => ucfirst($name),
@@ -21,7 +21,7 @@ class ProductFactory extends Factory
             'image' => 'https://placehold.co/600x400.png?text=Product+Image',
             'image_mime' => 'image/jpeg',
             'image_size' => rand(100, 5000),
-            'description' => $this->faker->paragraph,
+            'description' => fake()->paragraph(),
             'active' => 1,
             'category_id' => Category::factory(),
         ];

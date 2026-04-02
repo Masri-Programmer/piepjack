@@ -241,16 +241,6 @@
                         />
                     </svg>
                 </a>
-
-                <a
-                    href="https://Facebook.com/piepjack"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="social-media-button hover:text-white transition-colors"
-                    aria-label="Besuche uns auf Facebook"
-                >
-                    <Facebook />
-                </a>
             </div>
         </div>
     </div>
@@ -261,7 +251,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import confetti from "canvas-confetti";
 import logoCircle from "@img/logo-new.png";
-import { Facebook, Instagram } from "lucide-vue-next";
+import { Instagram } from "lucide-vue-next";
 import axios from "axios";
 import { apiRequest } from "@lib/helpers";
 

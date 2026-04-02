@@ -25,14 +25,14 @@ class AddressFactory extends Factory
     public function definition(): array
     {
         return [
-            'label' => $this->faker->randomElement(['Home', 'Work', 'Parents']),
+            'label' => fake()->randomElement(['Home', 'Work', 'Parents']),
             'is_default_shipping' => false,
             'is_default_billing' => false,
-            'street_address' => $this->faker->streetAddress(),
-            'city' => $this->faker->city(),
-            'state_province' => $this->faker->state(),
-            'postal_code' => $this->faker->postcode(),
-            'country_code' => $this->faker->countryCode(),
+            'street_address' => fake()->streetAddress(),
+            'city' => fake()->city(),
+            'state_province' => fake()->state(),
+            'postal_code' => fake()->postcode(),
+            'country_code' => fake()->countryCode(),
         ];
     }
 }

@@ -14,12 +14,12 @@ class ProductItemFactory extends Factory
     {
         return [
             'product_id' => Product::factory(),
-            'quantity' => $this->faker->numberBetween(1, 100),
+            'quantity' => fake()->numberBetween(1, 100),
             'image' => 'https://placehold.co/600x400.png?text=Product+Image',
             'image_mime' => 'image/jpeg',
-            'image_size' => $this->faker->numberBetween(100, 5000),
-            'active' => $this->faker->boolean,
-            'price' => $this->faker->randomFloat(2, 10, 1000),
+            'image_size' => fake()->numberBetween(100, 5000),
+            'active' => fake()->boolean(),
+            'price' => fake()->randomFloat(2, 10, 1000),
         ];
     }
 }

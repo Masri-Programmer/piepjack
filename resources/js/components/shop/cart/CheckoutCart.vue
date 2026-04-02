@@ -28,6 +28,11 @@
             <p v-else class="text-sm">5.90 {{ $currency }}</p>
         </div>
 
+        <div v-if="cartTotalPrice() > 100" class="flex justify-between text-green-500">
+            <p class="text-sm">5% Discount (Orders > 100€)</p>
+            <p class="text-sm">-{{ (cartTotalPrice() * 0.05).toFixed(2) }} {{ $currency }}</p>
+        </div>
+
         <div class="py-3 border-t border-b border-gray">
             <label for="promoCode" class="block mb-2 text-sm">
                 {{ $t("pages.checkout.promoCode") }}
@@ -112,7 +117,11 @@ const applyPromoCode = () => {
 const calculateFinalPrice = () => {
     let price = cartTotalPrice();
 
-    if (price < 100 && !freeShipping.value) {
+    if (price > 100) {
+        price = price * 0.95;
+    }
+
+    if (cartTotalPrice() < 100 && !freeShipping.value) {
         price += 5.9;
     }
 

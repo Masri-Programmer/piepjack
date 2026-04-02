@@ -32,16 +32,6 @@
                 />
             </svg>
         </a>
-
-        <a
-            href="https://Facebook.com/piepjack"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-media-button"
-            aria-label="Visit our Facebook"
-        >
-            <Facebook />
-        </a>
     </div>
     <footer
         class="px-4 md:px-8 2xl:px-16 py-10 border-t border-gray shadow-md tracking-normal bg-accent_dark text-xs sm:text-sm"
@@ -147,7 +137,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { apiQuery } from "@lib/helpers";
-import { Instagram, Facebook, Twitter } from "lucide-vue-next";
+import { Instagram } from "lucide-vue-next";
 const { t } = useI18n();
 const copyrightText = computed(() =>
     t("layout.footer.copyright", { year: new Date().getFullYear() }),
