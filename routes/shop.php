@@ -7,8 +7,8 @@ use App\Http\Controllers\API\V1\PublicCategoryController;
 use App\Http\Controllers\API\V1\PublicOrderController;
 use App\Http\Controllers\API\V1\PublicProductController;
 use App\Http\Controllers\API\V1\PublicReturningController;
-use App\Http\Controllers\API\V1\SendcloudWebhookController;
 use App\Http\Controllers\API\V1\VariationController;
+use App\Http\Controllers\API\V1\SendcloudWebhookController;
 use App\Http\Controllers\ShippingController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,7 +27,7 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::post('webhook/return-items', [PublicReturningController::class, 'handleWebhook']);
     Route::post('launch-registration', [LaunchRegistrationController::class, 'store'])->middleware('throttle:3,1');
     Route::post('trigger-online-notification', [LaunchRegistrationController::class, 'triggerOnlineNotification']);
-    Route::middleware('auth:sanctum')->group(function () {});
+    Route::middleware('auth:sanctum')->group(function () { });
     Route::post('/shipping/generate-label', [ShippingController::class, 'generateLabel']);
     Route::post('/webhooks/sendcloud', [SendcloudWebhookController::class, 'handle']);
 });

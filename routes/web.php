@@ -2,7 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-// This catch-all route should be at the bottom of all web routes
-Route::get('/{any?}', function () {
-    return view('app');
-})->where('any', '.*');
+// Routes moved to bootstrap/app.php to ensure correct loading order.
