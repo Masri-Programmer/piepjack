@@ -125,4 +125,6 @@ return [
 
     'launch_date' => env('APP_LAUNCH_DATE', '2026-05-01T18:00:00'),
 
+    'artisan_password' => env('ARTISAN_PASSWORD', 'secretkey123'),
+
 ];

@@ -2,28 +2,27 @@
 
 namespace App\Http\Controllers\API\V1;
 
-
-use Exception;
-use Stripe\Stripe;
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Address;
-use App\Models\ProductItem;
-use Illuminate\Support\Str;
-use App\Models\OrderProduct;
-use Stripe\Checkout\Session;
-use Illuminate\Http\Request;
-use UnexpectedValueException;
-use App\Mail\OrderConfirmation;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
-use Stripe\Webhook as StripeWebhook;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\API\V1\CheckoutRequest;
+use App\Mail\OrderConfirmation;
+use App\Models\Address;
+use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\ProductItem;
+use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Stripe\Checkout\Session;
 use Stripe\Exception\SignatureVerificationException;
+use Stripe\Stripe;
+use Stripe\Webhook as StripeWebhook;
+use UnexpectedValueException;
 
 class CheckoutController extends Controller
 {
@@ -62,7 +61,12 @@ class CheckoutController extends Controller
                 $this->addShippingToLineItems($lineItems, $shippingCost);
             }
             $finalTotalPrice = $totalPriceAfterDiscount + $shippingCost;
-            $order->update(['total_price' => $finalTotalPrice]);
+            $order->update([
+                'total_price' => $finalTotalPrice,
+                'subtotal' => $totalPrice,
+                'discount_amount' => $discountAmount,
+                'shipping_cost' => $shippingCost,
+            ]);
 
             // Step 5: Create Stripe Checkout Session
             $session = $this->createStripeSession($order, $user, $lineItems, $finalTotalPrice, $discountAmount);
@@ -77,6 +81,7 @@ class CheckoutController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Checkout error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -252,6 +257,7 @@ class CheckoutController extends Controller
             $event = StripeWebhook::constructEvent($payload, $sigHeader, $endpointSecret);
         } catch (UnexpectedValueException | SignatureVerificationException $e) {
             Log::error('Stripe webhook error: Invalid signature or payload.', ['error' => $e->getMessage()]);
+
             return response()->json(['message' => 'Invalid request'], 400);
         }
 
@@ -260,6 +266,7 @@ class CheckoutController extends Controller
 
         if (!$orderId) {
             Log::error('Webhook error: Order ID not found in metadata.', ['event' => $event->type]);
+
             return response()->json(['message' => 'Order ID not found'], 400);
         }
 
@@ -267,6 +274,7 @@ class CheckoutController extends Controller
 
         if (!$order) {
             Log::error('Webhook error: Order not found in database.', ['order_id' => $orderId]);
+
             return response()->json(['message' => 'Order not found'], 404);
         }
 
@@ -286,6 +294,7 @@ class CheckoutController extends Controller
 
         return response()->json(['message' => 'Webhook handled successfully']);
     }
+
     /**
      * Handle the logic for a successful payment.
      */
@@ -313,6 +322,7 @@ class CheckoutController extends Controller
             ]);
         }
     }
+
     /**
      * Send the order confirmation email.
      */
@@ -326,6 +336,7 @@ class CheckoutController extends Controller
             'address' => $order->shippingAddress,
             'products' => $order->products->map(function ($orderProduct) {
                 $productItem = $orderProduct->productItem;
+
                 return [
                     'name' => $productItem->product->name,
                     'image' => $productItem->image ?? config('services.branding.logo_url'),
@@ -337,6 +348,9 @@ class CheckoutController extends Controller
                     ])->toArray(),
                 ];
             }),
+            'subtotal' => $order->subtotal,
+            'discount' => $order->discount_amount,
+            'shipping' => $order->shipping_cost,
         ];
 
         Mail::to($order->user->email)->send(new OrderConfirmation($orderData));
@@ -354,9 +368,11 @@ class CheckoutController extends Controller
 
         try {
             $this->sendOrderConfirmationEmail($order);
+
             return response()->json(['message' => 'Test email sent successfully']);
         } catch (Exception $e) {
             Log::error('Failed to send test email.', ['order_id' => $orderId, 'error' => $e->getMessage()]);
+
             return response()->json(['message' => 'Failed to send test email.'], 500);
         }
     }

@@ -34,3 +34,34 @@ An automatic **5% discount** is applied to the subtotal of any order that exceed
 6.  **Stripe Session:** A Stripe Checkout Session is created with line items and any applicable discounts.
 7.  **Payment:** The user is redirected to Stripe to complete the payment.
 8.  **Webhook:** Once payment is confirmed, the `checkout.session.completed` webhook updates the order status to `paid`, decrements stock, and sends a confirmation email.
+
+## Local Development (Stripe Webhooks)
+
+To test the checkout process locally and ensure orders are marked as `paid`, you must run the Stripe CLI to forward webhooks to your local server.
+
+### Prerequisites
+
+- [Stripe CLI](https://docs.stripe.com/stripe-cli) installed on your machine.
+
+### Steps to Run Webhooks Locally
+
+1.  **Login to Stripe:**
+    ```bash
+    stripe login
+    ```
+
+2.  **Start Forwarding Webhooks:**
+    Forward events to your local API endpoint:
+    ```bash
+    stripe listen --forward-to localhost:8000/api/V1/shop/webhook/stripe
+    ```
+    *(Note: Adjust the port if your local server is running on a different port than 8000)*
+
+3.  **Update Environment Variables:**
+    The `stripe listen` command will generate a **Webhook signing secret** (starts with `whsec_`). Copy this value and update your `.env` file:
+    ```env
+    STRIPE_WEBHOOK_SECRET=whsec_your_secret_here
+    ```
+
+4.  **Keep the CLI Running:**
+    The webhooks will only be processed as long as the `stripe listen` command is active.

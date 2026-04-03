@@ -35,6 +35,9 @@ class OrderConfirmation extends Mailable
                 'user' => $this->orderData['user'],
                 'address' => $this->orderData['address'],
                 'products' => $this->orderData['products'],
+                'subtotal' => $this->orderData['subtotal'] ?? 0,
+                'discount' => $this->orderData['discount'] ?? 0,
+                'shipping' => $this->orderData['shipping'] ?? 0,
             ],
         );
     }

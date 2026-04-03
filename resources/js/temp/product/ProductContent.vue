@@ -174,12 +174,22 @@ const props = defineProps({
     data: { type: Object, required: true },
 });
 const categoryId = computed(() => props.data?.category_id);
-const imageUrls = computed(
-    () =>
+const imageUrls = computed(() => {
+    const itemImages =
         props.data?.items
             ?.filter((item) => item.image_url)
-            .map((item) => item.image_url) || [],
-);
+            .map((item) => item.image_url) || [];
+
+    if (itemImages.length > 0) {
+        return itemImages;
+    }
+
+    // Fallback to product image, then to hardcoded placeholder
+    return [
+        props.data?.image_url ||
+            "https://placehold.co/600x400.png?text=Product+Image",
+    ];
+});
 
 const {
     data: variants,

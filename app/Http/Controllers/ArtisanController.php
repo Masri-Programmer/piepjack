@@ -10,7 +10,7 @@ class ArtisanController extends Controller
 {
     public function call(Request $request)
     {
-        $correctPassword = env('ARTISAN_PASSWORD', 'secretkey123'); // Set password in .env
+        $correctPassword = config('app.artisan_password'); // Set password in .env/config
 
         if ($request->isMethod('post')) {
             if ($request->has('password')) {

@@ -173,7 +173,6 @@ const validationSchema = Yup.object().shape({
 
 const submitReview = async () => {
     resetErrors();
-    console.log(reviewForm);
     try {
         await validationSchema.validate(reviewForm, { abortEarly: false });
         createReview(reviewForm, {

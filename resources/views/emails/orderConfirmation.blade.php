@@ -74,14 +74,24 @@
                     <td colspan="2"></td>
                     <td style="padding: 5px 10px; font-size: 13px; color: #666666; text-align: right;">Zwischensumme</td>
                     <td style="padding: 5px 10px; font-size: 13px; color: #111111; text-align: right; font-weight: bold;">
-                        €{{ number_format($order->total_price, 2) }}
+                        €{{ number_format($subtotal, 2, ',', '.') }}
                     </td>
                 </tr>
-                {{-- Assuming tax is part of total or needs calculation, simplistic view here --}}
+                @if($discount > 0)
+                <tr>
+                    <td colspan="2"></td>
+                    <td style="padding: 5px 10px; font-size: 13px; color: #10b981; text-align: right;">Rabatt (5%)</td>
+                    <td style="padding: 5px 10px; font-size: 13px; color: #10b981; text-align: right; font-weight: bold;">
+                        -€{{ number_format($discount, 2, ',', '.') }}
+                    </td>
+                </tr>
+                @endif
                 <tr>
                     <td colspan="2"></td>
                     <td style="padding: 5px 10px; font-size: 13px; color: #666666; text-align: right;">Versand</td>
-                    <td style="padding: 5px 10px; font-size: 13px; color: #111111; text-align: right;">Standard</td>
+                    <td style="padding: 5px 10px; font-size: 13px; color: #111111; text-align: right;">
+                        {{ $shipping > 0 ? '€' . number_format($shipping, 2, ',', '.') : 'Gratis' }}
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="2"></td>
@@ -90,7 +100,7 @@
                         Gesamtbetrag</td>
                     <td class="accent-color"
                         style="padding: 10px; font-size: 15px; text-align: right; font-weight: bold; border-top: 1px solid #eeeeee; margin-top: 5px;">
-                        €{{ number_format($order->total_price, 2) }}
+                        €{{ number_format($order->total_price, 2, ',', '.') }}
                     </td>
                 </tr>
             </table>
@@ -117,7 +127,7 @@
                 </tr>
                 <tr>
                     <td style="padding-top: 10px;">
-                        <a href="{{ env('APP_URL') }}/track-order/{{ $order->order_number }}"
+                        <a href="{{ config('app.url') }}/track-order/{{ $order->order_number }}"
                             style="font-size: 13px; color: #4f46e5; text-decoration: none; font-weight: bold;">
                             Status ansehen &rarr;
                         </a>
