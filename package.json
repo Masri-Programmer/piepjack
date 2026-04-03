@@ -4,7 +4,7 @@
     "scripts": {
         "build": "vite build",
         "preview": "vite preview",
-        "start": "concurrently \"php artisan serve --port=${APP_PORT:-8000}\" \"npm run dev\"",
+        "start": "concurrently \"php artisan serve --port=8000\" \"npm run dev\"",
         "dev": "vite"
     },
     "devDependencies": {
