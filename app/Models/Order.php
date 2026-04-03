@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Traits\HasFilters;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
@@ -24,8 +24,14 @@ class Order extends Model
         'shipping_address_id',
         'billing_address_id',
         'total_price',
+        'subtotal',
+        'discount_amount',
+        'shipping_cost',
         'status',
         'order_notes',
+        'shipping_method_id',
+        'tracking_number',
+        'label_url',
     ];
 
     /**
@@ -39,7 +45,7 @@ class Order extends Model
         static::creating(function ($order) {
             $lastOrder = self::latest('id')->withTrashed()->first();
             $nextNumber = $lastOrder ? $lastOrder->id + 1 : 1;
-            $order->order_number = 'ORD-' . date('Ym') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+            $order->order_number = 'ORD-'.date('Ym').'-'.str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
         });
     }
 

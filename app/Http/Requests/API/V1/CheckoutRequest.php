@@ -44,8 +44,9 @@ class CheckoutRequest extends FormRequest
 
                     $productItem = $this->productItems->get($productId);
 
-                    if (!$productItem) {
+                    if (! $productItem) {
                         $fail("The selected product (ID: {$productId}) is invalid.");
+
                         return;
                     }
 
@@ -56,6 +57,7 @@ class CheckoutRequest extends FormRequest
             ],
 
             'promo_code' => 'nullable|string',
+            'shipping_method_id' => 'required|integer',
         ];
     }
 

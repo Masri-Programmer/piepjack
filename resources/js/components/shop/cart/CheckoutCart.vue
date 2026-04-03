@@ -20,12 +20,23 @@
             </p>
             <p class="text-sm">{{ cartTotalPrice() }} {{ $currency }}</p>
         </div>
-        <div class="flex justify-between">
-            <p class="text-sm">{{ $t("pages.checkout.shipping") }}</p>
-            <p v-if="cartTotalPrice() >= 100 || freeShipping" class="text-sm">
-                {{ $t("pages.checkout.free") }}
-            </p>
-            <p v-else class="text-sm">5.90 {{ $currency }}</p>
+        <div class="py-3 border-b border-gray">
+            <label class="block mb-2 text-sm font-bold">Versandmethode</label>
+            <div class="flex items-center justify-between mb-2">
+                <div>
+                    <input type="radio" id="dhlStandard" :value="8" v-model="cartState.shippingMethodId" />
+                    <label for="dhlStandard" class="ml-2 text-sm">DHL Standard</label>
+                </div>
+                <p v-if="cartTotalPrice() >= 100 || freeShipping" class="text-sm text-green-500">Kostenlos</p>
+                <p v-else class="text-sm">5.90 {{ $currency }}</p>
+            </div>
+            <div class="flex items-center justify-between">
+                <div>
+                    <input type="radio" id="dhlExpress" :value="9" v-model="cartState.shippingMethodId" />
+                    <label for="dhlExpress" class="ml-2 text-sm">DHL Express</label>
+                </div>
+                <p class="text-sm">9.90 {{ $currency }}</p>
+            </div>
         </div>
 
         <div v-if="cartTotalPrice() > 100" class="flex justify-between text-green-500">
@@ -121,8 +132,12 @@ const calculateFinalPrice = () => {
         price = price * 0.95;
     }
 
-    if (cartTotalPrice() < 100 && !freeShipping.value) {
-        price += 5.9;
+    let shippingCost = cartState.value.shippingMethodId === 9 ? 9.9 : 5.9;
+
+    if (cartState.value.shippingMethodId === 9) {
+        price += shippingCost;
+    } else if (cartTotalPrice() < 100 && !freeShipping.value) {
+        price += shippingCost;
     }
 
     if (promoApplied.value && promoDiscount.value > 0) {
@@ -134,6 +149,9 @@ const calculateFinalPrice = () => {
 
 onBeforeMount(() => {
     cartState.value.promoCode = "";
+    if (!cartState.value.shippingMethodId) {
+        cartState.value.shippingMethodId = 8;
+    }
     const stripeLoaded = ref(false);
     const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
     const stripePromise = loadStripe(stripePublicKey);

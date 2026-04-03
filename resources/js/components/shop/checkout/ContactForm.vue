@@ -387,6 +387,7 @@ const buildRequestForm = (form) => {
         postal_code: form.zip,
         country_code: form.land.code,
         state_province: form.stateProvince,
+        shipping_method_id: cartState.value.shippingMethodId || 8,
 
         products: transformCartItmes(cartState.value.cartItems),
         promo_code: cartState.value.promoCode || null,

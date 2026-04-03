@@ -36,6 +36,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             // \Spatie\ResponseCache\Middlewares\CacheResponse::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'shop/webhook/*',
+            'shop/webhooks/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
