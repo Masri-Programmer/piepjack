@@ -79,7 +79,7 @@ import { reactive, onMounted } from "vue";
 import { apiQuery } from "@lib/helpers";
 import { useI18n } from 'vue-i18n';
 import { useRouter } from "vue-router";
-import Spinner from "@components/admin/Spinner.vue"; // Assuming Spinner exists or use it if it's already used elsewhere
+import Spinner from "@components/ui/Spinner.vue";
 
 const { t } = useI18n();
 const router = useRouter();

@@ -13,9 +13,10 @@ const userStorage = useStorage("user", {});
 const userSessionStorage = useSessionStorage("user", {});
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
+axios.defaults.headers.common["Accept"] = "application/json";
 axios.defaults.headers.common["Accept-Language"] = i18n.global.locale;
-// axios.defaults.withCredentials = true;
-// axios.defaults.withXSRFToken = true;
+axios.defaults.withCredentials = true;
+axios.defaults.withXSRFToken = true;
 
 export const apiRequest = async (method, url, data = {}, params = {}) => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${
@@ -44,7 +45,7 @@ export const apiRequest = async (method, url, data = {}, params = {}) => {
         throw new Error(
             error.response?.data?.message ||
                 methodToMessage[method] ||
-                i18n.global.t("validation.api.error")
+                i18n.global.t("validation.api.error"),
         );
     }
 };
@@ -109,11 +110,11 @@ export const apiQuery = (resource) => {
                 mutationFn: (id) => api.delete(id),
                 onSuccess: () => {
                     const confirmed = window.confirm(
-                        i18n.global.t("validation.api.delete.confirm")
+                        i18n.global.t("validation.api.delete.confirm"),
                     );
                     if (!confirmed) {
                         throw new Error(
-                            i18n.global.t("validation.api.delete.cancel")
+                            i18n.global.t("validation.api.delete.cancel"),
                         );
                     }
                     handleSuccess(resource, "delete");

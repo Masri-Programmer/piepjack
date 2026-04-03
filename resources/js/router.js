@@ -327,6 +327,12 @@ const routes = [
                 meta: (route) => ({ title: `User: ${route.params.id}` }),
             },
             {
+                path: "system-logs",
+                name: "admin.system-logs",
+                component: () => import("./pages/admin/SystemLogs.vue"),
+                meta: { title: "System Logs" },
+            },
+            {
                 path: "404",
                 name: "admin.notfound",
                 component: AdminNotFoundLayout,

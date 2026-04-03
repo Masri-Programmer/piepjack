@@ -34,9 +34,7 @@ Route::prefix('admin')->middleware('auth:sanctum')->as('admin.')->group(function
 });
 Route::prefix('admin')->group(
     function () {
-        Route::get('/sanctum/csrf-cookie', function () {
-            return response()->json(['message' => 'CSRF cookie set']);
-        });
+        Route::get('/sanctum/csrf-cookie', [\Laravel\Sanctum\Http\Controllers\CsrfCookieController::class, 'show']);
         Route::post('login', [AdminAuthController::class, 'login'])->middleware('guest');
     }
 );

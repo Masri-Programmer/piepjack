@@ -133,6 +133,17 @@
                         </a>
                     </td>
                 </tr>
+                @if($order->tracking_number)
+                <tr>
+                    <td style="padding-top: 15px; font-size: 13px; line-height: 1.6; color: #666666;">
+                        <strong>Sendungsnummer (DHL):</strong><br>
+                        {{ $order->tracking_number }}
+                        @if($order->label_url)
+                            <br><a href="{{ $order->label_url }}" style="color: #4f46e5; text-decoration: underline;">Tracking Link / Label</a>
+                        @endif
+                    </td>
+                </tr>
+                @endif
             </table>
         </td>
     <tr>

@@ -1,5 +1,6 @@
 <?php
 
 use Laravel\Mcp\Facades\Mcp;
+use App\Mcp\Servers\AppServer;
 
-// Mcp::web('/mcp/demo', \App\Mcp\Servers\PublicServer::class);
+Mcp::web('/mcp', AppServer::class);
