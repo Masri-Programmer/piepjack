@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Stripe\Checkout\Session;
 use Stripe\Coupon;
+use Stripe\Customer;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\Stripe;
 use Stripe\Webhook as StripeWebhook;
@@ -207,9 +208,21 @@ class CheckoutController extends Controller
      */
     private function createStripeSession(Order $order, User $user, array $lineItems, float $totalPrice, float $discountAmount = 0): Session
     {
+        if (empty($user->stripe_id)) {
+            $customer = Customer::create([
+                'email' => $user->email,
+                'name' => $user->first_name.' '.$user->last_name,
+            ]);
+            $user->update(['stripe_id' => $customer->id]);
+        }
+
         $sessionData = [
             'payment_method_types' => config('services.stripe.payment_methods'),
             'mode' => 'payment',
+            'customer' => $user->stripe_id,
+            'saved_payment_method_options' => [
+                'payment_method_save' => 'enabled',
+            ],
             'line_items' => $lineItems,
             'success_url' => config('services.frontend_url').'/success?order_number='.$order->order_number,
             'cancel_url' => config('services.frontend_url').'/checkout?order_number='.$order->order_number,

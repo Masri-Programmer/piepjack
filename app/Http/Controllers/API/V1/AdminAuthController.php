@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\API\V1\LoginRequest;
 use App\Models\Role;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Validation\Rules\Password;
-use App\Http\Requests\API\V1\LoginRequest;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rules\Password;
 
 class AdminAuthController extends Controller
 {
@@ -26,7 +26,7 @@ class AdminAuthController extends Controller
 
         $request->ensureIsNotRateLimited();
 
-        if (!Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials)) {
             RateLimiter::hit($request->throttleKey());
 
             return response()->json([
@@ -35,11 +35,12 @@ class AdminAuthController extends Controller
             ], 422);
         }
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
 
-        if (!$user->hasRole('Admin')) {
+        if (! $user->hasRole('Admin')) {
             Auth::logout();
+
             return response()->json([
                 'message' => 'You do not have permission to access this area.',
             ], 403);
@@ -95,7 +96,13 @@ class AdminAuthController extends Controller
     public function logout(Request $request): Response
     {
         $user = $request->user();
-        $user->tokens()->delete();
+        if ($user) {
+            $user->tokens()->delete();
+        }
+
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response('', 204);
     }
