@@ -24,7 +24,7 @@ if [ "$1" == "status" ]; then
     ssh "${REMOTE_USER}@${REMOTE_HOST}" "
         echo '📊 PM2 Process Status:'
         # Uberspace specific: Use standard path or localized bin
-        pm2 list | grep \"$SSR_PROCESS\" || echo '❌ SSR Process NOT FOUND'
+        pm2 list
         
         echo ''
         echo '🛠️  Laravel Maintenance Mode:'
@@ -124,6 +124,6 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" "bash ${REMOTE_DEPLOY_SCRIPT}"
 
 # --- STEP 7: CLEANUP & RELOAD ---
 echo "🔄 Reloading SSR Process..."
-ssh "${REMOTE_USER}@${REMOTE_HOST}" "if [ -f ~/.profile ]; then source ~/.profile; elif [ -f ~/.bash_profile ]; then source ~/.bash_profile; elif [ -f ~/.bashrc ]; then source ~/.bashrc; fi; rm -rf ${REMOTE_APP_PATH}/public/build_backup && pm2 reload $SSR_PROCESS" 
+ssh "${REMOTE_USER}@${REMOTE_HOST}" "if [ -f ~/.profile ]; then source ~/.profile; elif [ -f ~/.bash_profile ]; then source ~/.bash_profile; elif [ -f ~/.bashrc ]; then source ~/.bashrc; fi; rm -rf ${REMOTE_APP_PATH}/public/build_backup"
 
 echo "✅ DEPLOYMENT SUCCESSFUL!"
