@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Admin',
                 'last_name' => 'User',
                 'active' => 1,
-                'password' => Hash::make('asdQWE@34104758'),
+                'password' => Hash::make(config('mail.mailers.smtp.password')),
                 'email_verified_at' => now(),
             ]
         );

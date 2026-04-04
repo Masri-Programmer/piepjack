@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Models\User;
+use Filament\Panel;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Lunar\Admin\Support\Facades\LunarPanel;
 use Stripe\Stripe;
-
+use Lunar\Shipping\ShippingPlugin;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -14,7 +16,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        LunarPanel::panel(function (Panel $panel) {
+            return $panel->plugin(new ShippingPlugin());
+        })->register();
     }
 
     /**

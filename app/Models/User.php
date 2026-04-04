@@ -11,11 +11,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Lunar\Base\LunarUser as LunarUserContract;
+use Lunar\Base\Traits\LunarUser;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements LunarUserContract
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasFilters,Notifiable;
+    use HasApiTokens, HasFactory, HasFilters, HasRoles, LunarUser, Notifiable;
 
     /**
      * @var array<int, string>
