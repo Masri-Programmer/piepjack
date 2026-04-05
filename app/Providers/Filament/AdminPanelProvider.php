@@ -23,13 +23,12 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandLogo(fn() => asset('img/logo-new.png'))
+            ->brandLogo(fn () => asset('img/logo-new.png'))
             ->brandLogoHeight('2.5rem')
-            ->darkModeBrandLogo(fn() => asset('img/logo-new.png'))
+            ->darkModeBrandLogo(fn () => asset('img/logo-new.png'))
             ->colors([
                 'primary' => Color::Amber,
             ])

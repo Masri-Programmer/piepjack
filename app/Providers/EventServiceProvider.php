@@ -21,6 +21,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        ProductReview::observe(ProductReviewObserver::class);
+        // ProductReview::observe(ProductReviewObserver::class);
     }
 }
