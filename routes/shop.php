@@ -19,14 +19,11 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::get('products-reviews/{product}', [ProductReviewController::class, 'index']);
     Route::post('products-reviews', [ProductReviewController::class, 'store'])->middleware('throttle:3,1');
     Route::get('categories', [PublicCategoryController::class, 'index']);
-    Route::get('category-variations/{category}', [VariationController::class, 'categoryVariations']);
     Route::post('checkout', [CheckoutController::class, 'checkout'])->middleware('throttle:5,1');
     // Route::get('sendTestEmail/{orderId}', [CheckoutController::class, 'sendTestEmail']);
     Route::get('sendReturnTestEmail/{returnId}', [PublicReturningController::class, 'sendReturnEmailTest']);
     Route::post('webhook/stripe', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1');
     Route::post('webhook/return-items', [PublicReturningController::class, 'handleWebhook']);
-    Route::post('launch-registration', [LaunchRegistrationController::class, 'store'])->middleware('throttle:3,1');
-    Route::post('trigger-online-notification', [LaunchRegistrationController::class, 'triggerOnlineNotification']);
     Route::middleware('auth:sanctum')->group(function () { });
     Route::post('/shipping/generate-label', [ShippingController::class, 'generateLabel']);
     Route::post('/webhooks/sendcloud', [SendcloudWebhookController::class, 'handle']);
