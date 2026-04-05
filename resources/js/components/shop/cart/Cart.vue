@@ -29,7 +29,7 @@
                         <!-- Cart Content -->
                         <div class="cart-body">
                             <transition name="fade">
-                                <div v-if="cartTotalPrice() >= 100">
+                                <div v-if="cartTotalPrice >= 100">
                                     <div class="cart-eligible">
                                         <CircleCheckBig size="20" />
                                         <div class="cart-eligible-details">
@@ -127,7 +127,7 @@
                                     </p>
                                 </div>
                                 <div>
-                                    {{ cartTotalPrice() }} {{ $currency }}
+                                    {{ cartTotalPrice }} {{ $currency }}
                                 </div>
                             </div>
                             <router-link
@@ -239,15 +239,9 @@ onMounted(async () => {
                     //removeProductFromCart( cartProduct.id); // Optional: remove the invalid product
                     continue; // Skip to the next cart product
                 }
-                // Update product details
+                // Update product details from validProduct
                 Object.keys(validProduct).forEach((key) => {
-                    if (
-                        Object.prototype.hasOwnProperty.call(
-                            cartProduct,
-                            key,
-                        ) &&
-                        key !== "items"
-                    ) {
+                    if (key !== "items") {
                         updateProductKey({
                             productId: cartProduct.id,
                             key,
@@ -273,21 +267,14 @@ onMounted(async () => {
                                 return null;
                             }
 
-                            // Update cart item with valid details
+                            // Update cart item with valid details from validItem
                             Object.keys(validItem).forEach((key) => {
-                                if (
-                                    Object.prototype.hasOwnProperty.call(
-                                        cartItem,
-                                        key,
-                                    )
-                                ) {
-                                    updateItemKey({
-                                        productId: cartProduct.id,
-                                        itemId: cartItem.id,
-                                        key,
-                                        value: validItem[key],
-                                    });
-                                }
+                                updateItemKey({
+                                    productId: cartProduct.id,
+                                    itemId: cartItem.id,
+                                    key,
+                                    value: validItem[key],
+                                });
                             });
                             return cartItem; // Return valid cart item
                         })

@@ -6,9 +6,10 @@
         <img
             :src="
                 item?.image_url ??
-                'https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/riva-dashboard-tailwind/img/img-49-new.jpg'
+                product?.image_url ??
+                NoImg
             "
-            :alt="product.name"
+            :alt="product.name || 'Product'"
             width="1667"
             height="2500"
             loading="lazy"
@@ -52,6 +53,7 @@
     </div>
 </template>
 <script setup>
+import NoImg from "@img/no-image.jpg";
 import CustomNumberInput from "@ui/CustomNumberInput.vue";
 import "@assets/css/components/product/card.css";
 

@@ -37,7 +37,7 @@
                     v-for="(image, index) in imageUrls"
                     :key="index"
                     @click="selectImage(index)"
-                    class="flex-shrink-0 cursor-pointer p-1 rounded-lg transition-all duration-200"
+                    class="shrink-0 cursor-pointer p-1 rounded-lg transition-all duration-200"
                     :class="{
                         'border-2 border-black shadow-lg':
                             index === activeIndex,
@@ -57,12 +57,8 @@
                 <h6 class="text-base font-extrabold">
                     {{ data?.name }}
                 </h6>
-                <template v-if="variants?.data && data?.items.length">
-                    <ProductVariations
-                        :variants="variants?.data"
-                        :items="data?.items"
-                        :product="data"
-                    />
+                <template v-if="data?.items && data?.items.length">
+                    <ProductVariations :items="data?.items" :product="data" />
                     <ProductContentAddOns />
                 </template>
                 <div v-else class="text-sm text-orange-300 underline uppercase">
@@ -174,18 +170,12 @@ const props = defineProps({
     data: { type: Object, required: true },
 });
 const categoryId = computed(() => props.data?.category_id);
-const imageUrls = computed(
-    () =>
-        props.data?.items
-            ?.filter((item) => item.image_url)
-            .map((item) => item.image_url) || [],
-);
-
-const {
-    data: variants,
-    error,
-    isLoading,
-} = apiQuery("category-variations").useGetById(categoryId);
+const imageUrls = computed(() => {
+    if (props.data?.images && props.data.images.length > 0) {
+        return props.data.images;
+    }
+    return props.data?.image_url ? [props.data.image_url] : [];
+});
 
 const visibleRef = ref(false);
 const indexRef = ref(0);

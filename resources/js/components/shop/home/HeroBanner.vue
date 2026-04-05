@@ -35,8 +35,25 @@ import { useSessionStorage } from "@vueuse/core";
 const { data } = apiQuery("categories").useGet({});
 
 const showCategories = useSessionStorage("home-animation", false);
+const targetSlugs = [
+    "t-shirts",
+    "sweaters",
+    "jackets",
+    "sports",
+    "accessories",
+    "underwear",
+];
+
 const displayedCollections = computed(() => {
-    return data.value?.data?.slice(0, 6) || [];
+    if (!data.value?.data) {
+        return [];
+    }
+
+    return data.value.data
+        .filter((collection) => targetSlugs.includes(collection.slug))
+        .sort(
+            (a, b) => targetSlugs.indexOf(a.slug) - targetSlugs.indexOf(b.slug),
+        );
 });
 
 onMounted(() => {

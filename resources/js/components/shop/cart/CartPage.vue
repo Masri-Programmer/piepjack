@@ -42,7 +42,7 @@
     <div class="cart-page-summary">
       <div class="cart-page-summary-content">
         <p>
-          {{ $t("components.cart.totalAmount", { total: cartTotalPrice() }) }}
+          {{ $t("components.cart.totalAmount", { total: cartTotalPrice }) }}
           {{ $currency }}
         </p>
         <p v-html="taxAndShippingInfo" class="cart-page-summary-info"></p>
@@ -106,12 +106,9 @@ onMounted(async () => {
           // removeProductFromCart(cartProduct.id); // Optional: remove the invalid product
           continue; // Skip to the next cart product
         }
-        // Update product details
+        // Update product details from validProduct
         Object.keys(validProduct).forEach((key) => {
-          if (
-            Object.prototype.hasOwnProperty.call(cartProduct, key) &&
-            key !== "items"
-          ) {
+          if (key !== "items") {
             updateProductKey({
               productId: cartProduct.id,
               key,
@@ -133,16 +130,14 @@ onMounted(async () => {
                 return null;
               }
 
-              // Update cart item with valid details
+              // Update cart item with valid details from validItem
               Object.keys(validItem).forEach((key) => {
-                if (Object.prototype.hasOwnProperty.call(cartItem, key)) {
-                  updateItemKey({
-                    productId: cartProduct.id,
-                    itemId: cartItem.id,
-                    key,
-                    value: validItem[key],
-                  });
-                }
+                updateItemKey({
+                  productId: cartProduct.id,
+                  itemId: cartItem.id,
+                  key,
+                  value: validItem[key],
+                });
               });
               return cartItem; // Return valid cart item
             })

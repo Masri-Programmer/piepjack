@@ -82,9 +82,9 @@
                             ></path>
                         </svg>
                         <span
-                            v-if="cartTotalQuantity() > 0"
+                            v-if="cartTotalQuantity > 0"
                             class="cart-badge"
-                            >{{ cartTotalQuantity() }}</span
+                            >{{ cartTotalQuantity }}</span
                         >
                     </div>
                 </ul>

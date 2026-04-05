@@ -4,9 +4,10 @@
             <img
                 :src="
                     item?.image_url ??
-                    'https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/riva-dashboard-tailwind/img/img-49-new.jpg'
+                    product?.image_url ??
+                    NoImg
                 "
-                :alt="product.name"
+                :alt="product.name || 'Product'"
                 loading="lazy"
                 class="cart-product-product-image"
             />
@@ -47,6 +48,7 @@
 
 <script setup>
 import "@assets/css/cart/cartProduct.css";
+import NoImg from "@img/no-image.jpg";
 import CustomNumberInput from "@ui/CustomNumberInput.vue";
 
 const props = defineProps({

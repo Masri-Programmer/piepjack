@@ -14,11 +14,11 @@
             <p class="text-sm">
                 {{
                     $t("pages.checkout.subtotal", {
-                        itemCount: cartTotalQuantity(),
+                        itemCount: cartTotalQuantity,
                     })
                 }}
             </p>
-            <p class="text-sm">{{ cartTotalPrice() }} {{ $currency }}</p>
+            <p class="text-sm">{{ cartTotalPrice }} {{ $currency }}</p>
         </div>
         <div class="py-3 border-b border-gray">
             <label class="block mb-2 text-sm font-bold">Versandmethode</label>
@@ -27,7 +27,7 @@
                     <input type="radio" id="dhlStandard" :value="8" v-model="cartState.shippingMethodId" />
                     <label for="dhlStandard" class="ml-2 text-sm">DHL Standard</label>
                 </div>
-                <p v-if="cartTotalPrice() >= 100 || freeShipping" class="text-sm text-green-500">Kostenlos</p>
+                <p v-if="cartTotalPrice >= 100 || freeShipping" class="text-sm text-green-500">Kostenlos</p>
                 <p v-else class="text-sm">5.90 {{ $currency }}</p>
             </div>
             <div class="flex items-center justify-between">
@@ -39,9 +39,9 @@
             </div>
         </div>
 
-        <div v-if="cartTotalPrice() > 100" class="flex justify-between text-green-500">
+        <div v-if="cartTotalPrice > 100" class="flex justify-between text-green-500">
             <p class="text-sm">5% Discount (Orders > 100€)</p>
-            <p class="text-sm">-{{ (cartTotalPrice() * 0.05).toFixed(2) }} {{ $currency }}</p>
+            <p class="text-sm">-{{ (cartTotalPrice * 0.05).toFixed(2) }} {{ $currency }}</p>
         </div>
 
         <div class="py-3 border-t border-b border-gray">
@@ -126,7 +126,7 @@ const applyPromoCode = () => {
 };
 
 const calculateFinalPrice = () => {
-    let price = cartTotalPrice();
+    let price = cartTotalPrice.value;
 
     if (price > 100) {
         price = price * 0.95;
@@ -136,7 +136,7 @@ const calculateFinalPrice = () => {
 
     if (cartState.value.shippingMethodId === 9) {
         price += shippingCost;
-    } else if (cartTotalPrice() < 100 && !freeShipping.value) {
+    } else if (cartTotalPrice.value < 100 && !freeShipping.value) {
         price += shippingCost;
     }
 
