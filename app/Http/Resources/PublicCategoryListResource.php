@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class PublicCategoryListResource extends JsonResource
 {
@@ -14,11 +15,14 @@ class PublicCategoryListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // Extract the name using Lunar's translation helper
+        $name = $this->translateAttribute('name');
+
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'promoted' => (bool) $this->promoted,
+            'name' => $name,
+            'slug' => Str::slug($name),
+            'promoted' => true,
             'parent_id' => $this->parent_id,
         ];
     }

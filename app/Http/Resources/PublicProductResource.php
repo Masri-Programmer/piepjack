@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class PublicProductResource extends JsonResource
 {
@@ -14,18 +15,22 @@ class PublicProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $name = $this->translateAttribute('name');
+        $media = $this->getFirstMedia('primary') ?: $this->getFirstMedia('images');
+        $collection = $this->collections->first();
+
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'image_url' => $this->image,
-            'image_mime' => $this->image_mime,
-            'image_size' => $this->image_size,
-            'description' => $this->description,
-            'category_id' => $this->category_id,
-            'category_name' => $this->whenLoaded('category')->name,
-            'items' => PublicProductItemResource::collection($this->whenLoaded('items')),
+            'name' => $name,
+            'slug' => Str::slug($name),
+            'image_url' => $media ? $media->getUrl() : null,
+            'image_mime' => $media ? $media->mime_type : null,
+            'image_size' => $media ? $media->size : null,
+            'images' => $this->getMedia('images')->map(fn ($m) => $m->getUrl())->toArray(),
+            'description' => $this->translateAttribute('description'),
+            'category_id' => $collection ? $collection->id : null,
+            'category_name' => $collection ? $collection->translateAttribute('name') : null,
+            'items' => PublicVariantResource::collection($this->whenLoaded('variants')),
         ];
-
     }
 }
