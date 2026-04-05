@@ -5,9 +5,6 @@ import { useStorage, useSessionStorage } from "@vueuse/core";
 import { createApiResource } from "@lib/helpers";
 import AppLayout from "./layouts/shop/AppLayout.vue";
 import AppLayout2 from "./layouts/shop/AppLayout2.vue";
-import AdminAppLayout from "./layouts/admin/AppLayout.vue";
-import AdminLoginLayout from "./layouts/admin/Login.vue";
-import AdminNotFoundLayout from "./layouts/admin/NotFound.vue";
 import PublicNotFoundLayout from "./layouts/shop/NotFound.vue";
 import LaunchCountdown from "./pages/shop/LaunchCountdown.vue";
 import { useArea } from "@lib/useArea.js";
@@ -172,179 +169,6 @@ const routes = [
             },
         ],
     },
-
-    {
-        path: "/admin/login",
-        name: "admin.login",
-        component: AdminLoginLayout,
-        meta: { requiresGuest: true, title: "Admin Login" },
-    },
-    {
-        path: "/admin",
-        component: AdminAppLayout,
-        meta: { requiresAuth: true },
-        children: [
-            {
-                path: "",
-                name: "admin.home",
-                redirect: { name: "admin.dashboard" },
-            },
-            {
-                path: "dashboard",
-                name: "admin.dashboard",
-                component: () => import("./pages/admin/Dashboard.vue"),
-                meta: { title: "Dashboard" },
-            },
-            {
-                path: "products",
-                name: "admin.products.show",
-                component: () =>
-                    import("./pages/admin/products/ProductsShow.vue"),
-                meta: { title: "Products" },
-            },
-            {
-                path: "products/add",
-                name: "admin.products.add",
-                component: () =>
-                    import("./pages/admin/products/StoreProduct.vue"),
-                meta: { title: "Add Product" },
-            },
-            {
-                path: "products/:id/:slug",
-                name: "admin.products.view",
-                component: () => import("./pages/admin/products/Product.vue"),
-                meta: (route) => ({ title: `Product: ${route.params.slug}` }),
-            },
-            {
-                path: "products/:id",
-                name: "admin.products.redirect",
-                redirect: async (to) => {
-                    const { id } = to.params;
-                    try {
-                        const product =
-                            await createApiResource("products").getById(id);
-                        if (product && product.slug) {
-                            return {
-                                name: "admin.products.view",
-                                params: { id, slug: product.slug },
-                            };
-                        }
-                        console.warn(
-                            `Admin: Product with ID ${id} not found or slug missing. Redirecting to admin notfound.`,
-                        );
-                        return { name: "admin.notfound" };
-                    } catch (error) {
-                        console.error(
-                            `Admin: Error fetching product ID ${id} for redirect:`,
-                            error,
-                        );
-                        return { name: "admin.notfound" };
-                    }
-                },
-            },
-            {
-                path: "categories",
-                name: "admin.categories",
-                component: () =>
-                    import("./pages/admin/categories/Categories.vue"),
-                meta: { title: "Categories" },
-            },
-            {
-                path: "categories/add",
-                name: "admin.categories.add",
-                component: () =>
-                    import("./pages/admin/categories/StoreCategory.vue"),
-                meta: { title: "Add Category" },
-            },
-            {
-                path: "categories/:id/:slug",
-                name: "admin.categories.view",
-                component: () =>
-                    import("./pages/admin/categories/Category.vue"),
-                meta: (route) => ({ title: `Category: ${route.params.slug}` }),
-            },
-            {
-                path: "categories/:id",
-                name: "admin.categories.redirect",
-                redirect: async (to) => {
-                    const { id } = to.params;
-                    try {
-                        const category =
-                            await createApiResource("categories").getById(id);
-                        if (category && category.slug) {
-                            return {
-                                name: "admin.categories.view",
-                                params: { id, slug: category.slug },
-                            };
-                        }
-                        console.warn(
-                            `Admin: Category with ID ${id} not found or slug missing. Redirecting to admin notfound.`,
-                        );
-                        return { name: "admin.notfound" };
-                    } catch (error) {
-                        console.error(
-                            `Admin: Error fetching category ID ${id} for redirect:`,
-                            error,
-                        );
-                        return { name: "admin.notfound" };
-                    }
-                },
-            },
-            {
-                path: "orders",
-                name: "admin.orders",
-                component: () => import("./pages/admin/orders/Orders.vue"),
-                meta: { title: "Orders" },
-            },
-            {
-                path: "orders/:id",
-                name: "admin.orders.view",
-                component: () => import("./pages/admin/orders/Order.vue"),
-                meta: (route) => ({ title: `Order: ${route.params.id}` }),
-            },
-            {
-                path: "returns",
-                name: "admin.returns",
-                component: () => import("./pages/admin/returns/Returns.vue"),
-                meta: { title: "Returns" },
-            },
-            {
-                path: "returns/:id",
-                name: "admin.returns.view",
-                component: () => import("./pages/admin/returns/Returns.vue"),
-                meta: (route) => ({ title: `Return: ${route.params.id}` }),
-            },
-            {
-                path: "users",
-                name: "admin.users",
-                component: () => import("./pages/admin/users/Users.vue"),
-                meta: { title: "Users" },
-            },
-            {
-                path: "users/:id",
-                name: "admin.users.view",
-                component: () => import("./pages/admin/users/User.vue"),
-                meta: (route) => ({ title: `User: ${route.params.id}` }),
-            },
-            {
-                path: "system-logs",
-                name: "admin.system-logs",
-                component: () => import("./pages/admin/SystemLogs.vue"),
-                meta: { title: "System Logs" },
-            },
-            {
-                path: "404",
-                name: "admin.notfound",
-                component: AdminNotFoundLayout,
-                meta: { title: "Admin - Not Found" },
-            },
-            {
-                path: ":adminPathMatch(.*)*",
-                redirect: { name: "admin.notfound" },
-            },
-        ],
-    },
-
     {
         path: "/launch",
         name: "Launch",
@@ -370,9 +194,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     NProgress.start();
 
-    if (to.path.startsWith("/admin")) {
-        setAppArea("admin");
-    } else if (to.name !== "admin.login") {
+    if (to.name !== "admin.login") {
         setAppArea("shop");
     }
 
@@ -392,7 +214,9 @@ router.beforeEach((to, from, next) => {
     );
     const loggedIn = isAuthenticated();
 
-    const targetDate = new Date(import.meta.env.VITE_LAUNCH_DATE || "2026-05-01T18:00:00").getTime();
+    const targetDate = new Date(
+        import.meta.env.VITE_LAUNCH_DATE || "2026-05-01T18:00:00",
+    ).getTime();
 
     const now = new Date().getTime();
     const isPastLaunch = now >= targetDate;
@@ -425,8 +249,6 @@ router.beforeEach((to, from, next) => {
         } else {
             next();
         }
-    } else if (requiresGuest && loggedIn) {
-        next({ name: "admin.dashboard" });
     } else {
         next();
     }
