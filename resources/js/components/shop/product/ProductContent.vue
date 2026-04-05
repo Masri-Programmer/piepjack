@@ -7,10 +7,10 @@
                 class="relative w-full overflow-hidden rounded-lg shadow-xl aspect-square bg-gray-100"
                 @click="showMultiple(activeIndex)"
             >
-                <img
+                <ProductImage
                     :src="imageUrls[activeIndex]"
-                    alt="Product large view"
-                    class="w-full h-full object-cover transition-transform duration-300 cursor-pointer"
+                    :alt="data?.name"
+                    customClass="w-full h-full object-cover transition-transform duration-300 cursor-pointer"
                 />
                 <div
                     class="absolute bottom-4 right-4 text-gray-700 cursor-pointer"
@@ -43,10 +43,10 @@
                             index === activeIndex,
                     }"
                 >
-                    <img
+                    <ProductImage
                         :src="image"
-                        alt="Product thumbnail"
-                        class="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded"
+                        :alt="data?.name"
+                        customClass="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded"
                     />
                 </div>
             </div>
@@ -165,6 +165,7 @@ import { apiQuery } from "@lib/helpers";
 import VueEasyLightbox from "vue-easy-lightbox";
 import ProductVariations from "./ProductVariations.vue";
 import ProductContentAddOns from "./ProductContentAddOns.vue";
+import ProductImage from "@components/ui/ProductImage.vue";
 import Table from "@ui/Table.vue";
 const props = defineProps({
     data: { type: Object, required: true },

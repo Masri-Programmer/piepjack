@@ -3,18 +3,11 @@
         <span v-if="item?.cartQuantity" class="cart-badge">
             {{ item.cartQuantity }}
         </span>
-        <img
-            :src="
-                item?.image_url ??
-                product?.image_url ??
-                NoImg
-            "
-            :alt="product.name || 'Product'"
-            width="1667"
-            height="2500"
-            loading="lazy"
-            sizes="100px"
-            class="product-image"
+        <ProductImage
+            :src="item?.image_url"
+            :fallback="product?.image_url"
+            :alt="product.name"
+            customClass="product-image"
         />
         <div class="product-details">
             <h6>
@@ -53,7 +46,7 @@
     </div>
 </template>
 <script setup>
-import NoImg from "@img/no-image.jpg";
+import ProductImage from "@components/ui/ProductImage.vue";
 import CustomNumberInput from "@ui/CustomNumberInput.vue";
 import "@assets/css/components/product/card.css";
 

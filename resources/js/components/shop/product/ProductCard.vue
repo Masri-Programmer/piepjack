@@ -14,13 +14,10 @@
             <p>{{ $t("common.product.new") }}</p>
         </div>
         <div class="relative w-full overflow-hidden aspect-3/4">
-            <img
-                :src="product.image_url || NoImg"
+            <ProductImage
+                :src="product.image_url"
                 :alt="product.name"
-                width="1667"
-                height="2500"
-                loading="lazy"
-                class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                customClass="w-full h-full transition-transform duration-300 group-hover:scale-110"
             />
         </div>
         <div
@@ -39,7 +36,7 @@
 
 <script setup>
 import { ref } from "vue";
-import NoImg from "@img/no-image.jpg";
+import ProductImage from "@components/ui/ProductImage.vue";
 import { ShoppingCart } from "lucide-vue-next";
 import { useNow } from "@vueuse/core";
 import { computed } from "vue";

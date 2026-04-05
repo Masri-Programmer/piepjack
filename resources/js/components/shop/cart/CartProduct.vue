@@ -1,15 +1,11 @@
 <template>
     <td class="cart-product-product">
         <div class="cart-product-product-info">
-            <img
-                :src="
-                    item?.image_url ??
-                    product?.image_url ??
-                    NoImg
-                "
-                :alt="product.name || 'Product'"
-                loading="lazy"
-                class="cart-product-product-image"
+            <ProductImage
+                :src="item?.image_url"
+                :fallback="product?.image_url"
+                :alt="product.name"
+                customClass="cart-product-product-image"
             />
             <h6 class="cart-product-product-name">
                 <strong>{{ product.name }} (#{{ product.id }})</strong>
@@ -48,7 +44,7 @@
 
 <script setup>
 import "@assets/css/cart/cartProduct.css";
-import NoImg from "@img/no-image.jpg";
+import ProductImage from "@components/ui/ProductImage.vue";
 import CustomNumberInput from "@ui/CustomNumberInput.vue";
 
 const props = defineProps({
