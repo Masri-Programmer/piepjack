@@ -5,33 +5,49 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PublicProductListResource;
 use App\Http\Resources\PublicProductResource;
-use App\Models\Product;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse; // IMPORTANT: Using the Lunar Model
+use Lunar\Models\Product;
 
 class PublicProductController extends Controller
 {
     public function index(): JsonResponse
     {
-        $query = Product::filter(request()->only(['category_id', 'search']), ['name'])
-            ->when(request('category_id'), fn($q, $categoryId) => $q->category($categoryId))
-            ->where('active', true)
-            ->with(['category', 'items' => fn($q) => $q->select('product_id', DB::raw('MIN(price) as min_price'))->groupBy('product_id')])
-            ->sort([request('sort_field', 'created_at') => request('sort_direction', 'desc')])
-            ->paginateResults(request('per_page', 10));
+        $query = Product::query()
+            ->where('status', 'published') // Lunar uses status instead of active boolean
+            ->with(['variants.prices', 'collections', 'media']); // Eager load Lunar relationships
 
-        return PublicProductListResource::collection($query)->response();
+        // 1. Filter by Category (Lunar Collections)
+        if ($categoryId = request('category_id')) {
+            $query->whereHas('collections', function ($q) use ($categoryId) {
+                $q->where('lunar_collections.id', $categoryId);
+            });
+        }
+
+        // 2. Search by Name (Querying Lunar's JSON attribute column)
+        if ($search = request('search')) {
+            $query->where('attribute_data->name->value', 'like', '%'.$search.'%');
+        }
+
+        // 3. Sorting and Pagination
+        $sortField = request('sort_field', 'created_at');
+        $sortDirection = request('sort_direction', 'desc');
+
+        $products = $query->orderBy($sortField, $sortDirection)
+            ->paginate(request('per_page', 8));
+
+        return PublicProductListResource::collection($products)->response();
     }
 
     public function show(Product $product): JsonResponse
     {
-        return (new PublicProductResource(
-            $product->load([
-                'category',
-                'items' => function ($query) {
-                    $query->where('active', true)->with('options');
-                },
-            ])
-        ))->response();
+        // Ensure we load the necessary Lunar relationships for a single product view
+        $product->load([
+            'variants.prices',
+            'variants.values.option', // This is the corrected relationship path!
+            'collections',
+            'media',
+        ]);
+
+        return (new PublicProductResource($product))->response();
     }
 }

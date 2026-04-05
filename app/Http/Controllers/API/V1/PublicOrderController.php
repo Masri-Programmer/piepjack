@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Models\User;
-use App\Models\Order;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\OrderListResource;
-use App\Http\Resources\PublicOrderListResource;
+use App\Http\Resources\PublicOrderListResource; // Using Lunar's Order Model
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Lunar\Models\Order;
 
 class PublicOrderController extends Controller
 {
-    /**
-     * Display a listing of orders for a given email.
-     */
     public function index(Request $request): JsonResponse
     {
         $request->validate([
@@ -23,27 +19,29 @@ class PublicOrderController extends Controller
 
         $user = User::where('email', $request->query('email'))->first();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'No user found with that email address.'], 404);
         }
 
-        $orders = $user->orders()->with('products')->get();
+        // Lunar orders belong to a user_id
+        // We eager load the lines, the purchased variant (purchasable), and the parent product
+        $orders = Order::where('user_id', $user->id)
+            ->with(['lines.purchasable.product'])
+            ->get();
 
-        return response()->json(OrderListResource::collection($orders));
+        return response()->json(PublicOrderListResource::collection($orders));
     }
 
-    /**
-     * Display the specified order.
-     */
     public function show(string $orderNumber): PublicOrderListResource
     {
+        // Lunar uses 'reference' instead of 'order_number'
         $order = Order::with([
-            'products.productItem.product',
+            'lines.purchasable.product',
             'user',
             'shippingAddress',
             'billingAddress',
         ])
-            ->where('order_number', $orderNumber)
+            ->where('reference', $orderNumber)
             ->firstOrFail();
 
         return new PublicOrderListResource($order);

@@ -4,16 +4,15 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PublicCategoryListResource;
-use App\Models\Category;
+use Illuminate\Http\JsonResponse;
+use Lunar\Models\Collection;
 
 class PublicCategoryController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
-        $query = Category::query()
-            ->where('active', true)
-            ->get();
+        $collections = Collection::all();
 
-        return PublicCategoryListResource::collection($query)->response();
+        return PublicCategoryListResource::collection($collections)->response();
     }
 }
