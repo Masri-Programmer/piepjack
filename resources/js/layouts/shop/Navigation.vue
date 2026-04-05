@@ -57,9 +57,9 @@
                         />
                     </li>
                     <li class="flex">
-                        <router-link to="/admin"
+                        <a href="/lunar/login"
                             ><ShieldUser size="24" strokeWidth="1" />
-                        </router-link>
+                        </a>
                     </li>
                     <li>
                         <Search
