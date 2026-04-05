@@ -2,52 +2,229 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
-use App\Models\Product;
-use App\Models\ProductConfiguration;
-use App\Models\ProductItem;
-use App\Models\VariationOption;
-use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Lunar\Admin\Actions\Products\MapVariantsToProductOptions;
+use Lunar\FieldTypes\ListField;
+use Lunar\FieldTypes\Text;
+use Lunar\FieldTypes\TranslatedText;
+use Lunar\Models\Attribute;
+use Lunar\Models\Brand;
+use Lunar\Models\Channel;
+use Lunar\Models\Collection;
+use Lunar\Models\Currency;
+use Lunar\Models\Language;
+use Lunar\Models\Price;
+use Lunar\Models\Product;
+use Lunar\Models\ProductOption;
+use Lunar\Models\ProductOptionValue;
+use Lunar\Models\ProductType;
+use Lunar\Models\ProductVariant;
+use Lunar\Models\TaxClass;
 
-class ProductSeeder extends Seeder
+class ProductSeeder extends AbstractSeeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        // Eager load variations to avoid N+1 queries when accessing $category->variations
-        $categories = Category::with('variations')->get();
+        $products = $this->getSeedData('products');
 
-        $categories->each(function ($category) {
-            // Create 10 products for the current category
-            $products = Product::factory(10)->create(['category_id' => $category->id]);
+        $attributes = Attribute::get();
 
-            // Get all variation IDs for this category
-            $variationIds = $category->variations->pluck('id');
+        $productType = ProductType::first();
 
-            // Fetch all possible variation options for this category in a single query and group them by their parent variation's ID
-            $optionsByVariationId = VariationOption::whereIn('variation_id', $variationIds)
-                ->get()
-                ->groupBy('variation_id');
+        $taxClass = TaxClass::getDefault();
 
-            $products->each(function ($product) use ($category, $optionsByVariationId) {
-                // Create 3 product items (SKUs) for each product
-                $productItems = ProductItem::factory(3)->create(['product_id' => $product->id]);
+        $currency = Currency::getDefault();
 
-                // Assign a configuration to each product item
-                $productItems->each(function ($productItem) use ($category, $optionsByVariationId) {
-                    // For each variation in the category (Color, Size, etc.), assign a random option
-                    $category->variations->each(function ($variation) use ($productItem, $optionsByVariationId) {
-                        // Check if we have options for this variation before trying to access them
-                        if (isset($optionsByVariationId[$variation->id]) && $optionsByVariationId[$variation->id]->isNotEmpty()) {
-                            ProductConfiguration::create([
-                                'product_item_id' => $productItem->id,
-                                'variation_option_id' => $optionsByVariationId[$variation->id]->random()->id,
+        $collections = Collection::get();
+
+        $language = Language::getDefault();
+
+        $channel = Channel::getDefault();
+
+        DB::transaction(function () use ($products, $attributes, $productType, $taxClass, $currency, $collections, $channel) {
+            $products->each(function ($product) use ($attributes, $productType, $taxClass, $currency, $collections, $channel) {
+                $attributeData = [];
+
+                foreach ($product->attributes as $attributeHandle => $value) {
+                    $attribute = $attributes->first(fn ($att) => $att->handle == $attributeHandle);
+
+                    if ($attribute->type == TranslatedText::class) {
+                        $attributeData[$attributeHandle] = new TranslatedText([
+                            'en' => new Text($value),
+                        ]);
+
+                        continue;
+                    }
+
+                    if ($attribute->type == ListField::class) {
+                        $attributeData[$attributeHandle] = new ListField((array) $value);
+                    }
+                }
+
+                $brand = Brand::firstOrCreate([
+                    'name' => $product->brand,
+                ]);
+
+                $productModel = Product::create([
+                    'attribute_data' => $attributeData,
+                    'product_type_id' => $productType->id,
+                    'status' => 'published',
+                    'brand_id' => $brand->id,
+                ]);
+
+                if ($channel) {
+                    $productModel->channels()->sync([
+                        $channel->id => [
+                            'enabled' => true,
+                            'starts_at' => now(),
+                        ],
+                    ]);
+                }
+
+                $variant = ProductVariant::create([
+                    'product_id' => $productModel->id,
+                    'purchasable' => 'always',
+                    'shippable' => true,
+                    'backorder' => 0,
+                    'sku' => $product->sku,
+                    'tax_class_id' => $taxClass->id,
+                    'stock' => 500,
+                ]);
+
+                if (! count($product->options ?? [])) {
+                    Price::create([
+                        'customer_group_id' => null,
+                        'currency_id' => $currency->id,
+                        'priceable_type' => (new ProductVariant)->getMorphClass(),
+                        'priceable_id' => $variant->id,
+                        'price' => $product->price,
+                        'compare_price' => $product->compare_price ?? null,
+                        'min_quantity' => 1,
+                    ]);
+                }
+
+                $media = $productModel->addMedia(
+                    base_path("database/seeders/data/images/{$product->image}")
+                )->preservingOriginal()->toMediaCollection('images');
+
+                $media->setCustomProperty('primary', true);
+                $media->save();
+
+                $collections->each(function ($coll) use ($product, $productModel) {
+                    if (in_array(strtolower($coll->translateAttribute('name')), $product->collections)) {
+                        $coll->products()->attach($productModel->id);
+                    }
+                });
+
+                if (! count($product->options ?? [])) {
+                    return;
+                }
+
+                $options = ProductOption::get();
+
+                $optionValues = ProductOptionValue::get();
+
+                $optionValueMapping = collect($product->options)->mapWithKeys(
+                    function ($option) {
+                        return [
+                            $option->name => $option->values,
+                        ];
+                    }
+                )->toArray();
+
+                $optionIds = [];
+
+                foreach ($product->options ?? [] as $optionIndex => $option) {
+                    // Do we have this option already?
+                    $optionModel = $options->first(fn ($opt) => $option->name == $opt->translate('name'));
+
+                    if (! $optionModel) {
+                        $optionModel = ProductOption::create([
+                            'name' => [
+                                'en' => $option->name,
+                            ],
+                            'label' => [
+                                'en' => $option->name,
+                            ],
+                            'shared' => $option->shared,
+                            'handle' => Str::slug($option->name),
+                        ]);
+                    }
+
+                    $optionIds[$optionModel->id] = [
+                        'position' => $optionIndex + 1,
+                    ];
+
+                    foreach ($option->values as $value) {
+                        $valueModel = $optionValues->first(fn ($val) => $value == $val->translate('name'));
+
+                        if (! $valueModel) {
+                            ProductOptionValue::create([
+                                'product_option_id' => $optionModel->id,
+                                'position' => $optionIndex,
+
+                                'name' => [
+                                    'en' => $value,
+                                ],
                             ]);
                         }
-                    });
-                });
+                    }
+                }
+
+                if (! count($product->options ?? [])) {
+                    return;
+                }
+
+                $productModel->productOptions()->sync($optionIds);
+
+                $variants = collect([$variant])->map(function ($variant) use ($product) {
+                    return [
+                        'id' => $variant->id,
+                        'sku' => $variant->sku,
+                        'price' => $product->price,
+                        'compare_price' => $product->compare_price ?? null,
+                        'values' => [],
+                    ];
+                })->toArray();
+
+                $variants = MapVariantsToProductOptions::map($optionValueMapping, $variants, true);
+
+                foreach ($variants as $variant) {
+                    if (! $variant['variant_id']) {
+                        $variantModel = ProductVariant::create([
+                            'product_id' => $productModel->id,
+                            'purchasable' => 'always',
+                            'shippable' => true,
+                            'backorder' => 0,
+                            'sku' => $variant['sku'],
+                            'tax_class_id' => $taxClass->id,
+                            'stock' => 500,
+                        ]);
+                        $variant['variant_id'] = $variantModel->id;
+                    } else {
+                        $variantModel = ProductVariant::find($variant['variant_id']);
+                    }
+
+                    Price::create([
+                        'customer_group_id' => null,
+                        'currency_id' => $currency->id,
+                        'priceable_type' => (new ProductVariant)->getMorphClass(),
+                        'priceable_id' => $variant['variant_id'],
+                        'price' => $variant['price'],
+                        'compare_price' => $variant['compare_price'] ?? null,
+                        'min_quantity' => 1,
+                    ]);
+
+                    $valueIds = ProductOptionValue::get()->filter(function ($option) use ($variant) {
+                        return in_array($option->translate('name'), $variant['values']);
+                    })->pluck('id');
+
+                    $variantModel->values()->sync($valueIds);
+                }
             });
         });
     }

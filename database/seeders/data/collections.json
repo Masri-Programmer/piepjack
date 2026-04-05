@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Shoes",
+        "description": "Collection of Shoes"
+    },
+    {
+        "name": "Trousers",
+        "description": "Collection of Trousers"
+    },
+    {
+        "name": "Hoodies",
+        "description": "Collection of Hoodies"
+    },
+    {
+        "name": "Sale",
+        "description": "50% OFF Selected Items"
+    },
+    {
+        "name": "T-shirts",
+        "description": "Collection of T-shirts"
+    },
+    {
+        "name": "Sweaters",
+        "description": "Collection of Sweaters"
+    },
+    {
+        "name": "Jackets",
+        "description": "Collection of Jackets"
+    },
+    {
+        "name": "Sports",
+        "description": "Collection of Sports"
+    },
+    {
+        "name": "Accessories",
+        "description": "Collection of Accessories"
+    },
+    {
+        "name": "Underwear",
+        "description": "Collection of Underwear"
+    }
+]

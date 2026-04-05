@@ -12,25 +12,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // Core Auth and User Seeders
-            // RoleSeeder::class,
-            // UserSeeder::class,
-            // AddressSeeder::class,
-
-            // New Lunar Seeders
-            // LunarCoreSeeder::class,
-            // LunarProductSeeder::class,
-
-            // CategorySeeder::class,
-            // VariationSeeder::class,
-            // ProductSeeder::class,
-            // SettingSeeder::class,
-
-            // Product Interaction Seeders (Keep if needed for custom logic)
-            // ProductReviewSeeder::class,
-            // ProductCommentSeeder::class,
-            // SpecificProductSeeder::class,
             LunarStoreSeeder::class,
+            CollectionSeeder::class,
+            AttributeSeeder::class,
+            TaxSeeder::class,
+            ProductSeeder::class,
+            CustomerSeeder::class,
+            ShippingSeeder::class,
+            OrderSeeder::class,
         ]);
     }
 }
