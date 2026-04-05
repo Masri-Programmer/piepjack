@@ -45,16 +45,6 @@ class LunarStoreSeeder extends Seeder
         // 4. Default Tax Class
         TaxClass::firstOrCreate(['name' => 'Default Tax Class'], ['default' => true]);
 
-        // 5. Default Shared Options
-        $options = ['Size', 'Color', 'Material'];
-        foreach ($options as $opt) {
-            ProductOption::updateOrCreate([
-                'handle' => Str::slug($opt),
-            ], [
-                'name' => ['de' => $opt, 'en' => $opt],
-                'label' => ['de' => $opt, 'en' => $opt],
-                'shared' => true,
-            ]);
-        }
+
     }
 }
