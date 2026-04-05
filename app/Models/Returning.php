@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Archive;
 
 use App\Traits\HasFilters;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Lunar\Models\Order;
 
 class Returning extends Model
 {

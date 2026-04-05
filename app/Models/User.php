@@ -6,16 +6,15 @@ namespace App\Models;
 use App\Traits\HasFilters;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Lunar\Base\LunarUser as LunarUserContract;
 use Lunar\Base\Traits\LunarUser;
+use Lunar\Models\Order;
 use Spatie\Permission\Traits\HasRoles;
-
-class User extends Authenticatable implements LunarUserContract
+use Lunar\Models\Address;
+class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, HasFilters, HasRoles, LunarUser, Notifiable;
@@ -58,19 +57,10 @@ class User extends Authenticatable implements LunarUserContract
         return $this->hasMany(Address::class);
     }
 
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class, 'user_roles');
-    }
 
     public function hasRole(string $roleName): bool
     {
         return $this->roles()->where('name', $roleName)->exists();
-    }
-
-    public function reviews(): HasMany
-    {
-        return $this->hasMany(ProductReview::class);
     }
 
     public function orders(): HasMany
