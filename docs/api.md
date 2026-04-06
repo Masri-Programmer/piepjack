@@ -14,6 +14,10 @@ The application follows a RESTful API structure with a `V1` prefix. All endpoint
 ### Categories
 - `GET /shop/categories`: Get all active categories.
 
+### Product Reviews
+- `GET /shop/products-reviews/{productId}`: List all approved reviews for a specific product.
+- `POST /shop/products-reviews`: Submit a new review (requires purchase verification).
+
 ### Checkout
 - `POST /shop/checkout`: Initiate checkout process. Returns a Stripe URL.
 - `POST /shop/webhook/stripe`: Stripe payment confirmation webhook.
