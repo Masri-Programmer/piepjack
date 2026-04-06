@@ -17,8 +17,8 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::get('products-reviews/{product}', [ProductReviewController::class, 'index']);
     Route::post('products-reviews', [ProductReviewController::class, 'store'])->middleware('throttle:3,1');
     Route::get('categories', [PublicCategoryController::class, 'index']);
-    Route::get('order-lookup/{cartId}', [CheckoutController::class, 'lookupOrder']);
-    Route::post('shipping-methods', [CheckoutController::class, 'getShippingMethods']);
+    Route::get('order-lookup/{cartId}', [CheckoutController::class, 'lookupOrder'])->middleware('throttle:30,1');
+    Route::post('shipping-methods', [CheckoutController::class, 'getShippingMethods'])->middleware('throttle:30,1');
     Route::post('checkout', [CheckoutController::class, 'checkout'])->middleware('throttle:5,1');
     // Route::get('sendTestEmail/{orderId}', [CheckoutController::class, 'sendTestEmail']);
     Route::get('sendReturnTestEmail/{returnId}', [PublicReturningController::class, 'sendReturnEmailTest']);

@@ -52,7 +52,8 @@ export const apiRequest = async (method, url, data = {}, params = {}) => {
 
 export const createApiResource = (resource) => ({
     get: (params = {}) => apiRequest("get", `/${resource}`, {}, params),
-    getById: (id) => apiRequest("get", `/${resource}/${id}`),
+    getById: (id, params = {}) =>
+        apiRequest("get", `/${resource}/${id}`, {}, params),
     store: (data) => apiRequest("post", `/${resource}`, data),
     update: (id, data) => apiRequest("put", `/${resource}/${id}`, data),
     delete: (id) => apiRequest("delete", `/${resource}/${id}`),
@@ -83,10 +84,10 @@ export const apiQuery = (resource) => {
                 refetchIntervalInBackground: false,
             }),
 
-        useGetById: (id) =>
+        useGetById: (id, params) =>
             useQuery({
-                queryKey: [resource, id],
-                queryFn: () => api.getById(id.value),
+                queryKey: [resource, id, params],
+                queryFn: () => api.getById(id.value, params?.value),
                 cacheTime: 0,
                 staleTime: 0,
                 enabled: !!id,

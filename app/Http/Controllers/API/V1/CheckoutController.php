@@ -86,15 +86,20 @@ class CheckoutController extends Controller
     /**
      * Lookup an order by cart ID.
      */
-    public function lookupOrder(string $cartId): JsonResponse
+    public function lookupOrder(Request $request, string $cartId): JsonResponse
     {
-        $cart = Cart::find($cartId);
+        $request->validate(['email' => 'required|email']);
+        $cart = Cart::with('order.user')->find($cartId);
 
         if (! $cart) {
             return response()->json(['message' => 'Cart not found'], 404);
         }
 
         $order = $cart->order;
+
+        if ($order && $order->user && $order->user->email !== $request->query('email')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
         if (! $order) {
             return response()->json([
@@ -291,7 +296,7 @@ class CheckoutController extends Controller
             'mode' => 'payment',
             'customer' => $user->stripe_id,
             'line_items' => $lineItems,
-            'success_url' => config('services.frontend_url').'/success?cart_id='.$cart->id,
+            'success_url' => config('services.frontend_url').'/success?cart_id='.$cart->id.'&email='.urlencode($user->email),
             'cancel_url' => config('services.frontend_url').'/checkout',
             'metadata' => [
                 'cart_id' => $cart->id,
@@ -345,11 +350,18 @@ class CheckoutController extends Controller
     public function handleWebhook(Request $request): JsonResponse
     {
         $payload = $request->getContent();
-        $sigHeader = $request->server('HTTP_STRIPE_SIGNATURE');
-        $endpointSecret = config('services.stripe.webhook_secret');
+        $sigHeader = $request->header('Stripe-Signature');
+
+        if (! $sigHeader) {
+            return response()->json(['message' => 'Missing Stripe-Signature header'], 400);
+        }
 
         try {
-            $event = StripeWebhook::constructEvent($payload, $sigHeader, $endpointSecret);
+            $event = StripeWebhook::constructEvent(
+                $payload,
+                $sigHeader,
+                config('services.stripe.webhook_secret')
+            );
         } catch (Exception $e) {
             return response()->json(['message' => 'Invalid request'], 400);
         }

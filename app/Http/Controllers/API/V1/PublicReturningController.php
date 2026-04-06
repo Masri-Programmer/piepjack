@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use Exception;
-use Stripe\Stripe;
-use App\Models\Order;
-use App\Models\User;
-use App\Models\Returning;
-use App\Models\ReturnItem;
-use Illuminate\Http\Request;
-use Stripe\Checkout\Session;
-use App\Models\OrderProduct;
-use App\Models\Address;
-use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
 use App\Mail\AdminReturnNotification;
 use App\Mail\ReturnConfirmation;
+use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\Returning;
+use App\Models\ReturnItem;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
+use Stripe\Checkout\Session;
+use Stripe\Exception\SignatureVerificationException;
+use Stripe\Stripe;
 use Stripe\Webhook as StripeWebhook;
 
 class PublicReturningController extends Controller
@@ -29,6 +29,7 @@ class PublicReturningController extends Controller
     public function show($id): JsonResponse
     {
         $return = Returning::with('order')->findOrFail($id);
+
         return response()->json($return);
     }
 
@@ -42,7 +43,7 @@ class PublicReturningController extends Controller
         $order = Order::with('user')->findOrFail($validated['order_id']);
         $user = $order->user;
 
-        if (!$user->active) {
+        if (! $user->active) {
             return $this->forbiddenResponse('You are banned from using this website.');
         }
 
@@ -50,7 +51,7 @@ class PublicReturningController extends Controller
         if ($user->email !== $validated['email']) {
             return $this->unprocessableEntityResponse('The provided email does not match the user associated with this order.');
         }
-        if (!in_array($order->status, ["paid", "shipped", "delivered"])) {
+        if (! in_array($order->status, ['paid', 'shipped', 'delivered'])) {
             return $this->unprocessableEntityResponse('Returns can only be created for paid, shipped, or delivered orders.');
         }
 
@@ -63,7 +64,7 @@ class PublicReturningController extends Controller
         );
 
         foreach ($validated['items'] as $item) {
-            if (!$this->canAddReturnItem($return, $item)) {
+            if (! $this->canAddReturnItem($return, $item)) {
                 continue;
             }
             ReturnItem::create([
@@ -75,12 +76,14 @@ class PublicReturningController extends Controller
 
         try {
             $checkoutSession = $this->createStripeSession($order, $return, $validated['total'], $user->email);
+
             return $this->successResponse('Return record created successfully. Redirect to payment.', [
                 'data' => $return->load('items'),
                 'checkout_url' => $checkoutSession->url,
             ]);
         } catch (Exception $e) {
-            Log::error('Failed to create Stripe session: ' . $e->getMessage());
+            Log::error('Failed to create Stripe session: '.$e->getMessage());
+
             return $this->serverErrorResponse('Failed to create Stripe session.', $e->getMessage());
         }
     }
@@ -88,17 +91,24 @@ class PublicReturningController extends Controller
     /**
      * Handle Stripe webhook events.
      */
-    public function handleWebhook()
+    public function handleWebhook(Request $request): JsonResponse
     {
-        $endpointSecret = config('services.stripe.webhook_return_secret');
-        $payload = @file_get_contents('php://input');
-        $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? null;
+        $payload = $request->getContent();
+        $sigHeader = $request->header('Stripe-Signature');
+
+        if (! $sigHeader) {
+            return $this->badRequestResponse('Missing Stripe-Signature header.');
+        }
 
         try {
-            $event = StripeWebhook::constructEvent($payload, $sigHeader, $endpointSecret);
+            $event = StripeWebhook::constructEvent(
+                $payload,
+                $sigHeader,
+                config('services.stripe.webhook_return_secret')
+            );
         } catch (\UnexpectedValueException $e) {
             return $this->badRequestResponse('Invalid payload.');
-        } catch (\Stripe\Exception\SignatureVerificationException $e) {
+        } catch (SignatureVerificationException $e) {
             return $this->badRequestResponse('Invalid signature.');
         }
 
@@ -106,14 +116,14 @@ class PublicReturningController extends Controller
         $orderId = $metadata['order_id'] ?? null;
         $returnId = $metadata['return_id'] ?? null;
 
-        if (!$orderId || !$returnId) {
+        if (! $orderId || ! $returnId) {
             return $this->badRequestResponse('Missing required metadata.');
         }
 
         $order = Order::find($orderId);
         $return = Returning::find($returnId);
 
-        if (!$order || !$return) {
+        if (! $order || ! $return) {
             return $this->notFoundResponse('Order or Return not found.');
         }
 
@@ -127,7 +137,7 @@ class PublicReturningController extends Controller
                 try {
                     $this->sendReturnConfirmationEmail($order, $return);
                 } catch (Exception $e) {
-                    Log::error("Failed to send return confirmation email for return ID {$return->id}: " . $e->getMessage());
+                    Log::error("Failed to send return confirmation email for return ID {$return->id}: ".$e->getMessage());
                 }
                 break;
 
@@ -158,7 +168,7 @@ class PublicReturningController extends Controller
             'items' => 'required|array',
             'items.*.id' => [
                 'required',
-                Rule::exists('order_products', 'product_item_id')->where('order_id', $request->order_id)
+                Rule::exists('order_products', 'product_item_id')->where('order_id', $request->order_id),
             ],
             'items.*.cartQuantity' => 'required|integer|min:1',
         ]);
@@ -177,6 +187,7 @@ class PublicReturningController extends Controller
             $this->unprocessableEntityResponse('Some products have already been returned. Please review your return request.', [
                 'product_id' => $item['id'],
             ]);
+
             return false;
         }
 
@@ -189,8 +200,8 @@ class PublicReturningController extends Controller
     private function createStripeSession(Order $order, Returning $return, float $total, string $email): Session
     {
 
-        $successUrl = config('services.frontend_url') . '/return-order/success?return_number=' . $return->return_number;
-        $cancelUrl = config('services.frontend_url') . '/return-order';
+        $successUrl = config('services.frontend_url').'/return-order/success?return_number='.$return->return_number;
+        $cancelUrl = config('services.frontend_url').'/return-order';
 
         return Session::create([
             'line_items' => [
@@ -203,7 +214,7 @@ class PublicReturningController extends Controller
                         'unit_amount' => (int) round($total * 100),
                     ],
                     'quantity' => 1,
-                ]
+                ],
             ],
             'payment_method_types' => config('services.stripe.payment_methods'),
             'mode' => 'payment',
@@ -226,15 +237,16 @@ class PublicReturningController extends Controller
     {
         $return->load([
             'items.productItem.product',
-            'items.productItem.options.variation'
+            'items.productItem.options.variation',
         ]);
 
         $order->load('user', 'shippingAddress');
         $user = $order->user;
         $address = $order->shippingAddress;
 
-        if (!$user || !$address) {
+        if (! $user || ! $address) {
             Log::error("User or Shipping Address not found for Order ID: {$order->id}");
+
             return;
         }
 
@@ -254,7 +266,7 @@ class PublicReturningController extends Controller
                 'quantity' => $returnItem->quantity,
                 'price_per_item' => $orderProduct->price_per_item ?? null,
                 'image' => $productItem->image ?? config('services.branding.logo_url'),
-                'options' => $productItem->options->map(fn($option) => [
+                'options' => $productItem->options->map(fn ($option) => [
                     'name' => optional($option->variation)->name,
                     'value' => $option->value,
                 ])->toArray(),
@@ -265,7 +277,7 @@ class PublicReturningController extends Controller
             'return' => $return,
             'user' => $user,
             'address' => $address,
-            'items' => $items
+            'items' => $items,
         ];
 
         // Send to User
@@ -324,7 +336,7 @@ class PublicReturningController extends Controller
 
         // FIX: Load order with the necessary relationships
         $order = Order::with(['user', 'shippingAddress'])->find($return->order_id);
-        if (!$order) {
+        if (! $order) {
             return $this->notFoundResponse('Order not found');
         }
 

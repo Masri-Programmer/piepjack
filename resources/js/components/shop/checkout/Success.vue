@@ -220,14 +220,16 @@ import { Button } from "@/components/ui/button";
 
 const route = useRoute();
 const cartId = route.query.cart_id;
+const userEmail = route.query.email;
 const { data, error, isLoading } = apiQuery("categories").useGet({});
 
 const isTimeout = ref(false);
 
 const { data: orderData, isError } = useQuery({
-    queryKey: ["orderLookup", cartId],
-    queryFn: () => apiRequest("get", `/order-lookup/${cartId}`),
-    enabled: !!cartId,
+    queryKey: ["orderLookup", cartId, userEmail],
+    queryFn: () =>
+        apiRequest("get", `/order-lookup/${cartId}`, {}, { email: userEmail }),
+    enabled: !!cartId && !!userEmail,
     refetchInterval: (data) => {
         // Stop polling if order is paid or we timed out
         if (data?.status === "paid" || isTimeout.value) {
@@ -241,23 +243,20 @@ const { data: orderData, isError } = useQuery({
 const orderStatus = computed(() => orderData.value?.status || "pending");
 const orderReference = computed(() => orderData.value?.reference || "");
 
-const { data: orderDetails } = useQuery({
-    queryKey: ["orderDetails", orderReference],
-    queryFn: () => apiRequest("get", `/shop/products/${orderReference.value}`), // Wait, should be /shop/orders
-    enabled: computed(
-        () => orderStatus.value === "paid" && !!orderReference.value,
-    ),
-    retry: 2,
-});
-
-// Re-evaluating queryFn after checking routes
 const { data: orderDetailsData } = useQuery({
-    queryKey: ["orderDetails", orderReference],
-    queryFn: () => apiRequest("get", `/shop/orders/${orderReference.value}`),
+    queryKey: ["orderDetails", orderReference, userEmail],
+    queryFn: () =>
+        apiRequest(
+            "get",
+            `/shop/orders/${orderReference.value}`,
+            {},
+            { email: userEmail },
+        ),
     enabled: computed(
         () =>
             (orderStatus.value === "paid" || orderStatus.value === "shipped") &&
-            !!orderReference.value,
+            !!orderReference.value &&
+            !!userEmail,
     ),
 });
 

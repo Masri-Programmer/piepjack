@@ -32,8 +32,12 @@ class PublicOrderController extends Controller
         return response()->json(PublicOrderListResource::collection($orders));
     }
 
-    public function show(string $orderNumber): PublicOrderListResource
+    public function show(Request $request, string $orderNumber): JsonResponse|PublicOrderListResource
     {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
         // Lunar uses 'reference' instead of 'order_number'
         $order = Order::with([
             'lines.purchasable.product',
@@ -43,6 +47,10 @@ class PublicOrderController extends Controller
         ])
             ->where('reference', $orderNumber)
             ->firstOrFail();
+
+        if ($order->user?->email !== $request->query('email')) {
+            return response()->json(['message' => 'The provided email does not match this order.'], 403);
+        }
 
         return new PublicOrderListResource($order);
     }

@@ -114,11 +114,12 @@ const form = useSessionStorage("active-track-form", {
 
 // API Query
 const orderQueryKey = computed(() => form.value.orderNr);
+const orderQueryParams = computed(() => ({ email: form.value.email }));
 const {
     data: order,
     isLoading: isLoadingOrder,
     refetch: refetchOrder,
-} = apiQuery("orders").useGetById(orderQueryKey);
+} = apiQuery("orders").useGetById(orderQueryKey, orderQueryParams);
 
 // Error Handling
 const errorMessage = ref("");
