@@ -97,7 +97,7 @@
 }
 
 .menu-icon {
-    @apply w-8 h-8 cursor-pointer opacity-55;
+    @apply cursor-pointer opacity-55;
 }
 
 .logo-link {
@@ -149,7 +149,7 @@
 }
 
 .dropdown-link {
-    @apply hover:text-primary-foreground;
+    @apply hover:text-gray-400;
 }
 
 .fade-enter-active,

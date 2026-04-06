@@ -10,7 +10,7 @@
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="menu-icon"
+                    class="menu-icon h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -52,65 +52,68 @@
                 </router-link>
             </div>
 
-            <nav class="nav-icons">
-                <ul class="icon-list">
-                    <li @click="toggleLangDropdownOpen" class="flex">
+            <nav class="flex items-center text-xs">
+                <ul class="flex items-center space-x-1 sm:space-x-2">
+                    <li class="flex">
                         <LanguageDropdown
                             :open="isLangDropdownOpen"
                             :handle:close="closeLangDropdownOpen"
                             :handle:toggle="toggleLangDropdownOpen"
+                            class="cursor-pointer hover:bg-main hover:text-accent transition-colors p-2 rounded-none"
                         />
                     </li>
+
                     <li class="flex">
-                        <a href="/lunar/login"
-                            ><ShieldUser size="24" strokeWidth="1" />
+                        <a
+                            href="/lunar/login"
+                            class="p-2 text-foreground hover:bg-main hover:text-accent transition-colors rounded-none flex items-center justify-center"
+                            aria-label="User Account"
+                        >
+                            <ShieldUser class="w-5 h-5" stroke-width="1.5" />
                         </a>
                     </li>
+
                     <li class="flex items-center">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            @click="toggleTheme()"
-                            class="p-0 h-auto w-auto hover:bg-transparent focus-visible:ring-0"
+                        <button
+                            @click="toggleTheme"
+                            class="p-2 text-foreground hover:bg-main hover:text-accent transition-colors rounded-none outline-none focus-visible:ring-2 focus-visible:ring-main flex items-center justify-center"
+                            aria-label="Toggle Theme"
                         >
                             <Sun
                                 v-if="isDark"
-                                size="24"
-                                strokeWidth="1"
-                                class="cursor-pointer"
+                                class="w-5 h-5"
+                                stroke-width="1.5"
                             />
-                            <Moon
-                                v-else
-                                size="24"
-                                strokeWidth="1"
-                                class="cursor-pointer"
-                            />
-                        </Button>
+                            <Moon v-else class="w-5 h-5" stroke-width="1.5" />
+                        </button>
                     </li>
-                    <li>
-                        <Search
-                            size="24"
-                            strokeWidth="1"
+
+                    <li class="flex items-center">
+                        <button
                             @click="toggleModal"
-                            class="search-icon"
-                        />
-                    </li>
-                    <div class="cart-icon" @click="toggleCart">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="cart-img"
-                            stroke-width="1"
-                            viewBox="0 0 16.933 16.933"
+                            class="p-2 text-foreground hover:bg-main hover:text-accent transition-colors rounded-none outline-none focus-visible:ring-2 focus-visible:ring-main flex items-center justify-center"
+                            aria-label="Open Search"
                         >
-                            <path
-                                d="M8.474 0C6.95 0 5.699 1.166 5.579 2.646h-.922c-.839 0-1.454.65-1.582 1.533L1.464 15.324c-.127.877.69 1.61 1.584 1.61h10.84c.9 0 1.708-.734 1.582-1.61L13.86 4.179c-.123-.851-.719-1.533-1.582-1.533h-.91A2.896 2.896 0 0 0 8.473 0Zm0 .529c1.238 0 2.25.927 2.366 2.117H6.108A2.36 2.36 0 0 1 8.474.53zM4.657 3.176h7.621c.633 0 .982.542 1.059 1.078l1.61 11.146c.08.554-.493 1.004-1.06 1.004H3.047c-.565 0-1.138-.447-1.058-1.004L3.6 4.254c.084-.588.46-1.078 1.058-1.078Zm6.195 2.115c0 1.299-1.06 2.35-2.378 2.35S6.096 6.59 6.096 5.29c0-.352-.529-.354-.529 0 0 1.588 1.306 2.879 2.907 2.879 1.6 0 2.906-1.291 2.906-2.88 0-.351-.528-.351-.528 0z"
-                                fill="var(--main)"
-                            ></path>
-                        </svg>
-                        <span v-if="cartTotalQuantity > 0" class="cart-badge">{{
-                            cartTotalQuantity
-                        }}</span>
-                    </div>
+                            <Search class="w-5 h-5" stroke-width="1.5" />
+                        </button>
+                    </li>
+
+                    <li class="flex items-center">
+                        <button
+                            @click="toggleCart"
+                            class="relative p-2 text-foreground hover:bg-main hover:text-accent transition-colors rounded-none outline-none focus-visible:ring-2 focus-visible:ring-main flex items-center justify-center"
+                            aria-label="Open Cart"
+                        >
+                            <ShoppingBag class="w-5 h-5" stroke-width="1.5" />
+
+                            <span
+                                v-if="cartTotalQuantity > 0"
+                                class="absolute top-0 right-0 translate-x-1/4 -translate-y-1/4 bg-main text-accent text-[10px] font-bold px-1.5 py-0.5 border-2 border-background rounded-none"
+                            >
+                                {{ cartTotalQuantity }}
+                            </span>
+                        </button>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -118,7 +121,7 @@
         <transition name="fade">
             <div
                 v-if="activeDropdown === 'COLLECTIONS' && data?.data"
-                class="dropdown-menu"
+                class="dropdown-menu border-b"
                 @mouseleave="closeDropdown"
                 @mouseover="openDropdown('COLLECTIONS')"
             >
@@ -160,7 +163,6 @@
 <script setup>
 import { ref } from "vue";
 import "@assets/css/navigation.css";
-import { Search, ShieldUser, Sun, Moon } from "lucide-vue-next";
 import { useDark, useToggle } from "@vueuse/core";
 import { Button } from "@components/ui/button";
 import NavSidebar from "./NavSidebar.vue";
@@ -171,6 +173,7 @@ import TopBanner from "@layouts/shop/TopBanner.vue";
 import SearchModal from "@pages/shop/SearchModal.vue";
 import { cartState, cartTotalQuantity } from "@lib/store/shop/index.js";
 import LanguageDropdown from "@components/LanguageDropdown.vue";
+import { ShieldUser, Sun, Moon, Search, ShoppingBag } from "lucide-vue-next";
 
 const isDark = useDark();
 const toggleTheme = useToggle(isDark);

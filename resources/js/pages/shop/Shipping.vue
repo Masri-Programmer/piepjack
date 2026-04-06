@@ -1,99 +1,136 @@
 <template>
     <div
-        class="grid place-content-center justify-items-center w-full h-full px-4 sm:px-8"
+        class="max-w-5xl mx-auto px-6 py-16 sm:py-24 selection:bg-main selection:text-accent"
     >
-        <h1
-            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-8"
+        <header
+            class="mb-16 border-b-[12px] border-border pb-10 text-center md:text-left"
         >
-            SHIPPING
-        </h1>
-
-        <p class="md:w-3/5 text-sm leading-relaxed text-center mb-6">
-            Nachdem du deine Bestellung aufgegeben hast, erhälst du eine
-            Bestätigungs-E-Mail mit allen Einzelheiten zu deinem Kauf,
-            einschließlich einer Tracking-Nummer. Mit dieser Nummer kannst du
-            den Verlauf deiner Bestellung in Echtzeit verfolgen und weißt so
-            immer, wo sich dein Paket befindet.
-        </p>
-
-        <div class="w-full overflow-x-auto grid place-content-center">
-            <table
-                class="w-full max-w-3xl border-collapse border border-gray shadow-md"
+            <p
+                class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
             >
-                <thead class="bg-muted">
-                    <tr>
-                        <th
-                            class="border border-gray px-4 py-2 text-center text-accent"
-                        >
-                            Land
-                        </th>
-                        <th
-                            class="border border-gray px-4 py-2 text-center text-accent"
-                        >
-                            Lieferung
-                        </th>
-                        <th
-                            class="border border-gray px-4 py-2 text-center text-accent"
-                        >
-                            Kosten
-                        </th>
-                        <th
-                            class="border border-gray px-4 py-2 text-center text-accent"
-                        >
-                            Kostenlose Lieferung
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="hover:bg-accent_light hover:text-accent">
-                        <td class="border border-gray px-4 py-2 text-center">
-                            Deutschland
-                        </td>
-                        <td class="border border-gray px-4 py-2 text-center">
-                            2-4
-                        </td>
-                        <td class="border border-gray px-4 py-2 text-center">
-                            €3,95
-                        </td>
-                        <td class="border border-gray px-4 py-2 text-center">
-                            bei Bestellungen über €70
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-accent_light hover:text-accent">
-                        <td class="border border-gray px-4 py-2 text-center">
-                            Österreich
-                        </td>
-                        <td class="border border-gray px-4 py-2 text-center">
-                            2-4
-                        </td>
-                        <td class="border border-gray px-4 py-2 text-center">
-                            €4,95
-                        </td>
-                        <td class="border border-gray px-4 py-2 text-center">
-                            bei Bestellungen über €70
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-accent_light hover:text-accent">
-                        <td class="border border-gray px-4 py-2 text-center">
-                            Schweiz & andere EU-Länder
-                        </td>
-                        <td class="border border-gray px-4 py-2 text-center">
-                            3-5
-                        </td>
-                        <td class="border border-gray px-4 py-2 text-center">
-                            €9,99
-                        </td>
-                        <td class="border border-gray px-4 py-2 text-center">
-                            -
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                {{ $t("pages.shipping.logistics") }}
+            </p>
+            <h1
+                class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground"
+            >
+                {{ $t("pages.shipping.title") }}
+            </h1>
+        </header>
+
+        <div class="grid md:grid-cols-2 gap-12 mb-20">
+            <div class="border-l-4 border-main pl-6">
+                <p
+                    class="text-lg leading-relaxed font-medium text-foreground italic"
+                >
+                    {{ $t("pages.shipping.tracking_info_header") }}
+                </p>
+            </div>
+            <p
+                class="text-sm leading-relaxed text-muted-foreground uppercase tracking-wide"
+            >
+                {{ $t("pages.shipping.tracking_info_description") }}
+            </p>
         </div>
 
-        <h6 class="font-bold text-center mt-6">
-            Nach einzelnen Drops kann sich die Lieferzeit auf 10-16 Tage
-            verlängern.
-        </h6>
+        <div class="w-full overflow-hidden border-2 border-main bg-background">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-left">
+                    <thead>
+                        <tr
+                            class="bg-main text-accent uppercase text-xs tracking-[0.2em]"
+                        >
+                            <th class="p-6 border-r border-accent/20">
+                                {{ $t("pages.shipping.table.country") }}
+                            </th>
+                            <th
+                                class="p-6 border-r border-accent/20 text-center"
+                            >
+                                {{ $t("pages.shipping.table.delivery") }}
+                            </th>
+                            <th
+                                class="p-6 border-r border-accent/20 text-center"
+                            >
+                                {{ $t("pages.shipping.table.cost") }}
+                            </th>
+                            <th class="p-6 text-center">
+                                {{ $t("pages.shipping.table.free_shipping") }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y-2 divide-border">
+                        <tr class="hover:bg-muted transition-colors group">
+                            <td
+                                class="p-6 font-bold uppercase italic border-r-2 border-border"
+                            >
+                                {{ $t("pages.shipping.countries.germany") }}
+                            </td>
+                            <td
+                                class="p-6 text-center border-r-2 border-border font-mono"
+                            >
+                                2-4
+                            </td>
+                            <td
+                                class="p-6 text-center border-r-2 border-border font-bold"
+                            >
+                                €3,95
+                            </td>
+                            <td
+                                class="p-6 text-center bg-accent_black/5 group-hover:bg-transparent transition-colors"
+                            >
+                                {{ $t("pages.shipping.over") }} €70
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-muted transition-colors group">
+                            <td
+                                class="p-6 font-bold uppercase italic border-r-2 border-border"
+                            >
+                                {{ $t("pages.shipping.countries.austria") }}
+                            </td>
+                            <td
+                                class="p-6 text-center border-r-2 border-border font-mono"
+                            >
+                                2-4
+                            </td>
+                            <td
+                                class="p-6 text-center border-r-2 border-border font-bold"
+                            >
+                                €4,95
+                            </td>
+                            <td
+                                class="p-6 text-center bg-accent_black/5 group-hover:bg-transparent transition-colors"
+                            >
+                                {{ $t("pages.shipping.over") }} €70
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-muted transition-colors group">
+                            <td
+                                class="p-6 font-bold uppercase italic border-r-2 border-border"
+                            >
+                                {{
+                                    $t("pages.shipping.countries.switzerland_eu")
+                                }}
+                            </td>
+                            <td
+                                class="p-6 text-center border-r-2 border-border font-mono"
+                            >
+                                3-5
+                            </td>
+                            <td
+                                class="p-6 text-center border-r-2 border-border font-bold"
+                            >
+                                €9,99
+                            </td>
+                            <td class="p-6 text-center opacity-30">—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-12 p-8 bg-accent_dark border-2 border-main text-center">
+            <h6 class="font-bold uppercase tracking-widest text-sm italic">
+                {{ $t("pages.shipping.warning") }}
+            </h6>
+        </div>
     </div>
 </template>

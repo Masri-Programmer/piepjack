@@ -27,6 +27,12 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->group(base_path('routes/ai.php'));
 
+            Route::prefix('api/V1/test')
+                ->group(function () {
+                    Route::get('/email', [\App\Http\Controllers\API\V1\TestIntegrationController::class, 'testEmail']);
+                    Route::get('/sendcloud', [\App\Http\Controllers\API\V1\TestIntegrationController::class, 'testSendcloud']);
+                });
+
             // This catch-all route must be at the very bottom of all routes
             Route::middleware('web')->get('/{any?}', function () {
                 return view('app');
@@ -44,8 +50,8 @@ return Application::configure(basePath: dirname(__DIR__))
             // \Spatie\ResponseCache\Middlewares\CacheResponse::class,
         ]);
         $middleware->validateCsrfTokens(except: [
-            'shop/webhook/*',
-            'shop/webhooks/*',
+            'api/V1/shop/webhook/*',
+            'api/V1/shop/webhooks/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

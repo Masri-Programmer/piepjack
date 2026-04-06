@@ -167,4 +167,26 @@ export default {
         rememberMe: "Angemeldet bleiben",
         forgotPassword: "Passwort vergessen?",
     },
+    shipping: {
+        logistics: "LOGISTIK",
+        title: "VERSAND",
+        tracking_info_header:
+            "Verfolgen Sie Ihre Bestellung mühelos von unserem Lager bis zu Ihrer Haustür.",
+        tracking_info_description:
+            "Nachdem du deine Bestellung aufgegeben hast, erhälst du eine Bestätigungs-E-Mail mit allen Einzelheiten zu deinem Kauf, einschließlich einer Tracking-Nummer. Mit dieser Nummer kannst du den Verlauf deiner Bestellung in Echtzeit verfolgen.",
+        table: {
+            country: "Land",
+            delivery: "Lieferung (Tage)",
+            cost: "Kosten",
+            free_shipping: "Kostenlose Lieferung",
+        },
+        countries: {
+            germany: "Deutschland",
+            austria: "Österreich",
+            switzerland_eu: "Schweiz & EU",
+        },
+        over: "ab",
+        warning:
+            "⚠️ Nach einzelnen Drops kann sich die Lieferzeit auf 10-16 Tage verlängern.",
+    },
 };

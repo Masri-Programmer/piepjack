@@ -7,7 +7,7 @@
         @mouseleave="mouseLeave"
     >
         <Card
-            class="relative flex flex-col h-full overflow-hidden transition-all duration-300 border-transparent hover:border-border hover:shadow-md"
+            class="relative flex flex-col overflow-hidden transition-all duration-300 border-transparent hover:border-border hover:shadow-md"
         >
             <Badge
                 v-if="isNewProduct"
@@ -26,7 +26,7 @@
             </AspectRatio>
 
             <CardContent
-                class="flex flex-col items-center justify-center flex-grow p-3 mt-2 text-center sm:p-4"
+                class="flex flex-col items-center justify-center grow p-3 mt-2 text-center sm:p-4"
             >
                 <p
                     class="w-full text-sm font-semibold uppercase truncate sm:text-base text-card-foreground"

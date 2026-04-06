@@ -25,7 +25,13 @@ class PublicProductController extends Controller
 
         // 2. Search by Name (Querying Lunar's JSON attribute column)
         if ($search = request('search')) {
-            $query->where('attribute_data->name->value', 'like', '%'.$search.'%');
+            $search = strtolower($search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(JSON_EXTRACT(attribute_data, "$.name.value.en")) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(JSON_EXTRACT(attribute_data, "$.name.value.de")) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(JSON_EXTRACT(attribute_data, "$.description.value.en")) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(JSON_EXTRACT(attribute_data, "$.description.value.de")) LIKE ?', ["%{$search}%"]);
+            });
         }
 
         // 3. Sorting and Pagination

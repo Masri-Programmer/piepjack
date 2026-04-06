@@ -1,113 +1,179 @@
+<script setup>
+import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { useDebounceFn } from "@vueuse/core";
+import { Search, X } from "lucide-vue-next";
+import { RouterLink } from "vue-router";
+
+// Components & Libs
+import Modal from "@components/Modal.vue";
+import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
+import { apiQuery } from "@lib/helpers";
+import searchIllustration from "@img/svg/search.svg";
+
+const props = defineProps({
+    open: { type: Boolean, default: false },
+});
+
+const emit = defineEmits(["close"]);
+
+const { t } = useI18n();
+
+// Tabs State
+const selectedTab = ref(0);
+const computedTabs = computed(() => [
+    t("common.search.tabs.0"), // e.g., "Products"
+    t("common.search.tabs.1"), // e.g., "Categories"
+]);
+
+const selectTab = (index) => {
+    selectedTab.value = index;
+};
+
+// Search Logic - Localized for "Full Search"
+const localSearchTerm = ref("");
+const debouncedSearchTerm = ref("");
+
+const updateDebounce = useDebounceFn((value) => {
+    debouncedSearchTerm.value = value;
+}, 400);
+
+watch(localSearchTerm, (newVal) => {
+    updateDebounce(newVal);
+});
+
+// Dedicated search params for "Full Search" (unfiltered by current category)
+const searchParams = computed(() => ({
+    search: debouncedSearchTerm.value,
+    per_page: 30, // Increased for full search experience
+    active: 1,
+}));
+
+// API Queries - Using dedicated searchParams
+const { data, isLoading } = apiQuery("products").useGet(searchParams);
+const { data: categories } = apiQuery("categories").useGet(searchParams);
+
+// Clear search when modal is closed
+watch(
+    () => props.open,
+    (isOpen) => {
+        if (!isOpen) {
+            localSearchTerm.value = "";
+            debouncedSearchTerm.value = "";
+        }
+    },
+);
+</script>
+
 <template>
-    <Modal :open="props.open" @close="$emit('close')">
-        <h1 class="search-modal-title">
-            {{ $t("common.search.title") }}
-        </h1>
-        <div class="search-modal-container">
-            <div class="search-modal-input-wrapper">
-                <div class="search-modal-input-container">
-                    <div class="search-modal-input-box">
-                        <input
-                            name="search"
-                            type="search"
-                            class="search-modal-input"
-                            :placeholder="$t('common.search.placeholder')"
-                            v-model="searchTerm"
-                        />
-                        <svg
-                            class="search-modal-icon"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            />
-                        </svg>
-                    </div>
+    <Modal :open="props.open" @close="emit('close')">
+        <div class="flex flex-col w-full bg-background text-foreground">
+            <div
+                class="flex items-center justify-between p-6 border-b border-border"
+            >
+                <h1 class="text-xl font-bold uppercase tracking-tight m-0">
+                    {{ t("common.search.title") }}
+                </h1>
+            </div>
+
+            <div class="p-6 pb-0">
+                <div class="relative flex items-center">
+                    <Search
+                        class="absolute right-4 w-5 h-5 text-muted-foreground pointer-events-none"
+                    />
+                    <input
+                        v-model="localSearchTerm"
+                        type="search"
+                        :placeholder="t('common.search.placeholder')"
+                        class="w-full bg-muted border-none p-4 pl-12 text-base focus:ring-2 focus:ring-ring outline-none rounded-none transition-all"
+                        autofocus
+                    />
                 </div>
             </div>
 
-            <div class="search-modal-tabs">
-                <ul class="search-modal-tabs-list">
-                    <li
+            <div class="px-6 mt-6">
+                <div class="flex space-x-8 border-b border-border">
+                    <button
                         v-for="(tab, index) in computedTabs"
                         :key="index"
-                        class="search-modal-tab"
+                        @click="selectTab(index)"
+                        :class="[
+                            'pb-3 text-sm font-bold uppercase tracking-wider transition-all rounded-none border-b-2',
+                            selectedTab === index
+                                ? 'border-primary text-primary'
+                                : 'border-transparent text-muted-foreground hover:text-foreground',
+                        ]"
                     >
-                        <a
-                            href="#"
-                            @click.prevent="selectTab(index)"
-                            :class="[
-                                'search-modal-tab-link',
-                                selectedTab === index
-                                    ? 'search-modal-tab-active'
-                                    : '',
-                            ]"
+                        {{ tab }}
+                    </button>
+                </div>
+            </div>
+
+            <div
+                class="p-6 min-h-[400px] max-h-[60vh] overflow-y-auto custom-scrollbar"
+            >
+                <div v-if="selectedTab === 0" class="space-y-4">
+                    <div
+                        v-if="data?.data?.length"
+                        class="grid grid-cols-1 gap-2"
+                    >
+                        <RouterLink
+                            v-for="product in data.data"
+                            :key="product.id"
+                            :to="`/product/${product.id}/${product.slug}`"
+                            @click="emit('close')"
+                            class="group block border border-transparent hover:border-border transition-colors"
                         >
-                            {{ tab }}
-                        </a>
-                    </li>
-                </ul>
-                <div class="search-modal-content">
-                    <div v-if="selectedTab === 0">
-                        <div v-if="data?.data.length">
-                            <template v-for="product in data.data">
-                                <router-link
-                                    @click="$emit('close')"
-                                    :to="
-                                        '/product/' +
-                                        product.id +
-                                        '/' +
-                                        product.slug
-                                    "
-                                    v-if="product"
-                                >
-                                    <ProductSmallCard
-                                        :product="product"
-                                        :item="product"
-                                    />
-                                </router-link>
-                            </template>
-                        </div>
-                        <img
-                            v-else
-                            :src="searchIllustration"
-                            alt="search_Illustration"
-                            class="search-modal-image"
-                            loading="lazy"
-                        />
+                            <ProductSmallCard
+                                :product="product"
+                                class="rounded-none"
+                            />
+                        </RouterLink>
                     </div>
-                    <div v-if="selectedTab === 1">
-                        <div
-                            v-if="categories?.data.length"
-                            class="search-modal-category-list"
-                        >
-                            <template v-for="category in categories.data">
-                                <router-link
-                                    :to="
-                                        '/collections/' +
-                                        category.id +
-                                        '/' +
-                                        category.slug
-                                    "
-                                    class="search-modal-category-link"
-                                >
-                                    {{ category.name }}
-                                </router-link>
-                            </template>
-                        </div>
+
+                    <div
+                        v-else-if="!isLoading"
+                        class="flex flex-col items-center justify-center py-12 opacity-40"
+                    >
                         <img
-                            v-else
                             :src="searchIllustration"
-                            alt="search_Illustration"
-                            class="search-modal-image"
-                            loading="lazy"
+                            class="w-32 h-32 mb-4 grayscale"
+                            alt="No results"
                         />
+                        <p class="text-sm uppercase tracking-widest">
+                            {{ t("common.search.no_results") }}
+                        </p>
+                    </div>
+                </div>
+
+                <div v-if="selectedTab === 1">
+                    <div
+                        v-if="categories?.data?.length"
+                        class="flex flex-col border-t border-l border-border"
+                    >
+                        <RouterLink
+                            v-for="category in categories.data"
+                            :key="category.id"
+                            :to="`/collections/${category.id}/${category.slug}`"
+                            @click="emit('close')"
+                            class="p-4 border-b border-r border-border hover:bg-muted transition-colors font-medium uppercase text-sm"
+                        >
+                            {{ category.name }}
+                        </RouterLink>
+                    </div>
+
+                    <div
+                        v-else
+                        class="flex flex-col items-center justify-center py-12 opacity-40"
+                    >
+                        <img
+                            :src="searchIllustration"
+                            class="w-32 h-32 mb-4 grayscale"
+                            alt="No results"
+                        />
+                        <p class="text-sm uppercase tracking-widest">
+                            {{ t("common.search.no_categories") }}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -115,49 +181,14 @@
     </Modal>
 </template>
 
-<script setup>
-import { useI18n } from "vue-i18n";
-import { ref, computed } from "vue";
-import "@assets/css/pages/searchModal.css";
-import { useDebounceFn } from "@vueuse/core";
-import Modal from "@components/Modal.vue";
-import { apiQuery } from "@lib/helpers";
-import searchIllustration from "@img/svg/search.svg";
-import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
-import { productParams } from "@lib/store/shop/index.js";
-
-const props = defineProps({
-    open: { type: Boolean },
-});
-
-const { t } = useI18n();
-const computedTabs = computed(() => [
-    t("common.search.tabs.0"),
-    t("common.search.tabs.1"),
-]);
-const selectedTab = ref(0);
-
-const selectTab = (index) => {
-    selectedTab.value = index;
-};
-const searchTerm = computed({
-    get: () => productParams.value.search,
-    set: (value) => {
-        productParams.value.search = value;
-        debouncedRefetch();
-    },
-});
-
-const { data, error, isError, isLoading, isPreviousData, isFetching, refetch } =
-    apiQuery("products").useGet(productParams);
-
-const {
-    data: categories,
-    error: errorCategories,
-    isLoading: isLoadingCategories,
-} = apiQuery("categories").useGet(productParams);
-
-const debouncedRefetch = useDebounceFn(() => {
-    refetch();
-}, 500);
-</script>
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--accent_light);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--main);
+}
+</style>

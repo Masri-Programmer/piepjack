@@ -1,48 +1,101 @@
 <template>
-    <div class="contact-form">
-        <h1 class="contact-form-title">{{ $t("common.forms.payment") }}</h1>
+    <div
+        class="space-y-8 animate-in fade-in duration-500 selection:bg-main selection:text-accent"
+    >
+        <header class="border-b-[6px] border-border pb-4">
+            <h1
+                class="text-4xl sm:text-5xl font-bold uppercase tracking-tighter italic text-foreground leading-none"
+            >
+                {{ $t("common.forms.payment") }}
+            </h1>
+        </header>
 
-        <div class="space-y-4 mb-8">
-            <div class="p-6 border border-accent_dark bg-accent_light">
-                <div class="flex items-center gap-4 mb-4">
+        <div
+            class="relative overflow-hidden rounded-none border-4 border-border bg-accent_light p-6 sm:p-8 transition-colors duration-300"
+            :class="{ 'border-main': isLoading }"
+        >
+            <div
+                :class="{ 'opacity-20 blur-sm pointer-events-none': isLoading }"
+                class="transition-all duration-300"
+            >
+                <div
+                    class="flex flex-col sm:flex-row sm:items-center gap-6 mb-8"
+                >
                     <div
-                        class="w-12 h-12 bg-background border border-muted grid place-content-center"
+                        class="w-16 h-16 rounded-none bg-background border-2 border-border flex items-center justify-center shrink-0"
                     >
-                        <CreditCard size="24" strokeWidth="1" />
+                        <CreditCard
+                            class="w-8 h-8 text-foreground"
+                            stroke-width="1.5"
+                        />
                     </div>
                     <div>
-                        <p class="font-bold text-sm">
-                            Stripe (Kreditkarte / PayPal / Klarna)
+                        <p
+                            class="font-bold text-lg uppercase tracking-widest text-foreground"
+                        >
+                            {{ $t("common.forms.stripeCheckout") }}
                         </p>
-                        <p class="text-xs text-muted-foreground">
-                            Sicher und schnell bezahlen
+                        <p
+                            class="text-sm font-bold uppercase tracking-widest text-muted-foreground mt-1"
+                        >
+                            {{ $t("common.forms.paymentMethodsInfo") }}
                         </p>
                     </div>
                 </div>
-                <p class="text-xs text-gray-600 italic">
-                    Nach dem Klicken auf "Jetzt bezahlen" werden Sie zu Stripe
-                    weitergeleitet, um Ihren Kauf sicher abzuschließen.
+
+                <div class="border-l-4 border-main pl-4">
+                    <p
+                        class="text-sm font-medium italic text-muted-foreground leading-relaxed"
+                    >
+                        {{ $t("common.forms.stripeRedirectInfo") }}
+                    </p>
+                </div>
+            </div>
+
+            <div
+                v-if="isLoading"
+                class="absolute inset-0 z-10 bg-background/90 flex flex-col items-center justify-center m-[-4px] border-4 border-main"
+            >
+                <Spinner class="w-12 h-12 text-main mb-6" />
+                <p
+                    class="font-bold uppercase tracking-widest text-sm text-foreground animate-pulse text-center px-4"
+                >
+                    {{ $t("common.forms.openingSecureCheckout") }}
                 </p>
             </div>
         </div>
 
-        <div class="contact-form-footer mt-8">
+        <div
+            class="flex justify-between items-center pt-8 border-t border-gray-100 gap-4"
+        >
             <Button
                 @click="$emit('prev')"
+                as-child
                 variant="ghost"
-                class="contact-form-back-link"
+                :disabled="isLoading"
+                class="rounded-none hover:bg-transparent px-0 group"
             >
-                <ChevronLeft size="20" />{{ $t("common.forms.backToBilling") }}
+                <router-link to="/cart" class="flex items-center gap-2">
+                    <ChevronLeft
+                        :size="20"
+                        class="transition-transform group-hover:-translate-x-1"
+                    />
+                    {{ $t("common.forms.backToBilling") }}
+                </router-link>
             </Button>
+
             <Button
                 @click="submitCheckout"
                 :disabled="isLoading"
-                class="contact-form-submit view-all h-auto"
+                type="submit"
+                class="view-all"
             >
                 <template v-if="!isLoading">
                     {{ $t("components.buttons.payNow") }}
                 </template>
-                <Spinner v-else class="h-5 w-5" />
+                <template v-else>
+                    {{ $t("common.forms.processing") }}
+                </template>
             </Button>
         </div>
     </div>
@@ -52,9 +105,9 @@
 import { ChevronLeft, CreditCard } from "lucide-vue-next";
 import { checkoutform, cartState } from "@lib/store/shop/index.js";
 import { apiQuery } from "@lib/helpers";
+
 import Spinner from "@components/ui/Spinner.vue";
 import { Button } from "@/components/ui/button";
-import "@assets/css/checkout/contactFrom.css";
 
 const emit = defineEmits(["prev"]);
 const { mutate: checkout, isLoading } = apiQuery("checkout").useStore();
@@ -105,6 +158,7 @@ const submitCheckout = () => {
     checkout(requestform, {
         onSuccess: (data) => {
             if (data?.url) {
+                // Using standard browser API for redirection per constraints
                 window.location.href = data.url;
             }
         },

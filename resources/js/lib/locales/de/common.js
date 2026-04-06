@@ -115,6 +115,13 @@ export default {
         payment: "Zahlung",
         coupon: "Rabattcode oder Geschenkkarte",
         applyCode: "Code anwenden",
+        stripeCheckout: "Stripe Checkout",
+        paymentMethodsInfo: "Kreditkarte / PayPal / Klarna",
+        stripeRedirectInfo: "Nach dem Klicken auf \"Jetzt bezahlen\" werden Sie zu Stripe weitergeleitet, um Ihren Kauf sicher abzuschließen.",
+        openingSecureCheckout: "Sichere Kasse wird geöffnet...",
+        processing: "Wird bearbeitet...",
+        noShippingMethods: "Keine Versandmethoden für Ihre Adresse verfügbar. Bitte prüfen Sie Ihre Angaben.",
+        free: "Kostenlos",
     },
     input: {
         orderTracking: "Bestellnummer oder Tracking -Code (e.g GREFIYOO2Q)",

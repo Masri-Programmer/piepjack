@@ -89,13 +89,13 @@ class CheckoutController extends Controller
     public function lookupOrder(Request $request, string $cartId): JsonResponse
     {
         $request->validate(['email' => 'required|email']);
-        $cart = Cart::with('order.user')->find($cartId);
+        $cart = Cart::with('completedOrder.user')->find($cartId);
 
         if (! $cart) {
             return response()->json(['message' => 'Cart not found'], 404);
         }
 
-        $order = $cart->order;
+        $order = $cart->completedOrder;
 
         if ($order && $order->user && $order->user->email !== $request->query('email')) {
             return response()->json(['message' => 'Unauthorized'], 403);
@@ -352,6 +352,10 @@ class CheckoutController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
 
+        Log::info('Stripe webhook received', [
+            'sig' => $sigHeader ? 'present' : 'missing',
+        ]);
+
         if (! $sigHeader) {
             return response()->json(['message' => 'Missing Stripe-Signature header'], 400);
         }
@@ -362,12 +366,17 @@ class CheckoutController extends Controller
                 $sigHeader,
                 config('services.stripe.webhook_secret')
             );
+            Log::info('Stripe event constructed', ['type' => $event->type]);
         } catch (Exception $e) {
+            Log::error('Stripe webhook construction failed: '.$e->getMessage());
+
             return response()->json(['message' => 'Invalid request'], 400);
         }
 
         $session = $event->data->object;
         $cartId = $session->metadata->cart_id ?? null;
+
+        Log::info('Webhook processing', ['cart_id' => $cartId, 'event' => $event->type]);
 
         if (! $cartId) {
             return response()->json(['message' => 'Cart ID not found'], 400);
@@ -376,10 +385,12 @@ class CheckoutController extends Controller
         $cart = Cart::find($cartId);
 
         if (! $cart) {
+            Log::warning('Cart not found for webhook', ['cart_id' => $cartId]);
+
             return response()->json(['message' => 'Cart not found'], 404);
         }
 
-        if ($event->type === 'checkout.session.completed') {
+        if ($event->type === 'checkout.session.completed' || $event->type === 'checkout.session.async_payment_succeeded') {
             $this->handleSuccessfulPayment($cart);
         }
 
@@ -392,6 +403,7 @@ class CheckoutController extends Controller
         try {
             // Lunar transition: Cart -> Order
             $order = $cart->createOrder();
+            Log::info('Lunar order created', ['order_id' => $order->id, 'cart_id' => $cart->id]);
             $order->update(['status' => 'paid']);
 
             // Custom post-checkout logic (Sendcloud, Emails)
@@ -400,13 +412,14 @@ class CheckoutController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Failed to finalize order: '.$e->getMessage());
+            Log::error('Failed to finalize order: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
     }
 
     private function processShippingAndNotifications(Order $order): void
     {
-        $order->load(['shippingAddress', 'user', 'lines.purchasable.product']);
+        // Avoid deep eager load on lines to prevent MorphTo errors with non-Eloquent types like ShippingOption
+        $order->load(['shippingAddress.country', 'user', 'lines']);
 
         // 1. Sendcloud integration
         $customerData = [
@@ -414,7 +427,7 @@ class CheckoutController extends Controller
             'address' => $order->shippingAddress->line_one,
             'city' => $order->shippingAddress->city,
             'zip' => $order->shippingAddress->postcode,
-            'country_code' => $order->shippingAddress->country->iso2,
+            'country_code' => $order->shippingAddress->country->iso2 ?? 'DE',
             'email' => $order->user->email,
         ];
 
@@ -438,20 +451,30 @@ class CheckoutController extends Controller
 
     private function sendOrderConfirmationEmail(Order $order): void
     {
-        // Adapt your OrderConfirmation mail class to handle Lunar Order
+        // Only map physical product lines to the 'products' array
+        $productLines = $order->lines->filter(fn ($line) => $line->type === 'physical');
+
+        // Manually load purchasable.product for these lines if needed,
+        // or just use description which is usually the product name in Lunar order lines
+        $products = $productLines->map(function ($line) {
+            // If purchasable is loaded, use it; otherwise fallback to description
+            $name = $line->description;
+            if ($line->purchasable && $line->purchasable->product) {
+                $name = $line->purchasable->product->translateAttribute('name');
+            }
+
+            return [
+                'name' => $name,
+                'quantity' => $line->quantity,
+                'price_per_item' => $line->unit_price->decimal,
+            ];
+        });
+
         $orderData = [
             'order' => $order,
             'user' => $order->user,
             'address' => $order->shippingAddress,
-            'products' => $order->lines->map(function ($line) {
-                $variant = $line->purchasable;
-
-                return [
-                    'name' => $variant->product->translateAttribute('name'),
-                    'quantity' => $line->quantity,
-                    'price_per_item' => $line->unit_price->decimal,
-                ];
-            }),
+            'products' => $products,
             'total' => $order->total->decimal,
         ];
 

@@ -1,6 +1,8 @@
 <template>
     <Sheet v-model:open="cartState.open">
-        <SheetContent class="flex flex-col w-full p-0 sm:max-w-md">
+        <SheetContent
+            class="flex flex-col w-full p-0 sm:max-w-md bg-accent_dark"
+        >
             <SheetHeader class="p-4 border-b">
                 <SheetTitle class="text-xl text-left">{{
                     $t("components.cart.title")
@@ -108,7 +110,7 @@
                         @click="cartState.open = false"
                         class="block w-full"
                     >
-                        <Button class="w-full gap-2" size="lg">
+                        <Button class="w-full gap-2 h-14" size="lg">
                             <LockKeyhole size="18" />
                             {{ $t("components.buttons.sicherZahlen") }}
                         </Button>

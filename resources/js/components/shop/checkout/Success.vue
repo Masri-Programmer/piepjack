@@ -1,222 +1,235 @@
 <template>
-    <div class="my-3">
-        <div class="bg-gray p-24 md:mx-auto">
-            <!-- Success State -->
+    <div
+        class="min-h-screen py-16 sm:py-24 selection:bg-main selection:text-accent"
+    >
+        <div class="container mx-auto px-6">
+            <header
+                class="mb-12 border-b-[12px] border-border pb-8 text-center md:text-left"
+            >
+                <p
+                    class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
+                >
+                    {{ $t("validation.success.order") }} Status
+                </p>
+                <h1
+                    class="text-6xl sm:text-7xl font-bold uppercase tracking-tighter leading-none italic text-foreground"
+                >
+                    {{ $t("validation.success.title") }}
+                </h1>
+            </header>
+
             <div
                 v-if="['paid', 'shipped', 'delivered'].includes(orderStatus)"
-                class="max-w-4xl mx-auto"
+                class="space-y-12 animate-in fade-in duration-700"
             >
                 <div
-                    class="bg-background p-8 shadow-sm border border-gray-100 mb-8"
+                    class="bg-main text-accent p-8 sm:p-12 border-4 border-main flex flex-col items-center text-center"
                 >
                     <svg
                         viewBox="0 0 24 24"
-                        class="text-green-600 w-20 h-20 mx-auto mb-6"
+                        class="w-24 h-24 mb-8 text-accent animate-in zoom-in duration-500 delay-200"
                     >
                         <path
                             fill="currentColor"
                             d="M12,0A12,12,0,1,0,24,12,12.014,12.014,0,0,0,12,0Zm6.927,8.2-6.845,9.289a1.011,1.011,0,0,1-1.43.188L5.764,13.769a1,1,0,1,1,1.25-1.562l4.076,3.261,6.227-8.451A1,1,0,1,1,18.927,8.2Z"
                         />
                     </svg>
-                    <div class="text-center text-main">
-                        <h3
-                            class="md:text-4xl text-2xl text-accent font-bold text-center uppercase mb-4"
-                        >
-                            {{ $t("validation.success.title") }}
-                        </h3>
-                        <p class="text-lg font-semibold mb-2">
-                            Order #{{ orderReference }}
-                        </p>
-                        <p class="my-2 text-gray-700">
-                            {{ $t("validation.success.thankYou") }}
-                        </p>
-                        <p
-                            class="text-sm text-muted-foreground max-w-md mx-auto"
-                        >
-                            {{
-                                $t("validation.success.checkEmail", {
-                                    payment: $t("validation.success.order"),
-                                })
-                            }}
-                        </p>
-                    </div>
-
-                    <!-- Order Summary -->
-                    <div
-                        v-if="orderDetailsData?.data"
-                        class="mt-12 pt-8 border-t border-gray-100 animate-fade-in"
+                    <p
+                        class="text-2xl font-bold uppercase tracking-widest mb-2"
                     >
+                        Order Confirmed
+                    </p>
+                    <p class="text-4xl font-mono font-bold mb-6">
+                        #{{ orderReference }}
+                    </p>
+                    <p class="text-lg font-medium opacity-80 mb-2">
+                        {{ $t("validation.success.thankYou") }}
+                    </p>
+                    <p
+                        class="text-sm font-bold uppercase tracking-widest opacity-60"
+                    >
+                        {{
+                            $t("validation.success.checkEmail", {
+                                payment: $t("validation.success.order"),
+                            })
+                        }}
+                    </p>
+                </div>
+
+                <div
+                    v-if="orderDetailsData?.data"
+                    class="border-2 border-border bg-background animate-in slide-in-from-bottom-4 duration-500 delay-300"
+                >
+                    <div class="p-6 border-b-2 border-border bg-muted">
                         <h4
-                            class="text-lg font-bold uppercase mb-6 tracking-wider"
+                            class="text-lg font-bold uppercase tracking-widest text-foreground"
                         >
                             Order Summary
                         </h4>
-                        <div class="space-y-4 mb-8">
+                    </div>
+
+                    <div class="divide-y-2 divide-border">
+                        <div
+                            v-for="product in orderDetailsData.data.products"
+                            :key="product.id"
+                            class="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+                        >
                             <div
-                                v-for="product in orderDetailsData.data
-                                    .products"
-                                :key="product.id"
-                                class="flex items-center gap-4"
+                                class="w-24 h-24 bg-accent_light border-2 border-border flex-shrink-0"
                             >
-                                <div
-                                    class="w-16 h-16 bg-accent_light overflow-hidden flex-shrink-0"
+                                <img
+                                    :src="product.image_url"
+                                    :alt="product.name"
+                                    class="w-full h-full object-cover grayscale-[20%]"
+                                />
+                            </div>
+                            <div class="flex-1">
+                                <p
+                                    class="font-bold text-lg uppercase tracking-tight"
                                 >
-                                    <img
-                                        :src="product.image_url"
-                                        :alt="product.name"
-                                        class="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <div class="flex-1">
-                                    <p class="font-bold text-sm">
-                                        {{ product.name }}
-                                    </p>
-                                    <p class="text-xs text-muted-foreground">
-                                        Qty: {{ product.item.quantity }} |
-                                        {{
-                                            product.item.options
-                                                .map((o) => o.value)
-                                                .join(" / ")
-                                        }}
-                                    </p>
-                                </div>
-                                <p class="font-bold text-sm">
-                                    {{ product.item.price.toFixed(2) }}
-                                    {{ $currency }}
+                                    {{ product.name }}
+                                </p>
+                                <p
+                                    class="text-sm font-bold uppercase tracking-widest text-muted-foreground mt-1"
+                                >
+                                    Qty: {{ product.item.quantity }} |
+                                    {{
+                                        product.item.options
+                                            .map((o) => o.value)
+                                            .join(" / ")
+                                    }}
                                 </p>
                             </div>
-                        </div>
-                        <div class="bg-accent_light p-6 space-y-2">
-                            <div class="flex justify-between text-sm">
-                                <span>Subtotal</span>
-                                <span
-                                    >{{
-                                        orderDetailsData.data.total_price.toFixed(
-                                            2,
-                                        )
-                                    }}
-                                    {{ $currency }}</span
-                                >
-                            </div>
-                            <div
-                                class="flex justify-between font-bold text-lg pt-2 border-t border-muted"
-                            >
-                                <span>Total Paid</span>
-                                <span
-                                    >{{
-                                        orderDetailsData.data.total_price.toFixed(
-                                            2,
-                                        )
-                                    }}
-                                    {{ $currency }}</span
-                                >
-                            </div>
+                            <p class="font-bold font-mono text-xl">
+                                {{ product.item.price.toFixed(2) }}
+                                {{ $currency }}
+                            </p>
                         </div>
                     </div>
 
                     <div
-                        class="flex flex-col sm:flex-row gap-4 justify-center mt-12"
+                        class="p-6 bg-accent_light border-t-4 border-border space-y-4"
                     >
-                        <Button
-                            as-child
-                            class="view-all bg-primary text-primary-foreground px-8 py-4 text-xs font-bold uppercase tracking-widest text-center h-auto"
+                        <div
+                            class="flex justify-between items-center text-sm font-bold uppercase tracking-widest text-muted-foreground"
                         >
-                            <router-link to="/shop">
-                                Continue Shopping
-                            </router-link>
-                        </Button>
-                        <Button
-                            as-child
-                            variant="outline"
-                            class="view-all bg-background border border-accent_dark text-main px-8 py-4 text-xs font-bold uppercase tracking-widest text-center h-auto"
+                            <span>Subtotal</span>
+                            <span class="font-mono text-foreground"
+                                >{{
+                                    orderDetailsData.data.total_price.toFixed(2)
+                                }}
+                                {{ $currency }}</span
+                            >
+                        </div>
+                        <div
+                            class="flex justify-between items-center text-2xl font-bold uppercase italic border-t-2 border-border pt-4"
                         >
-                            <router-link :to="'/track-order/' + orderReference">
-                                Track Order
-                            </router-link>
-                        </Button>
+                            <span>Total Paid</span>
+                            <span class="font-mono"
+                                >{{
+                                    orderDetailsData.data.total_price.toFixed(2)
+                                }}
+                                {{ $currency }}</span
+                            >
+                        </div>
                     </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 pt-8">
+                    <Button
+                        as-child
+                        class="view-all flex-1 h-16 text-sm font-bold uppercase tracking-widest"
+                    >
+                        <router-link to="/shop">Continue Shopping</router-link>
+                    </Button>
+                    <Button
+                        as-child
+                        variant="outline"
+                        class="flex-1 h-16 border-2 border-main text-sm font-bold uppercase tracking-widest rounded-none hover:bg-main hover:text-accent transition-colors"
+                    >
+                        <router-link :to="'/track-order/' + orderReference"
+                            >Track Order</router-link
+                        >
+                    </Button>
                 </div>
             </div>
 
-            <!-- Processing State -->
             <div
                 v-else-if="orderStatus === 'pending'"
-                class="text-center py-20"
+                class="text-center py-32 border-4 border-border animate-pulse"
             >
-                <div class="relative w-24 h-24 mx-auto mb-8">
+                <div class="relative w-24 h-24 mx-auto mb-8 text-main">
                     <Spinner class="w-full h-full" />
                 </div>
                 <h3
-                    class="text-2xl font-bold text-accent uppercase tracking-wider"
+                    class="text-3xl font-bold text-foreground uppercase tracking-tighter italic mb-4"
                 >
                     {{ $t("validation.success.processingTitle") }}
                 </h3>
-                <p class="mt-4 text-gray-600 max-w-sm mx-auto leading-relaxed">
+                <p
+                    class="text-sm font-bold uppercase tracking-widest text-muted-foreground max-w-md mx-auto"
+                >
                     {{ $t("validation.success.processingDesc") }}
                 </p>
             </div>
 
-            <!-- Fallback / Timeout State -->
-            <div v-else class="text-center py-20">
-                <div v-if="isTimeout" class="max-w-md mx-auto">
-                    <div class="text-orange-500 mb-6">
-                        <svg
-                            class="w-16 h-16 mx-auto"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-accent uppercase mb-4">
+            <div v-else class="text-center py-32 border-4 border-border">
+                <div
+                    v-if="isTimeout"
+                    class="max-w-lg mx-auto p-8 border-2 border-destructive bg-destructive/10"
+                >
+                    <h3
+                        class="text-2xl font-bold text-destructive uppercase tracking-widest mb-4"
+                    >
                         {{ $t("validation.success.timeoutTitle") }}
                     </h3>
-                    <p class="text-gray-600 mb-4">
+                    <p class="text-base font-medium text-foreground mb-4">
                         {{ $t("validation.success.timeoutDesc") }}
                     </p>
-                    <p class="text-sm font-medium text-muted-foreground italic">
+                    <p
+                        class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-8"
+                    >
                         {{ $t("validation.success.timeoutCheckEmail") }}
                     </p>
                     <Button
                         as-child
-                        class="mt-8 inline-block view-all bg-primary text-primary-foreground px-8 py-3 text-xs uppercase font-bold tracking-widest h-auto"
+                        class="view-all w-full h-16 text-sm font-bold uppercase tracking-widest"
                     >
-                        <router-link to="/shop"> Return to Shop </router-link>
+                        <router-link to="/shop">Return to Shop</router-link>
                     </Button>
                 </div>
-                <Spinner class="grid justify-center" v-else />
+                <Spinner v-else class="w-16 h-16 mx-auto text-main" />
+            </div>
+
+            <div
+                v-if="data?.data"
+                class="mt-32 pt-16 border-t-4 border-border grid gap-16"
+            >
+                <template v-for="c in data.data" :key="c.id">
+                    <HomeCarousel
+                        v-if="c.promoted"
+                        :name="c.name"
+                        :slug="c.slug"
+                        :id="c.id"
+                        :title="c.name"
+                    />
+                </template>
             </div>
         </div>
     </div>
-
-    <template v-if="data?.data">
-        <template v-for="c in data.data">
-            <HomeCarousel
-                v-if="c.promoted"
-                :name="c.name"
-                :slug="c.slug"
-                :id="c.id"
-                :title="c.name"
-            />
-        </template>
-    </template>
 </template>
 
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
+import { useQuery } from "@tanstack/vue-query";
+
 import Spinner from "@components/ui/Spinner.vue";
 import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
+import { Button } from "@/components/ui/button";
+
 import { apiQuery, apiRequest } from "@lib/helpers";
 import { cartState } from "@lib/store/shop/index.js";
-import { useQuery } from "@tanstack/vue-query";
-import { Button } from "@/components/ui/button";
 
 const route = useRoute();
 const cartId = route.query.cart_id;
@@ -231,11 +244,8 @@ const { data: orderData, isError } = useQuery({
         apiRequest("get", `/order-lookup/${cartId}`, {}, { email: userEmail }),
     enabled: !!cartId && !!userEmail,
     refetchInterval: (data) => {
-        // Stop polling if order is paid or we timed out
-        if (data?.status === "paid" || isTimeout.value) {
-            return false;
-        }
-        return 3000; // Poll every 3 seconds
+        if (data?.status === "paid" || isTimeout.value) return false;
+        return 3000;
     },
     retry: false,
 });
@@ -262,22 +272,16 @@ const { data: orderDetailsData } = useQuery({
 
 onMounted(() => {
     if (cartId) {
-        // Clear cart and progress immediately upon landing on success page
         cartState.value.cartItems = [];
         localStorage.removeItem("checkout-max-step");
 
-        // Set a 60-second timeout for processing
         setTimeout(() => {
-            if (orderStatus.value === "pending") {
-                isTimeout.value = true;
-            }
+            if (orderStatus.value === "pending") isTimeout.value = true;
         }, 60000);
     }
 });
 
 watch(orderStatus, (newStatus) => {
-    if (newStatus === "paid") {
-        isTimeout.value = false;
-    }
+    if (newStatus === "paid") isTimeout.value = false;
 });
 </script>

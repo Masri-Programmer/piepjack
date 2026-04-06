@@ -137,9 +137,31 @@ export default {
     need_help_answer: "Still have questions? Contact our support team:{email}",
   },
   login: {
-    title: "Sign in to your account",
-    password: "Password",
-    rememberMe: "Remember me",
-    forgotPassword: "Forgot password?"
-  }
-}
+      title: "Sign in to your account",
+      password: "Password",
+      rememberMe: "Remember me",
+      forgotPassword: "Forgot password?"
+  },
+  shipping: {
+      logistics: "LOGISTICS",
+      title: "SHIPPING",
+      tracking_info_header:
+          "Track your order effortlessly from our warehouse to your doorstep.",
+      tracking_info_description:
+          "After you have placed your order, you will receive a confirmation email with all the details of your purchase, including a tracking number. With this number, you can track the progress of your order in real-time.",
+      table: {
+          country: "Country",
+          delivery: "Delivery (Days)",
+          cost: "Cost",
+          free_shipping: "Free Delivery",
+      },
+      countries: {
+          germany: "Germany",
+          austria: "Austria",
+          switzerland_eu: "Switzerland & EU",
+      },
+      over: "over",
+      warning:
+          "⚠️ After individual drops, the delivery time may be extended to 10-16 days.",
+  },
+  };

@@ -1,223 +1,294 @@
 <template>
-    <div class="return-order-container">
-        <!-- Title -->
-        <h1 class="return-order-title">
-            <Button
-                v-if="activeStep > 1"
-                variant="ghost"
-                size="icon"
-                @click="goBack()"
-                aria-label="Go Back"
-                class="return-order-back-button p-0 h-auto w-auto"
-            >
-                <ChevronLeft size="30" />
-            </Button>
-            {{ $t("common.titles.return_exchange") }}
-        </h1>
-
-        <!-- Step 1: Form -->
-        <form
-            v-if="activeStep === 1"
-            @submit.prevent="submitForm"
-            class="return-order-form"
-            aria-label="Return Order Form"
-        >
-            <input
-                v-model="form.email"
-                class="return-order-input"
-                id="email"
-                type="email"
-                :placeholder="$t('common.input.email')"
-                required
-                aria-label="Email Address"
-            />
-            <input
-                v-model="form.orderNr"
-                class="return-order-input"
-                id="orderNr"
-                type="text"
-                :placeholder="$t('common.input.orderTracking')"
-                required
-                aria-label="Order Number"
-            />
-            <Button
-                type="submit"
-                :disabled="isLoadingOrder"
-                class="return-order-button-submit view-all h-auto"
-            >
-                <Spinner v-if="isLoadingOrder" center size="xs" />
-                <span v-else>{{ $t("components.buttons.returnOrder") }}</span>
-            </Button>
-        </form>
-
-        <!-- Step 2: Product Selection -->
-        <div
-            v-if="activeStep === 2 && !isLoadingOrder && order?.data.products"
-            class="return-order-products"
-        >
-            <div class="return-order-grid">
-                <div
-                    v-for="product in order?.data.products"
-                    :key="product.item"
-                    class="return-order-product-card"
-                    :class="{ 'is-selected': isSelected(product.item) }"
-                    @click="toggleProductSelection(product.item)"
+    <div
+        class="max-w-4xl mx-auto px-6 py-16 sm:py-24 selection:bg-main selection:text-accent"
+    >
+        <header class="mb-12 border-b-12 border-border pb-8">
+            <div class="flex items-center gap-4 mb-4">
+                <Button
+                    v-if="activeStep > 1"
+                    variant="ghost"
+                    size="icon"
+                    @click="goBack()"
+                    class="hover:bg-accent_light rounded-none p-0 h-10 w-10 border border-main"
                 >
-                    <ProductSmallCard :product="product" :item="product.item" />
+                    <ChevronLeft class="w-6 h-6" />
+                </Button>
+                <p
+                    class="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                >
+                    Step {{ activeStep }} / 3
+                </p>
+            </div>
+            <h1
+                class="text-5xl sm:text-7xl font-bold uppercase tracking-tighter italic leading-none text-foreground"
+            >
+                {{ $t("common.titles.return_exchange") }}
+            </h1>
+        </header>
+
+        <section
+            v-if="activeStep === 1"
+            class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"
+        >
+            <form @submit.prevent="submitForm" class="grid gap-6">
+                <div class="space-y-2">
+                    <label
+                        class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                        >Email Address</label
+                    >
+                    <input
+                        v-model="form.email"
+                        type="email"
+                        :placeholder="$t('common.input.email')"
+                        class="w-full bg-accent_light border-2 border-border p-4 text-base focus:border-main outline-none rounded-none transition-all"
+                        required
+                    />
+                </div>
+                <div class="space-y-2">
+                    <label
+                        class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                        >Order Number</label
+                    >
+                    <input
+                        v-model="form.orderNr"
+                        type="text"
+                        :placeholder="$t('common.input.orderTracking')"
+                        class="w-full bg-accent_light border-2 border-border p-4 text-base focus:border-main outline-none rounded-none transition-all"
+                        required
+                    />
+                </div>
+                <Button
+                    type="submit"
+                    :disabled="isLoadingOrder"
+                    class="view-all w-full h-16 text-lg font-bold uppercase tracking-widest"
+                >
+                    <Spinner v-if="isLoadingOrder" size="xs" />
+                    <span v-else>{{
+                        $t("components.buttons.returnOrder")
+                    }}</span>
+                </Button>
+            </form>
+        </section>
+
+        <section
+            v-if="activeStep === 2 && order?.data"
+            class="space-y-10 animate-in fade-in duration-500"
+        >
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div
+                    v-for="product in order.data.products"
+                    :key="product.item.id"
+                    @click="toggleProductSelection(product.item)"
+                    :class="[
+                        'relative cursor-pointer border-2 transition-all duration-300 p-2',
+                        isSelected(product.item)
+                            ? 'border-main bg-accent_light'
+                            : 'border-border opacity-60 hover:opacity-100',
+                    ]"
+                >
+                    <div
+                        v-if="isSelected(product.item)"
+                        class="absolute top-2 right-2 z-10 bg-main text-accent px-2 py-1 text-[10px] font-bold uppercase"
+                    >
+                        Selected
+                    </div>
+                    <ProductSmallCard
+                        :product="product"
+                        :item="product.item"
+                        class="border-none"
+                    />
                 </div>
             </div>
-            <p>{{ $t("common.return.provide_reason") }}</p>
-            <textarea
-                v-model="form.reason"
-                class="return-order-reason-textarea"
-                :placeholder="$t('common.return.reason_placeholder')"
-                required
-                aria-label="Reason for Return"
-            ></textarea>
-            <div class="flex gap-4 mt-8">
-                <Button @click="goBack" variant="outline" class="return-order-button-back view-all h-auto flex-1">
+
+            <div class="space-y-4">
+                <h2 class="text-xl font-bold uppercase italic tracking-tight">
+                    {{ $t("common.return.provide_reason") }}
+                </h2>
+                <textarea
+                    v-model="form.reason"
+                    :placeholder="$t('common.return.reason_placeholder')"
+                    class="w-full bg-accent_light border-2 border-border p-6 min-h-[150px] outline-none focus:border-main rounded-none transition-all"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <Button
+                    @click="goBack"
+                    variant="outline"
+                    class="flex-1 h-16 border-2 border-main uppercase font-bold rounded-none"
+                >
                     {{ $t("common.return.back") }}
                 </Button>
                 <Button
                     @click="goToNextStep"
-                    class="return-order-button-next view-all h-auto flex-1"
+                    class="view-all flex-1 h-16 uppercase font-bold"
                 >
                     {{ $t("common.return.next") }}
                 </Button>
             </div>
-        </div>
+        </section>
 
-        <!-- Step 3: Shipping Options -->
-        <div v-if="activeStep === 3" class="return-order-shipping">
-            <p>{{ $t("common.return.reason", { reason: form.reason }) }}</p>
-            <div
-                v-for="product in order?.data.products"
-                :key="product.item"
-                class="return-order-selected-product"
-            >
-                <ProductSmallCard
-                    :product="product"
-                    v-if="isSelected(product.item)"
-                    :item="product.item"
-                />
-            </div>
-            <h1 class="return-order-total">
-                {{ $t("common.return.select_shipping") }}
-            </h1>
-            <p class="return-order-description">
-                {{ $t("common.return.select_shipping_desc") }}
-            </p>
-            <div class="return-order-shipping-option">
-                <label class="return-order-radio">
-                    <input
-                        type="radio"
-                        value="DHL Parcel Shop"
-                        v-model="selectedService"
-                        required
-                    />
-                    {{ $t("common.return.dhl") }}
-                    <span class="return-order-price">4,90 €</span>
-                </label>
-            </div>
-            <div class="return-order-insurance">
-                <h2 class="return-order-subtitle">
-                    {{ $t("common.return.insurance") }}
+        <section
+            v-if="activeStep === 3"
+            class="space-y-12 animate-in fade-in duration-500"
+        >
+            <div class="border-2 border-main p-8 space-y-8 bg-background">
+                <h2
+                    class="text-2xl font-bold uppercase italic border-b-2 border-border pb-4"
+                >
+                    {{ $t("common.return.select_shipping") }}
                 </h2>
-                <div class="return-order-insurance-option">
-                    <label class="return-order-radio">
+
+                <label
+                    class="flex items-center justify-between cursor-pointer group"
+                >
+                    <div class="flex items-center gap-4">
                         <input
                             type="radio"
-                            :value="true"
-                            v-model="addInsurance"
-                            :true-value="true"
-                            :false-value="false"
-                            required
+                            value="DHL Parcel Shop"
+                            v-model="selectedService"
+                            class="w-5 h-5 accent-main"
                         />
-                        {{ $t("common.return.insurance_yes") }}
-                        <span class="return-order-price">1,99 €</span>
-                    </label>
-                    <p class="return-order-info">
-                        {{
-                            $t("common.return.insurance_info", {
-                                amount: coverageAmount,
-                            })
-                        }}
-                    </p>
-                </div>
-                <div class="return-order-insurance-option">
-                    <label class="return-order-radio">
-                        <input
-                            type="radio"
-                            :value="false"
-                            v-model="addInsurance"
-                            :true-value="true"
-                            :false-value="false"
-                            required
-                        />
-                        {{ $t("common.return.insurance_no") }}
-                    </label>
-                    <p class="return-order-info">
-                        {{ $t("common.return.insurance_warning") }}
-                    </p>
+                        <span
+                            class="font-bold uppercase tracking-wider group-hover:italic"
+                            >{{ $t("common.return.dhl") }}</span
+                        >
+                    </div>
+                    <span class="font-mono font-bold text-lg">4,90 €</span>
+                </label>
+
+                <div class="pt-8 border-t-2 border-border space-y-6">
+                    <h3
+                        class="text-sm font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                        Insurance Protection
+                    </h3>
+                    <div class="grid gap-4">
+                        <label
+                            class="flex flex-col p-4 border-2 border-border cursor-pointer transition-colors"
+                            :class="{
+                                'border-main bg-accent_light': addInsurance,
+                            }"
+                        >
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-3">
+                                    <input
+                                        type="radio"
+                                        :value="true"
+                                        v-model="addInsurance"
+                                        class="w-4 h-4 accent-main"
+                                    />
+                                    <span
+                                        class="font-bold uppercase text-sm italic"
+                                        >{{
+                                            $t("common.return.insurance_yes")
+                                        }}</span
+                                    >
+                                </div>
+                                <span class="font-mono font-bold">1,99 €</span>
+                            </div>
+                            <p class="text-xs text-muted-foreground">
+                                {{
+                                    $t("common.return.insurance_info", {
+                                        amount: coverageAmount,
+                                    })
+                                }}
+                            </p>
+                        </label>
+
+                        <label
+                            class="flex flex-col p-4 border-2 border-border cursor-pointer transition-colors"
+                            :class="{
+                                'border-main bg-accent_light': !addInsurance,
+                            }"
+                        >
+                            <div class="flex items-center gap-3 mb-2">
+                                <input
+                                    type="radio"
+                                    :value="false"
+                                    v-model="addInsurance"
+                                    class="w-4 h-4 accent-main"
+                                />
+                                <span
+                                    class="font-bold uppercase text-sm italic"
+                                    >{{
+                                        $t("common.return.insurance_no")
+                                    }}</span
+                                >
+                            </div>
+                            <p class="text-xs text-muted-foreground">
+                                {{ $t("common.return.insurance_warning") }}
+                            </p>
+                        </label>
+                    </div>
                 </div>
             </div>
-            <div class="return-order-summary">
-                <p class="return-order-total-price">
-                    <strong>{{
-                        $t("common.return.total_amount", {
-                            total: total.toFixed(2),
-                        })
-                    }}</strong>
-                </p>
-            </div>
-            <div class="return-order-terms">
-                <label class="return-order-checkbox">
+
+            <div class="bg-main text-accent p-8 space-y-6">
+                <div
+                    class="flex justify-between items-center text-2xl font-bold uppercase italic"
+                >
+                    <span>{{ $t("common.return.total_amount_label") }}</span>
+                    <span class="font-mono">{{ total.toFixed(2) }} €</span>
+                </div>
+                <label class="flex gap-3 items-start cursor-pointer">
                     <input
                         type="checkbox"
                         v-model="termsAccepted"
-                        required
-                        aria-label="Accept Terms and Conditions"
+                        class="mt-1 w-5 h-5 accent-accent"
                     />
-                    {{ $t("common.return.terms") }}
+                    <span
+                        class="text-xs font-medium uppercase tracking-tighter leading-tight opacity-80"
+                    >
+                        {{ $t("common.return.terms") }}
+                    </span>
                 </label>
             </div>
-            <div class="flex gap-4 mt-8">
-                <Button @click="goBack" variant="outline" class="return-order-button-back flex-1 h-auto">
-                    {{ $t("common.return.back_products") }}
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <Button
+                    @click="goBack"
+                    variant="outline"
+                    class="flex-1 h-16 border-2 border-main uppercase font-bold rounded-none"
+                >
+                    Back to items
                 </Button>
                 <Button
-                    :disabled="!termsAccepted"
+                    :disabled="!termsAccepted || isLoading"
                     @click="submitReturn"
-                    class="return-order-button-final view-all h-auto flex-1"
+                    class="view-all flex-1 h-16"
                 >
-                    {{ $t("common.return.next_step") }}
+                    <Spinner v-if="isLoading" size="xs" />
+                    <span v-else>{{ $t("common.return.next_step") }}</span>
                 </Button>
             </div>
-        </div>
+        </section>
     </div>
 </template>
 
 <script setup>
-import "@assets/css/order/returnOrder.css";
+import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { ChevronLeft } from "lucide-vue-next";
 import { useToast } from "vue-toastification";
-import { ref, computed, onMounted } from "vue";
-import Spinner from "@components/ui/Spinner.vue";
 import { useSessionStorage } from "@vueuse/core";
+
+// Components
+import Spinner from "@components/ui/Spinner.vue";
 import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
-import { apiQuery } from "@lib/helpers";
-import { checkoutform } from "@lib/store/shop/index.js";
 import { Button } from "@/components/ui/button";
 
-// Internationalization
+// Logic
+import { apiQuery } from "@lib/helpers";
+import { checkoutform } from "@lib/store/shop/index.js";
+
 const { t } = useI18n();
 const toast = useToast();
 const route = useRoute();
 const slug = computed(() => route.params.slug);
 
-// Reactive State
 const activeStep = ref(1);
 const selectedReturnedProducts = ref([]);
 const form = useSessionStorage("active-return-form", {
@@ -226,9 +297,7 @@ const form = useSessionStorage("active-return-form", {
     orderId: null,
     reason: "",
 });
-const returnData = ref({});
 
-// API Query
 const orderQueryKey = computed(() => form.value.orderNr);
 const {
     data: order,
@@ -236,51 +305,41 @@ const {
     refetch: refetchOrder,
 } = apiQuery("orders").useGetById(orderQueryKey);
 
-// Fetch Order
 const fetchOrder = async () => {
     try {
         const { data } = await refetchOrder();
-        if (!data || !data.data || !data.data.products) {
+        if (!data?.data?.products)
             throw new Error(t("common.alerts.orderNotFound"));
-        }
         activeStep.value = 2;
     } catch (error) {
         alert(error.message || t("common.alerts.fetchError"));
-        console.error("Failed to fetch order:", error);
     }
 };
 
-// Form Submission
 const submitForm = async () => {
-    if (!form.value.email || !form.value.orderNr) {
-        alert(t("common.alerts.fillAllFields"));
-        return;
-    }
+    if (!form.value.email || !form.value.orderNr) return;
     await fetchOrder();
 };
 
-// Product Selection
 const toggleProductSelection = (item) => {
     const index = selectedReturnedProducts.value.findIndex(
-        (p) => p.id === item.id
+        (p) => p.id === item.id,
     );
     if (index === -1) {
-        // Store both item details and its quantity for return
         selectedReturnedProducts.value.push({
             ...item,
-            cartQuantity: item.cartQuantity // Use original bought quantity
+            cartQuantity: item.cartQuantity,
         });
     } else {
         selectedReturnedProducts.value.splice(index, 1);
     }
 };
+
 const isSelected = (item) =>
     selectedReturnedProducts.value.some((p) => p.id === item.id);
 
-// Navigation
-const goBack = () => {
-    activeStep.value = Math.max(activeStep.value - 1, 1);
-};
+const goBack = () => (activeStep.value = Math.max(activeStep.value - 1, 1));
+
 const goToNextStep = () => {
     if (selectedReturnedProducts.value.length === 0) {
         alert(t("common.alerts.selectAtLeastOneProduct"));
@@ -293,7 +352,6 @@ const goToNextStep = () => {
     activeStep.value = 3;
 };
 
-// Shipping and Insurance
 const selectedService = ref("DHL Parcel Shop");
 const termsAccepted = ref(false);
 const addInsurance = ref(false);
@@ -301,16 +359,13 @@ const shippingFee = 4.9;
 const insuranceFee = 1.99;
 const coverageAmount = 20;
 const total = computed(() =>
-    addInsurance.value ? shippingFee + insuranceFee : shippingFee
+    addInsurance.value ? shippingFee + insuranceFee : shippingFee,
 );
 
-// Submit Return
-const { mutate: returnOrder, isLoading } =
-    apiQuery("returns").useStore();
+const { mutate: returnOrder, isLoading } = apiQuery("returns").useStore();
 
 const submitReturn = () => {
     if (!order.value?.data) return;
-
     const payload = {
         total: total.value,
         order_number: form.value.orderNr,
@@ -323,32 +378,15 @@ const submitReturn = () => {
 
     returnOrder(payload, {
         onSuccess: (data) => {
-            if (data?.checkout_url) {
-                window.location.href = data.checkout_url;
-            }
+            if (data?.checkout_url) window.location.href = data.checkout_url;
         },
     });
 };
 
-// Reset Stepper
-const resetStepper = () => {
-    selectedReturnedProducts.value = [];
-    form.value = {
-        email:
-            checkoutform.value.email ||
-            useSessionStorage("active-return-form").value?.email ||
-            "",
-        orderNr: "",
-        reason: "",
-    };
-    activeStep.value = 1;
-    returnData.value = {};
-};
-
-// Lifecycle Hooks
 onMounted(() => {
     if (slug.value === "success") {
-        resetStepper();
+        selectedReturnedProducts.value = [];
+        activeStep.value = 1;
         toast.success(t("common.alerts.returnSuccess"));
     }
 });

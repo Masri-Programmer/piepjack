@@ -41,9 +41,7 @@
         <div class="mt-4" data-aos="fade-up" :data-aos-delay="300">
             <Button
                 as-child
-                variant="outline"
-                size="lg"
-                class="min-w-[200px] view-all"
+                class="view-all"
             >
                 <router-link to="/collections">
                     {{ $t("components.buttons.viewAll") }}

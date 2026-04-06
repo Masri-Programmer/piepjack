@@ -1,30 +1,30 @@
 <template>
     <div
-        class="max-w-4xl mx-auto px-6 py-16 sm:py-24 selection:bg-accent_dark selection:text-[#f2f0a1]"
+        class="max-w-4xl mx-auto px-6 py-16 sm:py-24 selection:bg-main selection:text-accent"
     >
         <header
-            class="mb-16 border-b-[12px] border-accent_dark pb-8 text-center md:text-left"
+            class="mb-20 border-b-[12px] border-border pb-10 text-center md:text-left"
         >
             <p
-                class="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
             >
                 {{ $t("pages.faq.help") }}
             </p>
             <h1
-                class="text-5xl sm:text-7xl md:text-8xl font-accent_dark uppercase tracking-tighter leading-none italic break-words"
+                class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic break-words text-foreground"
             >
                 {{ $t("pages.faq.title") }}
             </h1>
         </header>
 
-        <div class="w-full space-y-16">
-            <div
+        <div class="w-full space-y-24">
+            <section
                 v-for="(category, index) in faqData"
                 :key="index"
-                class="space-y-6"
+                class="space-y-8"
             >
                 <h2
-                    class="text-2xl font-accent_dark uppercase bg-primary text-primary-foreground px-4 py-2 w-fit rounded-none tracking-tight italic"
+                    class="text-xl font-bold uppercase bg-primary text-primary-foreground px-6 py-3 w-fit rounded-none tracking-tight italic"
                 >
                     {{ $t(category.title) }}
                 </h2>
@@ -34,28 +34,32 @@
                         v-for="(item, idx) in category.items"
                         :key="idx"
                         :value="`item-${index}-${idx}`"
-                        class="border-2 border-accent_dark bg-background rounded-none"
+                        class="border-2 border-border bg-background rounded-none transition-all duration-300"
                     >
                         <AccordionTrigger
-                            class="px-5 py-5 text-left text-sm sm:text-base font-accent_dark uppercase tracking-wide hover:no-underline hover:bg-accent_dark hover:text-[#f2f0a1] transition-colors rounded-none group [&[data-state=open]]:bg-accent_dark [&[data-state=open]]:text-[#f2f0a1]"
+                            class="px-6 py-6 text-left text-base sm:text-lg font-bold uppercase tracking-wide hover:no-underline hover:bg-main hover:text-accent transition-colors rounded-none group [&[data-state=open]]:bg-main [&[data-state=open]]:text-accent"
                         >
                             {{ $t(item.question) }}
                         </AccordionTrigger>
 
                         <AccordionContent
-                            class="px-5 py-6 border-t-2 border-accent_dark bg-accent_light text-base font-medium text-gray-800 leading-relaxed"
+                            class="px-6 py-8 border-t-2 border-border bg-muted text-base font-medium leading-relaxed text-foreground/90"
                         >
-                            <p>
-                                {{
-                                    $t(item.answer, {
-                                        email: "info@piepjack-clothing.com",
-                                    })
-                                }}
-                            </p>
+                            <div
+                                class="prose prose-zinc dark:prose-invert max-w-none"
+                            >
+                                <p>
+                                    {{
+                                        $t(item.answer, {
+                                            email: "info@piepjack-clothing.com",
+                                        })
+                                    }}
+                                </p>
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-            </div>
+            </section>
         </div>
     </div>
 </template>
@@ -69,6 +73,7 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 
+// Data remains the same, assuming i18n keys are handled
 const faqData = ref([
     {
         title: "pages.faq.order_process",

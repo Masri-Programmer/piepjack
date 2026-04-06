@@ -28,7 +28,7 @@
 
         <div class="flex flex-col items-center justify-center mt-8">
             <router-link :to="'/collections/' + id + '/' + slug">
-                <Button variant="outline" size="lg" class="text-xs view-all">
+                <Button class="view-all">
                     {{ $t("components.buttons.viewAll") }}
                 </Button>
             </router-link>
@@ -65,32 +65,34 @@ const {
 } = apiQuery("products").useGet(params);
 
 const settings = {
-    itemsToShow: 2,
+    itemsToShow: 1.2,
     itemsToScroll: 1,
-    snapAlign: "center",
+    snapAlign: "start",
 };
 
 const breakpoints = {
-    480: {
-        itemsToShow: 2,
-        itemsToScroll: 3,
+    200: {
+        itemsToShow: 1.2,
+        itemsToScroll: 1,
+        snapAlign: "start",
     },
+    // 640px and up
+    640: {
+        itemsToShow: 2.2,
+        itemsToScroll: 1,
+        snapAlign: "start",
+    },
+    // 768px and up
     768: {
         itemsToShow: 3,
-        itemsToScroll: 2,
+        itemsToScroll: 1,
+        snapAlign: "start",
     },
-
+    // 1024px and up
     1024: {
         itemsToShow: 4,
-        itemsToScroll: 2,
-    },
-    1204: {
-        itemsToShow: 4,
-        itemsToScroll: 2,
-    },
-    1600: {
-        itemsToShow: 4,
-        itemsToScroll: 2,
+        itemsToScroll: 1,
+        snapAlign: "start",
     },
 };
 </script>

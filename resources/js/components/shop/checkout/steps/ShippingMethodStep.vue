@@ -12,8 +12,7 @@
             v-else-if="!shippingMethods.length"
             class="text-center py-12 text-muted-foreground"
         >
-            Keine Versandmethoden für Ihre Adresse verfügbar. Bitte prüfen Sie
-            Ihre Angaben.
+            {{ $t("common.forms.noShippingMethods") }}
         </div>
 
         <div v-else class="space-y-3">
@@ -51,7 +50,7 @@
                 <p class="font-bold text-sm">
                     {{
                         method.price === 0
-                            ? "Kostenlos"
+                            ? $t("common.forms.free")
                             : method.formatted_price
                     }}
                 </p>
@@ -69,7 +68,7 @@
             <Button
                 @click="$emit('next')"
                 :disabled="!checkoutform.shippingMethodId"
-                class="contact-form-submit view-all h-auto"
+                class="view-all flex-1"
             >
                 {{ $t("common.forms.continueToBilling") }}
             </Button>
