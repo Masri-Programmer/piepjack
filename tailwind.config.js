@@ -50,12 +50,48 @@ export default {
                 sans: ["AvenirNext-Bold", "sans-serif"],
             },
             colors: {
-                accent: "var(--accent)",
+                // Existing project colors (renamed/kept)
+                app_bg: "var(--accent)",
                 accent_light: "var(--accent_light)",
                 accent_dark: "var(--accent_dark)",
                 accent_black: "var(--accent_black)",
                 main: "var(--main)",
                 gray: "var(--gray)",
+
+                // Shadcn UI (Tailored to match)
+                border: "var(--border)",
+                input: "var(--input)",
+                ring: "var(--ring)",
+                background: "var(--background)",
+                foreground: "var(--foreground)",
+                primary: {
+                    DEFAULT: "var(--primary)",
+                    foreground: "var(--primary-foreground)",
+                },
+                secondary: {
+                    DEFAULT: "var(--secondary)",
+                    foreground: "var(--secondary-foreground)",
+                },
+                destructive: {
+                    DEFAULT: "hsl(var(--destructive))",
+                    foreground: "var(--destructive-foreground)",
+                },
+                muted: {
+                    DEFAULT: "var(--muted)",
+                    foreground: "var(--muted-foreground)",
+                },
+                accent: {
+                    DEFAULT: "var(--accent-shadcn)",
+                    foreground: "var(--accent-shadcn-foreground)",
+                },
+                popover: {
+                    DEFAULT: "var(--popover)",
+                    foreground: "var(--popover-foreground)",
+                },
+                card: {
+                    DEFAULT: "var(--card)",
+                    foreground: "var(--card-foreground)",
+                },
             },
             borderRadius: {
                 xl: "calc(var(--radius) + 4px)",
