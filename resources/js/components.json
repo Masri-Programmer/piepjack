@@ -10,11 +10,11 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@components",
-    "composables": "@/composables",
-    "utils": "@lib/utils.ts",
-    "ui": "@ui",
-    "lib": "@lib"
+    "components": "@/js/components",
+    "composables": "@/js/composables",
+    "utils": "@/js/lib/utils.ts",
+    "ui": "@/js/components/ui",
+    "lib": "@/js/lib"
   },
   "iconLibrary": "lucide"
 }

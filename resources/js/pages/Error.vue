@@ -27,16 +27,20 @@ const description = computed(() => {
 
 <template>
     <div
-        class="flex items-center justify-center min-h-screen p-5 text-center bg-gray-100"
+        class="flex items-center justify-center min-h-screen p-5 text-center bg-muted"
     >
         <div class="max-w-md">
             <h1 class="text-6xl font-bold text-gray-700">{{ status }}</h1>
-            <p class="mt-4 text-2xl font-semibold text-gray-800">{{ title }}</p>
+            <p
+                class="mt-4 text-2xl font-semibold text-gray-800 dark:text-gray-300"
+            >
+                {{ title }}
+            </p>
             <p class="mt-2 text-gray-600">{{ description }}</p>
             <div class="mt-6">
                 <Link
                     href="/"
-                    class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    class="px-4 py-2 font-semibold text-primary-foreground bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                     Go back home
                 </Link>
