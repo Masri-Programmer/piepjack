@@ -10,6 +10,7 @@ export default {
     noOrderNr: "You don't have an order number?",
     track: "Track Order",
     back: "Back",
+    payNow: "Pay Now",
   },
   cart: {
     checkout: "checkout",

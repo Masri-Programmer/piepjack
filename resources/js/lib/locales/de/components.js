@@ -10,6 +10,7 @@ export default {
         noOrderNr: "Haben Sie keine Bestellnummer?",
         track: "Bestellung verfolgen",
         back: "Zurück",
+        payNow: "Jetzt bezahlen",
     },
     cart: {
         ab: "ab",

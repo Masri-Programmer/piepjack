@@ -27,7 +27,7 @@ export const useShopGlobalState = createGlobalState(() => {
         sort_field: "",
     });
 
-    const checkoutform = useStorage("checkout-form", {
+    const defaultCheckoutForm = {
         email: "",
         firstName: "",
         lastName: "",
@@ -35,7 +35,29 @@ export const useShopGlobalState = createGlobalState(() => {
         zip: "",
         land: "",
         city: "",
+        stateProvince: "",
+        phone: "",
+        shippingMethodId: 8,
+        billingSameAsShipping: true,
+        billing: {
+            firstName: "",
+            lastName: "",
+            address: "",
+            zip: "",
+            city: "",
+            land: "",
+            stateProvince: "",
+        }
+    };
+
+    const checkoutform = useStorage("checkout-form", defaultCheckoutForm, undefined, {
+        mergeDefaults: true // This ensures new fields are added to existing storage objects
     });
+
+    // Ensure structure integrity after loading from storage
+    if (checkoutform.value && !checkoutform.value.billing) {
+        checkoutform.value.billing = { ...defaultCheckoutForm.billing };
+    }
 
     const cartTotalPrice = computed(() => {
         const total = cartState.value.cartItems.reduce((total, product) => {
@@ -84,7 +106,7 @@ export const useShopGlobalState = createGlobalState(() => {
                 ...product,
                 items: product.items.map((item) => ({
                     ...item,
-                    cartQuantity: Math.min(1, item.quantity),
+                    cartQuantity: Math.max(1, Math.min(1, Number(item.quantity) || 0)),
                 })),
             };
             cartState.value.cartItems.push(newProduct);
