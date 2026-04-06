@@ -3,7 +3,7 @@
     :open="props.open"
     :close="$emit('handle:close')"
     :toggle="$emit('handle:toggle')"
-    :dropdownContentClass="'bg-accent h-full'"
+    :dropdownContentClass="'bg-background h-full'"
   >
     <template v-slot:toggle>
       <img class="h-6 w-6 object-contain hover:opacity-75" :src="currentFlag" />

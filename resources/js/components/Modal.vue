@@ -9,12 +9,12 @@
             </div>
 
             <div
-                class="bg-accent rounded-border text-left shadow-xl transform transition-all sm:w-11/12 md:max-w-2xl lg:max-w-3xl xl:max-w-3xl 2xl:max-w-6xl sm:max-w-full relative overflow-auto max-h-[95vh] p-4 m-4"
+                class="bg-background rounded-border text-left shadow-xl transform transition-all sm:w-11/12 md:max-w-2xl lg:max-w-3xl xl:max-w-3xl 2xl:max-w-6xl sm:max-w-full relative overflow-auto max-h-[95vh] p-4 m-4"
                 ref="modalConent"
                 :class="props.class"
             >
                 <X
-                    class="absolute right-0 top-0 h-6 w-6 bg-gray-100 hover:bg-gray-400 text-main text-lg rounded-border cursor-pointer m-3 opacity-55"
+                    class="absolute right-0 top-0 h-6 w-6 bg-muted hover:bg-gray-400 text-main text-lg rounded-border cursor-pointer m-3 opacity-55"
                     @click="$emit('close')"
                 />
                 <slot />

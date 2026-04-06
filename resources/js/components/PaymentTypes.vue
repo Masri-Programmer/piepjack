@@ -4,7 +4,7 @@
         <div class="flex items-center">
             <button
                 type="button"
-                class="text-[#253b80] font-bold bg-[#cbeaf8] hover:bg-[#cbeaf8]/90 focus:ring-4 focus:ring-[#cbeaf8]/50 rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#F7BE38]/50 mr-2 mb-2"
+                class="text-[#253b80] font-bold bg-[#cbeaf8] hover:bg-[#cbeaf8]/90 focus:ring-4 focus:ring-[#cbeaf8]/50 text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#F7BE38]/50 mr-2 mb-2"
             >
                 <svg
                     class="mr-2 -ml-1 w-4 h-4"
@@ -25,7 +25,7 @@
             </button>
             <button
                 type="button"
-                class="text-accent_dark font-bold bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:ring-gray-100 rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-800 dark:bg-white dark:border-gray-700 dark:text-accent_dark dark:hover:bg-gray-200 mr-2 mb-2"
+                class="text-main font-bold bg-background hover:bg-muted border border-muted focus:ring-4 focus:ring-gray-100 text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-800 dark:bg-background dark:border-gray-700 dark:text-main dark:hover:bg-gray-200 mr-2 mb-2"
             >
                 <svg
                     class="mr-2 -ml-1 w-10 h-3"
@@ -46,7 +46,7 @@
             </button>
             <button
                 type="button"
-                class="text-accent_dark font-bold bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:ring-gray-100 rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-accent_dark dark:hover:bg-gray-700 mr-2 mb-2"
+                class="text-main font-bold bg-background hover:bg-muted border border-muted focus:ring-4 focus:ring-gray-100 text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-main dark:hover:bg-gray-700 mr-2 mb-2"
             >
                 <svg
                     class="mr-2 -ml-1 w-7 h-4"
