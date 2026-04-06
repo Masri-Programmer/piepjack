@@ -127,4 +127,6 @@ return [
 
     'artisan_password' => env('ARTISAN_PASSWORD', 'secretkey123'),
 
+    'admin_email' => env('ADMIN_EMAIL', 'info@piepjack-clothing.de'),
+
 ];

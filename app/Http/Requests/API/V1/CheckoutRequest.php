@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests\API\V1;
 
-use App\Models\ProductItem;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
+use Lunar\Models\ProductVariant;
 
 class CheckoutRequest extends FormRequest
 {
-    // Property to hold product items fetched in a single query
-    protected ?Collection $productItems = null;
+    // Property to hold product variants fetched in a single query
+    protected ?Collection $productVariants = null;
 
     public function authorize(): bool
     {
@@ -28,48 +28,50 @@ class CheckoutRequest extends FormRequest
             'state_province' => 'required|string|max:255',
             'postal_code' => 'required|string|max:20',
             'country_code' => 'required|string|max:2',
-            'label' => 'nullable|string|max:255',
-            'is_default_shipping' => 'sometimes|boolean',
-            'is_default_billing' => 'sometimes|boolean',
+
+            // Billing Info (Multi-step)
+            'billing_same_as_shipping' => 'required|boolean',
+            'billing_first_name' => 'required_if:billing_same_as_shipping,false|nullable|string|max:255',
+            'billing_last_name' => 'required_if:billing_same_as_shipping,false|nullable|string|max:255',
+            'billing_street_address' => 'required_if:billing_same_as_shipping,false|nullable|string|max:255',
+            'billing_city' => 'required_if:billing_same_as_shipping,false|nullable|string|max:255',
+            'billing_postal_code' => 'required_if:billing_same_as_shipping,false|nullable|string|max:20',
+            'billing_country_code' => 'required_if:billing_same_as_shipping,false|nullable|string|max:2',
 
             'products' => 'required|array',
-            'products.*.id' => 'required|exists:product_items,id',
+            'products.*.id' => 'required|exists:lunar_product_variants,id',
             'products.*.quantity' => [
                 'required',
                 'integer',
                 'min:1',
                 function ($attribute, $value, $fail) {
                     $index = explode('.', $attribute)[1];
-                    $productId = $this->input("products.{$index}.id");
+                    $variantId = $this->input("products.{$index}.id");
 
-                    $productItem = $this->productItems->get($productId);
+                    $variant = $this->productVariants->get($variantId);
 
-                    if (! $productItem) {
-                        $fail("The selected product (ID: {$productId}) is invalid.");
+                    if (! $variant) {
+                        $fail("The selected variant (ID: {$variantId}) is invalid.");
 
                         return;
                     }
 
-                    if ($value > $productItem->quantity) {
-                        $fail("The requested quantity for product ID {$productId} exceeds the available stock of {$productItem->quantity}.");
+                    if ($value > $variant->stock) {
+                        $fail("The requested quantity for variant ID {$variantId} exceeds the available stock of {$variant->stock}.");
                     }
                 },
             ],
 
             'promo_code' => 'nullable|string',
-            'shipping_method_id' => 'required|integer',
+            'shipping_method_id' => 'required',
         ];
     }
 
-    /**
-     * Prepare the data for validation.
-     * OPTIMIZATION: Fetch all product items at once to avoid N+1 problem in validation.
-     */
     protected function prepareForValidation(): void
     {
         if ($this->has('products')) {
-            $productIds = collect($this->input('products'))->pluck('id')->all();
-            $this->productItems = ProductItem::whereIn('id', $productIds)->get()->keyBy('id');
+            $variantIds = collect($this->input('products'))->pluck('id')->all();
+            $this->productVariants = ProductVariant::whereIn('id', $variantIds)->get()->keyBy('id');
         }
     }
 }

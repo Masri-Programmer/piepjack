@@ -13,6 +13,7 @@ use Stripe\Checkout\Session;
 use App\Models\OrderProduct;
 use App\Models\Address;
 use Illuminate\Validation\Rule;
+use App\Mail\AdminReturnNotification;
 use App\Mail\ReturnConfirmation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -267,7 +268,13 @@ class PublicReturningController extends Controller
             'items' => $items
         ];
 
+        // Send to User
         Mail::to($user->email)->send(new ReturnConfirmation($returnData));
+
+        // Send to Admin
+        if (config('app.admin_email')) {
+            Mail::to(config('app.admin_email'))->send(new AdminReturnNotification($returnData));
+        }
     }
 
     /**
