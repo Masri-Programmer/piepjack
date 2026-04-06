@@ -4,16 +4,18 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductReviewRequest;
-use App\Models\ProductReview; // ACTIVATE LUNAR MODEL
+use App\Models\ProductReview;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Lunar\Models\Order;
 use Lunar\Models\Product;
+use Lunar\Models\ProductVariant;
 
 class ProductReviewController extends Controller
 {
     public function index(Product $product): JsonResponse
     {
-        $reviews = $product->reviews()
+        $reviews = ProductReview::where('product_id', $product->id)
             ->where('is_approved', true)
             ->with('user:id,first_name,last_name')
             ->latest()
@@ -37,11 +39,13 @@ class ProductReviewController extends Controller
             return response()->json(['message' => 'Product not found.'], 404);
         }
 
-        // Check if user bought ANY variant of this Lunar Product
-        $canReview = $user->orders()
+        // Check if user bought any variant of this Lunar Product in a delivered order
+        $canReview = Order::where('user_id', $user->id)
             ->where('status', 'delivered')
-            ->whereHas('products.variant.product', function ($query) use ($product) {
-                $query->where('lunar_products.id', $product->id);
+            ->whereHas('lines', function ($query) use ($product) {
+                $query->whereHasMorph('purchasable', [ProductVariant::class], function ($query) use ($product) {
+                    $query->where('product_id', $product->id);
+                });
             })
             ->exists();
 
@@ -49,18 +53,21 @@ class ProductReviewController extends Controller
             return response()->json(['message' => 'You can only review products from a delivered order.'], 403);
         }
 
-        $hasAlreadyReviewed = $product->reviews()->where('user_id', $user->id)->exists();
+        $hasAlreadyReviewed = ProductReview::where('product_id', $product->id)
+            ->where('user_id', $user->id)
+            ->exists();
 
         if ($hasAlreadyReviewed) {
             return response()->json(['message' => 'You have already submitted a review for this product.'], 409);
         }
 
-        $review = $product->reviews()->create([
+        $review = ProductReview::create([
             'user_id' => $user->id,
+            'product_id' => $product->id,
             'rating' => $validated['rating'],
             'title' => $validated['title'] ?? null,
             'comment' => $validated['comment'],
-            'is_approved' => true,
+            'is_approved' => false, // Set to false for moderation
         ]);
 
         return response()->json([

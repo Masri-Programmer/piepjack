@@ -1,4 +1,5 @@
 <template>
+    <div class="product-review-form-container">
         <!-- Review Form -->
         <form
             v-if="!createSuccess"
@@ -118,6 +119,20 @@
                 </Button>
             </div>
         </form>
+
+        <!-- Success Message -->
+        <div v-else class="bg-green-50 border border-green-200 p-8 text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <h3 class="text-xl font-bold text-green-800 mb-2">
+                {{ $t("validation.success.title") }}
+            </h3>
+            <p class="text-green-700">
+                {{ $t("common.product.review_submitted_message") || 'Thank you for your review! It is pending approval.' }}
+            </p>
+        </div>
+    </div>
 </template>
 
 <script setup>

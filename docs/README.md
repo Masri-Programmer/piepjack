@@ -12,6 +12,7 @@ Welcome to the **Piepjackclothing** developer documentation. This guide is inten
 6.  **[Checkout & Payments](checkout.md)** - Detailed workflow of the checkout process and Stripe integration.
 7.  **[Testing](testing.md)** - Running and writing tests with Pest.
 8.  **[Deployment](deployment.md)** - Shipping and deployment procedures.
+9.  **[Product Reviews](product-reviews.md)** - Implementation of the customer review and rating system.
 
 ---
 
