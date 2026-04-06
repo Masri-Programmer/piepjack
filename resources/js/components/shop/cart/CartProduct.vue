@@ -22,8 +22,8 @@
                     <p class="cart-product-option-name">{{ option.name }}:</p>
                     <p class="cart-product-option-value">{{ option.value }}</p>
                 </div>
-                <p class="cart-product-product-price" v-if="item?.price">
-                    {{ item?.price }} {{ $currency }}
+                <p class="cart-product-product-price" v-if="item?.formatted_price">
+                    {{ item?.formatted_price }}
                 </p>
             </div>
         </div>

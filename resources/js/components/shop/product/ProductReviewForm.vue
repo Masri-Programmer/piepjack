@@ -106,16 +106,16 @@
             </div>
 
             <div class="contact-form-footer">
-                <button
+                <Button
                     type="submit"
-                    class="view-all"
+                    class="view-all h-auto"
                     :disabled="createLoading"
                 >
                     <div v-if="createLoading" class="contact-form-loading">
                         <Spinner class="h-5 w-5" />
                     </div>
                     <span v-else>{{ $t("common.product.submit_review") }}</span>
-                </button>
+                </Button>
             </div>
         </form>
 </template>
@@ -126,6 +126,7 @@ import { useI18n } from "vue-i18n";
 import * as Yup from "yup";
 import { apiQuery } from "@lib/helpers";
 import Spinner from "@components/ui/Spinner.vue";
+import { Button } from "@/components/ui/button";
 import "@assets/css/checkout/contactFrom.css";
 
 const props = defineProps({

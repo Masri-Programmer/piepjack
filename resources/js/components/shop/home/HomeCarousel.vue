@@ -1,15 +1,22 @@
 <template>
-    <div class="w-full" v-if="products?.data.length">
-        <h1 class="mb-6 text-3xl font-extrabold text-center md:mb-12">
+    <div class="w-full" v-if="products?.data?.length">
+        <h1
+            class="mb-6 text-2xl font-extrabold text-center md:text-3xl md:mb-12 text-foreground"
+        >
             {{ title }}
         </h1>
+
         <Carousel
             v-bind="settings"
             :breakpoints="breakpoints"
             class="vue-carousel"
         >
-            <Slide v-for="product in products?.data" :key="product.id">
-                <div class="carousel__item">
+            <Slide
+                v-for="product in products.data"
+                :key="product.id"
+                class="px-2 pb-4"
+            >
+                <div class="carousel__item w-full h-full text-left">
                     <ProductCard :product="product" />
                 </div>
             </Slide>
@@ -18,20 +25,20 @@
                 <Navigation />
             </template>
         </Carousel>
-        <router-link
-            :to="'/collections/' + id + '/' + slug"
-            class="flex flex-col items-center justify-center mt-6"
-        >
-            <div class="text-xs view-all">
-                {{ $t("components.buttons.viewAll") }}
-            </div>
-        </router-link>
-        <hr class="text-gray" />
+
+        <div class="flex flex-col items-center justify-center mt-8">
+            <router-link :to="'/collections/' + id + '/' + slug">
+                <Button variant="outline" size="lg" class="text-xs view-all">
+                    {{ $t("components.buttons.viewAll") }}
+                </Button>
+            </router-link>
+        </div>
     </div>
 </template>
 <script setup>
 import { Carousel, Navigation, Slide } from "vue3-carousel";
 import ProductCard from "../product/ProductCard.vue";
+import { Button } from "@/js/components/ui/button";
 import "@assets/css/carousel/homeCarousel.css";
 import "vue3-carousel/dist/carousel.css";
 import { ref } from "vue";

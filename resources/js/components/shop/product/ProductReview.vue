@@ -4,7 +4,10 @@
             {{ $t("common.product.reviews") }}
         </h2>
 
-        <div v-if="reviewsIsLoading" class="text-center py-8 text-gray-500">
+        <div
+            v-if="reviewsIsLoading"
+            class="text-center py-8 text-muted-foreground"
+        >
             <p>{{ $t("validation.messages.loading") }}</p>
         </div>
 
@@ -17,7 +20,7 @@
                 <article
                     v-for="review in reviews.data"
                     :key="review.id"
-                    class="flex gap-4 pb-6 border-b border-gray-200 last:border-b-0"
+                    class="flex gap-4 pb-6 border-b border-muted last:border-b-0"
                 >
                     <div
                         class="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-slate-200 rounded-full"
@@ -35,7 +38,7 @@
                             </h3>
                             <time
                                 :datetime="review.created_at"
-                                class="text-sm text-gray-500"
+                                class="text-sm text-muted-foreground"
                             >
                                 {{ formatDate(review.created_at) }}
                             </time>
@@ -56,7 +59,7 @@
             <Pagination :links="reviews.links" class="mt-6" />
         </div>
 
-        <div v-else class="text-center py-8 text-gray-500">
+        <div v-else class="text-center py-8 text-muted-foreground">
             <p>{{ $t("common.product.no_reviews") }}</p>
         </div>
 

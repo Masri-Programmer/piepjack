@@ -4,10 +4,10 @@
             <a
                 v-if="link.url"
                 :href="link.url"
-                class="px-4 py-2 text-sm rounded-md"
+                class="px-4 py-2 text-sm"
                 :class="{
-                    'bg-main text-white': link.active,
-                    'bg-white text-gray-700 hover:bg-gray-100': !link.active,
+                    'bg-main text-primary-foreground': link.active,
+                    'bg-background text-gray-700 hover:bg-muted': !link.active,
                 }"
                 v-html="link.label"
             />

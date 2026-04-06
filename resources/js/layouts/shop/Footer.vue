@@ -1,6 +1,6 @@
 <template>
     <div
-        class="w-full px-4 md:px-8 2xl:px-16 py-10 border-t border-gray-400 shadow-md tracking-normal text-xs sm:text-sm flex justify-center items-center gap-4 bg-[#f2f0a1] text-accent_dark"
+        class="w-full px-4 md:px-8 2xl:px-16 py-10 border-t border-gray-400 shadow-md tracking-normal text-xs sm:text-sm flex justify-center items-center gap-4 bg-[#f2f0a1] dark:bg-[#3d3d17] text-main"
     >
         <a
             href="https://www.instagram.com/piepjack"
@@ -60,7 +60,7 @@
                                 '/' +
                                 category.slug
                             "
-                            class="hover:text-white"
+                            class="hover:text-primary-foreground"
                         >
                             {{ category.name }}
                         </router-link>

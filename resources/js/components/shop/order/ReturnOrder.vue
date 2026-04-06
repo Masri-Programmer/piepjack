@@ -2,14 +2,16 @@
     <div class="return-order-container">
         <!-- Title -->
         <h1 class="return-order-title">
-            <button
+            <Button
                 v-if="activeStep > 1"
+                variant="ghost"
+                size="icon"
                 @click="goBack()"
                 aria-label="Go Back"
-                class="return-order-back-button"
+                class="return-order-back-button p-0 h-auto w-auto"
             >
                 <ChevronLeft size="30" />
-            </button>
+            </Button>
             {{ $t("common.titles.return_exchange") }}
         </h1>
 
@@ -38,14 +40,14 @@
                 required
                 aria-label="Order Number"
             />
-            <button
+            <Button
                 type="submit"
                 :disabled="isLoadingOrder"
-                class="return-order-button-submit view-all"
+                class="return-order-button-submit view-all h-auto"
             >
                 <Spinner v-if="isLoadingOrder" center size="xs" />
                 <span v-else>{{ $t("components.buttons.returnOrder") }}</span>
-            </button>
+            </Button>
         </form>
 
         <!-- Step 2: Product Selection -->
@@ -72,15 +74,17 @@
                 required
                 aria-label="Reason for Return"
             ></textarea>
-            <button @click="goBack" class="return-order-button-back view-all">
-                {{ $t("common.return.back") }}
-            </button>
-            <button
-                @click="goToNextStep"
-                class="return-order-button-next view-all"
-            >
-                {{ $t("common.return.next") }}
-            </button>
+            <div class="flex gap-4 mt-8">
+                <Button @click="goBack" variant="outline" class="return-order-button-back view-all h-auto flex-1">
+                    {{ $t("common.return.back") }}
+                </Button>
+                <Button
+                    @click="goToNextStep"
+                    class="return-order-button-next view-all h-auto flex-1"
+                >
+                    {{ $t("common.return.next") }}
+                </Button>
+            </div>
         </div>
 
         <!-- Step 3: Shipping Options -->
@@ -177,16 +181,18 @@
                     {{ $t("common.return.terms") }}
                 </label>
             </div>
-            <button @click="goBack" class="return-order-button-back">
-                {{ $t("common.return.back_products") }}
-            </button>
-            <button
-                :disabled="!termsAccepted"
-                @click="submitReturn"
-                class="return-order-button-final view-all"
-            >
-                {{ $t("common.return.next_step") }}
-            </button>
+            <div class="flex gap-4 mt-8">
+                <Button @click="goBack" variant="outline" class="return-order-button-back flex-1 h-auto">
+                    {{ $t("common.return.back_products") }}
+                </Button>
+                <Button
+                    :disabled="!termsAccepted"
+                    @click="submitReturn"
+                    class="return-order-button-final view-all h-auto flex-1"
+                >
+                    {{ $t("common.return.next_step") }}
+                </Button>
+            </div>
         </div>
     </div>
 </template>
@@ -203,6 +209,7 @@ import { useSessionStorage } from "@vueuse/core";
 import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
 import { apiQuery } from "@lib/helpers";
 import { checkoutform } from "@lib/store/shop/index.js";
+import { Button } from "@/components/ui/button";
 
 // Internationalization
 const { t } = useI18n();
@@ -214,11 +221,8 @@ const slug = computed(() => route.params.slug);
 const activeStep = ref(1);
 const selectedReturnedProducts = ref([]);
 const form = useSessionStorage("active-return-form", {
-    email:
-        checkoutform.value.email ||
-        useSessionStorage("active-return-form").value?.email ||
-        "",
-    orderNr: "",
+    email: checkoutform.value.email || "",
+    orderNr: route.params.id || "",
     orderId: null,
     reason: "",
 });
@@ -236,7 +240,7 @@ const {
 const fetchOrder = async () => {
     try {
         const { data } = await refetchOrder();
-        if (!data || !data.data.products) {
+        if (!data || !data.data || !data.data.products) {
             throw new Error(t("common.alerts.orderNotFound"));
         }
         activeStep.value = 2;
@@ -261,7 +265,11 @@ const toggleProductSelection = (item) => {
         (p) => p.id === item.id
     );
     if (index === -1) {
-        selectedReturnedProducts.value.push(item);
+        // Store both item details and its quantity for return
+        selectedReturnedProducts.value.push({
+            ...item,
+            cartQuantity: item.cartQuantity // Use original bought quantity
+        });
     } else {
         selectedReturnedProducts.value.splice(index, 1);
     }
@@ -298,8 +306,11 @@ const total = computed(() =>
 
 // Submit Return
 const { mutate: returnOrder, isLoading } =
-    apiQuery("returns").useStore(returnData);
+    apiQuery("returns").useStore();
+
 const submitReturn = () => {
+    if (!order.value?.data) return;
+
     const payload = {
         total: total.value,
         order_number: form.value.orderNr,

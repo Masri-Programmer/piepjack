@@ -24,8 +24,8 @@
                     <p class="option-value">{{ option.value }}</p>
                 </div>
             </div>
-            <p v-if="item?.price" class="product-price">
-                {{ item?.price }} {{ $currency }}
+            <p v-if="item?.formatted_price" class="product-price">
+                {{ item?.formatted_price }}
             </p>
             <!-- <button
                 v-if="options.addToCart && options.label !== 'no-label'"

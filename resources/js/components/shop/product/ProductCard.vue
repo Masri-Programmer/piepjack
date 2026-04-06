@@ -1,66 +1,83 @@
 <template>
     <router-link
+        v-if="product"
         :to="'/product/' + product.id + '/' + product.slug"
-        class="relative flex flex-col items-center w-full overflow-hidden text-xs text-center uppercase cursor-pointer group"
+        class="block h-full group cursor-pointer"
         @mouseenter="mouseEnter"
         @mouseleave="mouseLeave"
-        v-if="product"
     >
-        <!-- max-w-[180px] sm:max-w-[220px] md:max-w-[250px] -->
-        <div
-            v-if="isNewProduct"
-            class="absolute px-2 py-1 text-xs font-bold transition-transform duration-300 shadow-md top-6 left-2 bg-main text-accent_dark z-9 group-hover:scale-110"
+        <Card
+            class="relative flex flex-col h-full overflow-hidden transition-all duration-300 border-transparent hover:border-border hover:shadow-md"
         >
-            <p>{{ $t("common.product.new") }}</p>
-        </div>
-        <div class="relative w-full overflow-hidden aspect-3/4">
-            <ProductImage
-                :src="product.image_url"
-                :alt="product.name"
-                customClass="w-full h-full transition-transform duration-300 group-hover:scale-110"
-            />
-        </div>
-        <div
-            class="absolute bottom-0 flex flex-col items-center w-full h-16 p-2 px-2 mt-2 bg-accent/50 md:p-0 md:relative md:h-auto"
-        >
-            <p class="max-w-full text-sm font-semibold sm:text-base">
-                {{ product.name }}
-            </p>
-            <p v-if="product.price" class="text-xs text-gray-600 sm:text-sm">
-                {{ $t("common.product.ab") }} {{ product.price }}
-                {{ $currency }}
-            </p>
-        </div>
+            <Badge
+                v-if="isNewProduct"
+                class="absolute z-10 transition-transform duration-300 top-3 left-3 group-hover:scale-105"
+                variant="default"
+            >
+                {{ $t("common.product.new") }}
+            </Badge>
+
+            <AspectRatio :ratio="3 / 4" class="overflow-hidden bg-muted">
+                <ProductImage
+                    :src="product.image_url"
+                    :alt="product.name"
+                    customClass="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                />
+            </AspectRatio>
+
+            <CardContent
+                class="flex flex-col items-center justify-center flex-grow p-3 mt-2 text-center sm:p-4"
+            >
+                <p
+                    class="w-full text-sm font-semibold uppercase truncate sm:text-base text-card-foreground"
+                >
+                    {{ product.name }}
+                </p>
+                <p
+                    v-if="product.price"
+                    class="mt-1 text-xs uppercase sm:text-sm text-muted-foreground"
+                >
+                    {{ $t("common.product.ab") }} {{ product.formatted_price }}
+                </p>
+            </CardContent>
+        </Card>
     </router-link>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import ProductImage from "@components/ui/ProductImage.vue";
-import { ShoppingCart } from "lucide-vue-next";
+import { ref, computed } from "vue";
 import { useNow } from "@vueuse/core";
-import { computed } from "vue";
+import ProductImage from "@ui/ProductImage.vue";
+import { Card, CardContent } from "@ui/card";
+import { Badge } from "@ui/badge";
+import { AspectRatio } from "@ui/aspect-ratio";
+
 const props = defineProps({
     product: {
         type: Object,
         default: () => ({
             id: 1,
-            title: "Title",
+            name: "Title",
             slug: "Slug",
             description: "Qui ut doloribus eos quisquam fuga sit.",
             image_url: "",
             image_mime: "image/jpeg",
             image_size: 1279,
             price: "89.91",
+            formatted_price: "89.91 €",
+            created_at: new Date().toISOString(),
         }),
     },
 });
+
 const imgHover = ref(false);
 const mouseEnter = () => (imgHover.value = true);
 const mouseLeave = () => (imgHover.value = false);
+
 const now = useNow();
 
 const isNewProduct = computed(() => {
+    if (!props.product?.created_at) return false;
     const createdAt = new Date(props.product.created_at);
     const daysDifference = (now.value - createdAt) / (1000 * 60 * 60 * 24);
     return daysDifference <= 7;

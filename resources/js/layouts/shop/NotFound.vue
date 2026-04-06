@@ -11,9 +11,15 @@
       {{ $t("validation.error.message") }}
     </p>
     <div class="flex flex-col justify-center items-center">
-      <router-link to="/collections" class="view-all text-xs mt-12">
-        {{ $t("validation.error.continueShopping") }}
-      </router-link>
+      <Button as-child class="view-all text-xs mt-12 h-auto">
+        <router-link to="/collections">
+          {{ $t("validation.error.continueShopping") }}
+        </router-link>
+      </Button>
     </div>
   </div>
 </template>
+
+<script setup>
+import { Button } from "@/components/ui/button";
+</script>

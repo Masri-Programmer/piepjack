@@ -12,7 +12,7 @@
       <transition name="slide">
         <div
           v-show="nav"
-          class="w-screen max-w-md h-full flex flex-col py-6 bg-accent shadow-xl me-24"
+          class="w-screen max-w-md h-full flex flex-col py-6 bg-background shadow-xl me-24"
           ref="NavSidebar"
         >
           <!-- NavSidebar Header -->

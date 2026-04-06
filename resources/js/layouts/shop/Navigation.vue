@@ -2,7 +2,12 @@
     <header ref="navigation" class="border-b bg-accent_dark border-gray">
         <!-- <TopBanner /> -->
         <div class="navigation-bar">
-            <button class="menu-button" @click="toggleNav">
+            <Button
+                variant="ghost"
+                size="icon"
+                class="menu-button p-0 h-auto w-auto"
+                @click="toggleNav"
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="menu-icon"
@@ -17,7 +22,7 @@
                         d="M4 6h16M4 12h16M4 18h16"
                     />
                 </svg>
-            </button>
+            </Button>
             <div>
                 <router-link to="/" class="logo-link">
                     <img :src="logoCircle" alt="Logo" class="logo-img" />
@@ -61,6 +66,27 @@
                             ><ShieldUser size="24" strokeWidth="1" />
                         </a>
                     </li>
+                    <li class="flex items-center">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            @click="toggleTheme()"
+                            class="p-0 h-auto w-auto hover:bg-transparent focus-visible:ring-0"
+                        >
+                            <Sun
+                                v-if="isDark"
+                                size="24"
+                                strokeWidth="1"
+                                class="cursor-pointer"
+                            />
+                            <Moon
+                                v-else
+                                size="24"
+                                strokeWidth="1"
+                                class="cursor-pointer"
+                            />
+                        </Button>
+                    </li>
                     <li>
                         <Search
                             size="24"
@@ -81,11 +107,9 @@
                                 fill="var(--main)"
                             ></path>
                         </svg>
-                        <span
-                            v-if="cartTotalQuantity > 0"
-                            class="cart-badge"
-                            >{{ cartTotalQuantity }}</span
-                        >
+                        <span v-if="cartTotalQuantity > 0" class="cart-badge">{{
+                            cartTotalQuantity
+                        }}</span>
                     </div>
                 </ul>
             </nav>
@@ -136,7 +160,9 @@
 <script setup>
 import { ref } from "vue";
 import "@assets/css/navigation.css";
-import { Search, ShieldUser } from "lucide-vue-next";
+import { Search, ShieldUser, Sun, Moon } from "lucide-vue-next";
+import { useDark, useToggle } from "@vueuse/core";
+import { Button } from "@components/ui/button";
 import NavSidebar from "./NavSidebar.vue";
 import logoCircle from "@img/logo-new.png";
 import { apiQuery } from "@lib/helpers";
@@ -145,6 +171,9 @@ import TopBanner from "@layouts/shop/TopBanner.vue";
 import SearchModal from "@pages/shop/SearchModal.vue";
 import { cartState, cartTotalQuantity } from "@lib/store/shop/index.js";
 import LanguageDropdown from "@components/LanguageDropdown.vue";
+
+const isDark = useDark();
+const toggleTheme = useToggle(isDark);
 
 const { data, error, isLoading } = apiQuery("categories").useGet({});
 
