@@ -62,7 +62,6 @@
 
                 {{-- Loop Products --}}
                 @foreach ($products as $index => $product)
-                    {{-- Pass index to stripe rows if needed, or keep clean white --}}
                     @include('emails.products', ['product' => $product, 'last' => $loop->last])
                 @endforeach
 
@@ -74,13 +73,13 @@
                     <td colspan="2"></td>
                     <td style="padding: 5px 10px; font-size: 13px; color: #666666; text-align: right;">Zwischensumme</td>
                     <td style="padding: 5px 10px; font-size: 13px; color: #111111; text-align: right; font-weight: bold;">
-                        €{{ number_format($subtotal, 2, ',', '.') }}
+                        €{{ number_format($subtotal ?? 0, 2, ',', '.') }}
                     </td>
                 </tr>
-                @if($discount > 0)
+                @if(($discount ?? 0) > 0)
                 <tr>
                     <td colspan="2"></td>
-                    <td style="padding: 5px 10px; font-size: 13px; color: #10b981; text-align: right;">Rabatt (5%)</td>
+                    <td style="padding: 5px 10px; font-size: 13px; color: #10b981; text-align: right;">Rabatt</td>
                     <td style="padding: 5px 10px; font-size: 13px; color: #10b981; text-align: right; font-weight: bold;">
                         -€{{ number_format($discount, 2, ',', '.') }}
                     </td>
@@ -90,7 +89,7 @@
                     <td colspan="2"></td>
                     <td style="padding: 5px 10px; font-size: 13px; color: #666666; text-align: right;">Versand</td>
                     <td style="padding: 5px 10px; font-size: 13px; color: #111111; text-align: right;">
-                        {{ $shipping > 0 ? '€' . number_format($shipping, 2, ',', '.') : 'Gratis' }}
+                        {{ ($shipping ?? 0) > 0 ? '€' . number_format($shipping, 2, ',', '.') : 'Gratis' }}
                     </td>
                 </tr>
                 <tr>
@@ -100,7 +99,7 @@
                         Gesamtbetrag</td>
                     <td class="accent-color"
                         style="padding: 10px; font-size: 15px; text-align: right; font-weight: bold; border-top: 1px solid #eeeeee; margin-top: 5px;">
-                        €{{ number_format($order->total_price, 2, ',', '.') }}
+                        €{{ number_format($order->total_price ?? $total ?? 0, 2, ',', '.') }}
                     </td>
                 </tr>
             </table>
@@ -114,57 +113,48 @@
                 <tr>
                     <td
                         style="padding-bottom: 10px; border-bottom: 1px solid #eeeeee; font-size: 14px; font-weight: bold; color: #111111;">
-                        Zahlung & Versand
+                        Versandinformationen
                     </td>
                 </tr>
                 <tr>
                     <td style="padding-top: 15px; font-size: 13px; line-height: 1.6; color: #666666;">
                         <strong>Lieferadresse:</strong><br>
-                        {{ $address->street_address }}<br>
-                        {{ $address->postal_code }} {{ $address->city }}<br>
-                        {{ $address->country_name }}
+                        {{ $address->street_address ?? $address->line_one }}<br>
+                        {{ $address->postal_code ?? $address->postcode }} {{ $address->city }}<br>
+                        {{ $address->country_name ?? $address->country->name }}
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding-top: 10px;">
+                    <td style="padding-top: 25px;" align="center">
                         <a href="{{ config('app.url') }}/track-order/{{ $order->order_number }}"
-                            style="font-size: 13px; color: #4f46e5; text-decoration: none; font-weight: bold;">
-                            Status ansehen &rarr;
+                            style="display: inline-block; background-color: #171717; color: #ffffff; padding: 12px 30px; text-decoration: none; font-size: 14px; font-weight: bold; border-radius: 0; text-transform: uppercase; letter-spacing: 1px;">
+                            Bestellstatus verfolgen
                         </a>
                     </td>
                 </tr>
                 @if($order->tracking_number)
                 <tr>
-                    <td style="padding-top: 15px; font-size: 13px; line-height: 1.6; color: #666666;">
+                    <td style="padding-top: 20px; font-size: 13px; line-height: 1.6; color: #666666; border-top: 1px solid #f3f4f6; margin-top: 20px;">
                         <strong>Sendungsnummer (DHL):</strong><br>
-                        {{ $order->tracking_number }}
+                        <span style="font-family: monospace; background-color: #f3f4f6; padding: 2px 5px;">{{ $order->tracking_number }}</span>
                         @if($order->label_url)
-                            <br><a href="{{ $order->label_url }}" style="color: #4f46e5; text-decoration: underline;">Tracking Link / Label</a>
+                            <br><a href="{{ $order->label_url }}" style="color: #4f46e5; text-decoration: underline; font-weight: bold;">Tracking Link öffnen &rarr;</a>
                         @endif
                     </td>
                 </tr>
                 @endif
             </table>
         </td>
+    </tr>
+
     <tr>
         <td style="padding: 20px 40px; border-top: 1px solid #eeeeee;">
             <p style="font-size: 14px; font-weight: bold; color: #111111; margin-bottom: 10px;">Widerrufsbelehrung</p>
-            <p style="font-size: 12px; color: #666666; line-height: 1.5;">
-                <strong>Widerrufsrecht</strong><br>
+            <p style="font-size: 11px; color: #999999; line-height: 1.5;">
                 Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen. Die
                 Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter, der nicht
-                der Beförderer ist, die Waren in Besitz genommen haben bzw. hat.<br><br>
-                Um Ihr Widerrufsrecht auszuüben, müssen Sie uns mittels einer eindeutigen Erklärung (z. B. ein mit der Post
-                versandter Brief oder E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.<br><br>
-                <strong>Folgen des Widerrufs</strong><br>
-                Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben,
-                einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten, die sich daraus ergeben, dass Sie
-                eine andere Art der Lieferung als die von uns angebotene, günstigste Standardlieferung gewählt haben),
-                unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über
-                Ihren Widerruf dieses Vertrags bei uns eingegangen ist.<br><br>
-                Wir können die Rückzahlung verweigern, bis wir die Waren wieder zurückerhalten haben oder bis Sie den
-                Nachweis erbracht haben, dass Sie die Waren zurückgesandt haben.<br><br>
-                Der Kunde trägt die unmittelbaren Kosten der Rücksendung der Waren.
+                der Beförderer ist, die Waren in Besitz genommen haben. Um Ihr Widerrufsrecht auszuüben, müssen Sie uns mittels
+                einer eindeutigen Erklärung über Ihren Entschluss informieren.
             </p>
         </td>
     </tr>
