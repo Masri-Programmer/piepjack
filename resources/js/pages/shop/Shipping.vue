@@ -20,7 +20,7 @@
             <table
                 class="w-full max-w-3xl border-collapse border border-gray shadow-md"
             >
-                <thead class="bg-gray-100">
+                <thead class="bg-muted">
                     <tr>
                         <th
                             class="border border-gray px-4 py-2 text-center text-accent"
@@ -45,7 +45,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="hover:bg-gray-50 hover:text-accent">
+                    <tr class="hover:bg-accent_light hover:text-accent">
                         <td class="border border-gray px-4 py-2 text-center">
                             Deutschland
                         </td>
@@ -59,7 +59,7 @@
                             bei Bestellungen über €70
                         </td>
                     </tr>
-                    <tr class="hover:bg-gray-50 hover:text-accent">
+                    <tr class="hover:bg-accent_light hover:text-accent">
                         <td class="border border-gray px-4 py-2 text-center">
                             Österreich
                         </td>
@@ -73,7 +73,7 @@
                             bei Bestellungen über €70
                         </td>
                     </tr>
-                    <tr class="hover:bg-gray-50 hover:text-accent">
+                    <tr class="hover:bg-accent_light hover:text-accent">
                         <td class="border border-gray px-4 py-2 text-center">
                             Schweiz & andere EU-Länder
                         </td>

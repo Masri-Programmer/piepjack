@@ -57,7 +57,7 @@
                         </p>
                         <p>{{ $t("pages.tracking.date") }}:</p>
                         <p class="font-semibold">
-                            {{ formatDate(order?.data.created_at) }}
+                            {{ formatDateLocal(order?.data.created_at) }}
                         </p>
                         <p>{{ $t("pages.tracking.orderNr") }}:</p>
                         <p class="font-semibold">
@@ -109,9 +109,8 @@ const slug = route.params.slug;
 const activeStep = ref(1);
 const form = useSessionStorage("active-track-form", {
     email: checkoutform.value.email || "",
-    orderNr: "",
+    orderNr: route.params.id || "",
 });
-form.value.orderNr = route.params.id ? route.params.id : form.value.orderNr;
 
 // API Query
 const orderQueryKey = computed(() => form.value.orderNr);
@@ -125,7 +124,8 @@ const {
 const errorMessage = ref("");
 
 // Helper Functions
-const formatDate = (dateString) => {
+const formatDateLocal = (dateString) => {
+    if (!dateString) return t("common.unknown");
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, {
         year: "numeric",
@@ -136,9 +136,10 @@ const formatDate = (dateString) => {
 
 // Fetch Order
 const fetchOrder = async () => {
+    errorMessage.value = "";
     try {
         const { data } = await refetchOrder();
-        if (!data) {
+        if (!data || !data.data) {
             throw new Error(t("common.alerts.orderNotFound"));
         }
         activeStep.value = 2;
@@ -154,14 +155,12 @@ const handleSubmit = async () => {
         errorMessage.value = t("common.alerts.fillAllFields");
         return;
     }
-    errorMessage.value = ""; // Clear previous errors
-    orderQueryKey.value = form.value.orderNr;
     await fetchOrder();
 };
 
 // Go Back to Previous Step
 const goBack = () => {
-    activeStep.value = Math.max(activeStep.value - 1, 1); // Prevent negative steps
+    activeStep.value = 1;
 };
 
 // Lifecycle Hooks

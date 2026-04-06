@@ -1,6 +1,6 @@
 <template>
     <div
-        class="launch-countdown min-h-[100dvh] bg-neutral-950 flex flex-col items-center justify-center p-4 relative overflow-x-hidden font-manrope selection:bg-main/20 selection:text-white"
+        class="launch-countdown min-h-[100dvh] bg-neutral-950 flex flex-col items-center justify-center p-4 relative overflow-x-hidden font-manrope selection:bg-main/20 selection:text-primary-foreground"
     >
         <router-link
             to="/"
@@ -17,7 +17,7 @@
                 class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-main/5 blur-[90px] rounded-full"
             ></div>
             <div
-                class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-accent/5 blur-[90px] rounded-full"
+                class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-background/5 blur-[90px] rounded-full"
             ></div>
             <div
                 class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_0,transparent_100%)]"
@@ -29,18 +29,18 @@
         >
             <div class="space-y-4" v-motion-fade>
                 <div
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-white/60 text-xs font-semibold uppercase tracking-widest animate-pulse"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-background/5 backdrop-blur-md text-primary-foreground/60 text-xs font-semibold uppercase tracking-widest animate-pulse"
                 >
                     <span class="w-2 h-2 rounded-full bg-main"></span>
                     {{ isLaunched ? "Kollektion ist Live" : "Demnächst" }}
                 </div>
                 <h1
-                    class="text-5xl md:text-8xl font-bold text-white tracking-tighter"
+                    class="text-5xl md:text-8xl font-bold text-primary-foreground tracking-tighter"
                 >
                     P I E P J A C K
                 </h1>
                 <p
-                    class="text-white/40 text-sm md:text-lg max-w-lg mx-auto font-medium"
+                    class="text-primary-foreground/40 text-sm md:text-lg max-w-lg mx-auto font-medium"
                 >
                     {{
                         isLaunched
@@ -62,15 +62,15 @@
                     class="group"
                 >
                     <div
-                        class="relative bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-8 backdrop-blur-xl transition-all duration-500 group-hover:bg-white/[0.05] group-hover:border-white/20"
+                        class="relative bg-background/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-8 backdrop-blur-xl transition-all duration-500 group-hover:bg-background/[0.05] group-hover:border-white/20"
                     >
                         <div
-                            class="text-4xl md:text-6xl font-black text-white group-hover:scale-105 transition-transform duration-500"
+                            class="text-4xl md:text-6xl font-accent_dark text-primary-foreground group-hover:scale-105 transition-transform duration-500"
                         >
                             {{ val.toString().padStart(2, "0") }}
                         </div>
                         <div
-                            class="text-[10px] md:text-xs font-bold text-white/30 uppercase tracking-[0.2em] mt-2 group-hover:text-main/60 transition-colors"
+                            class="text-[10px] md:text-xs font-bold text-primary-foreground/30 uppercase tracking-[0.2em] mt-2 group-hover:text-main/60 transition-colors"
                         >
                             {{ translateUnit(unit) }}
                         </div>
@@ -85,7 +85,7 @@
             >
                 <div v-if="!isRegistered" class="space-y-4 px-4 md:px-0">
                     <p
-                        class="text-white/40 text-xs font-bold tracking-[0.2em] uppercase"
+                        class="text-primary-foreground/40 text-xs font-bold tracking-[0.2em] uppercase"
                     >
                         Registrieren, um benachrichtigt zu werden
                     </p>
@@ -99,21 +99,21 @@
                                 v-model="form.name"
                                 type="text"
                                 placeholder="Name"
-                                class="bg-white/10 border border-white/40 rounded-xl px-5 py-3 text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-all"
+                                class="bg-background/10 border border-white/40 px-5 py-3 text-primary-foreground text-sm placeholder:text-primary-foreground/40 focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-all"
                                 required
                             />
                             <input
                                 v-model="form.email"
                                 type="email"
                                 placeholder="E-Mail"
-                                class="bg-white/10 border border-white/40 rounded-xl px-5 py-3 text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-all"
+                                class="bg-background/10 border border-white/40 px-5 py-3 text-primary-foreground text-sm placeholder:text-primary-foreground/40 focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-all"
                                 required
                             />
                         </div>
                         <button
                             type="submit"
                             :disabled="isSubmitting"
-                            class="w-full bg-white text-neutral-950 py-3 rounded-xl font-black text-sm hover:bg-main hover:text-white transition-all disabled:opacity-50 active:scale-[0.98]"
+                            class="w-full bg-background text-neutral-950 py-3 font-accent_dark text-sm hover:bg-main hover:text-primary-foreground transition-all disabled:opacity-50 active:scale-[0.98]"
                         >
                             {{
                                 isSubmitting
@@ -131,7 +131,7 @@
                 </div>
                 <div
                     v-else
-                    class="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl animate-in fade-in zoom-in duration-500 mx-4 md:mx-0"
+                    class="bg-background/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl animate-in fade-in zoom-in duration-500 mx-4 md:mx-0"
                 >
                     <div
                         class="w-12 h-12 bg-main/20 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -151,8 +151,10 @@
                             <path d="M20 6 9 17l-5-5" />
                         </svg>
                     </div>
-                    <h3 class="text-white font-bold mb-2">Du bist dabei!</h3>
-                    <p class="text-white/40 text-xs font-medium">
+                    <h3 class="text-primary-foreground font-bold mb-2">
+                        Du bist dabei!
+                    </h3>
+                    <p class="text-primary-foreground/40 text-xs font-medium">
                         Wir haben deine Anmeldung erhalten und melden uns zum
                         Launch.
                     </p>
@@ -163,7 +165,7 @@
                 <router-link
                     v-if="isLaunched"
                     to="/"
-                    class="inline-flex items-center gap-3 bg-white text-neutral-950 px-10 py-5 rounded-full text-base font-black hover:bg-main hover:text-white transition-all duration-500 group shadow-2xl shadow-white/5 active:scale-95"
+                    class="inline-flex items-center gap-3 bg-background text-neutral-950 px-10 py-5 rounded-full text-base font-accent_dark hover:bg-main hover:text-primary-foreground transition-all duration-500 group shadow-2xl shadow-white/5 active:scale-95"
                 >
                     ZUM SHOP
                     <svg
@@ -185,7 +187,7 @@
 
                 <div
                     v-else
-                    class="text-white/20 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]"
+                    class="text-primary-foreground/20 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]"
                 >
                     {{
                         new Date(targetDate).toLocaleDateString("de-DE", {
@@ -207,7 +209,7 @@
         </div>
 
         <div
-            class="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-white/20 text-[10px] font-bold uppercase tracking-[0.3em] z-10 relative mt-auto pb-6"
+            class="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-primary-foreground/20 text-[10px] font-bold uppercase tracking-[0.3em] z-10 relative mt-auto pb-6"
         >
             <div>© 2026 PIEPJACK CLOTHING</div>
             <div class="flex gap-8">
@@ -215,7 +217,7 @@
                     href="https://www.instagram.com/piepjack"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="social-media-button hover:text-white transition-colors"
+                    class="social-media-button hover:text-primary-foreground transition-colors"
                     aria-label="Besuche uns auf Instagram"
                 >
                     <Instagram />
@@ -225,7 +227,7 @@
                     href="https://www.tiktok.com/@piepjack"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="social-media-button hover:text-white transition-colors"
+                    class="social-media-button hover:text-primary-foreground transition-colors"
                     aria-label="Besuche uns auf TikTok"
                 >
                     <svg

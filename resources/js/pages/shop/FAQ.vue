@@ -1,41 +1,60 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full px-4 py-10">
-        <h1 class="text-sm font-bold text-center mb-3">
-            {{ $t("pages.faq.help") }}
-        </h1>
-        <h1
-            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-6 sm:mb-8 md:mb-10 lg:mb-12"
+    <div
+        class="max-w-4xl mx-auto px-6 py-16 sm:py-24 selection:bg-accent_dark selection:text-[#f2f0a1]"
+    >
+        <header
+            class="mb-16 border-b-[12px] border-accent_dark pb-8 text-center md:text-left"
         >
-            {{ $t("pages.faq.title") }}
-        </h1>
-        <div class="w-full max-w-3xl">
-            <div v-for="(category, index) in faqData" :key="index" class="mb-6">
-                <p class="text-xl font-semibold border-b pb-2">
-                    {{ $t(category.title) }}
-                </p>
-                <details
-                    v-for="(item, idx) in category.items"
-                    :key="idx"
-                    class="group mt-4 border overflow-hidden"
+            <p
+                class="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground"
+            >
+                {{ $t("pages.faq.help") }}
+            </p>
+            <h1
+                class="text-5xl sm:text-7xl md:text-8xl font-accent_dark uppercase tracking-tighter leading-none italic break-words"
+            >
+                {{ $t("pages.faq.title") }}
+            </h1>
+        </header>
+
+        <div class="w-full space-y-16">
+            <div
+                v-for="(category, index) in faqData"
+                :key="index"
+                class="space-y-6"
+            >
+                <h2
+                    class="text-2xl font-accent_dark uppercase bg-primary text-primary-foreground px-4 py-2 w-fit rounded-none tracking-tight italic"
                 >
-                    <summary
-                        class="flex justify-between items-center px-4 py-3 cursor-pointer text-accent bg-gray-400 hover:bg-gray-200"
+                    {{ $t(category.title) }}
+                </h2>
+
+                <Accordion type="single" collapsible class="w-full space-y-4">
+                    <AccordionItem
+                        v-for="(item, idx) in category.items"
+                        :key="idx"
+                        :value="`item-${index}-${idx}`"
+                        class="border-2 border-accent_dark bg-background rounded-none"
                     >
-                        <span class="text-lg">{{ $t(item.question) }}</span>
-                        <span class="transition-transform group-open:rotate-45"
-                            >+</span
+                        <AccordionTrigger
+                            class="px-5 py-5 text-left text-sm sm:text-base font-accent_dark uppercase tracking-wide hover:no-underline hover:bg-accent_dark hover:text-[#f2f0a1] transition-colors rounded-none group [&[data-state=open]]:bg-accent_dark [&[data-state=open]]:text-[#f2f0a1]"
                         >
-                    </summary>
-                    <div class="px-4 py-3 bg-gray border-t text-accent">
-                        <p>
-                            {{
-                                $t(item.answer, {
-                                    email: "info@piepjack-clothing.com",
-                                })
-                            }}
-                        </p>
-                    </div>
-                </details>
+                            {{ $t(item.question) }}
+                        </AccordionTrigger>
+
+                        <AccordionContent
+                            class="px-5 py-6 border-t-2 border-accent_dark bg-accent_light text-base font-medium text-gray-800 leading-relaxed"
+                        >
+                            <p>
+                                {{
+                                    $t(item.answer, {
+                                        email: "info@piepjack-clothing.com",
+                                    })
+                                }}
+                            </p>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </div>
         </div>
     </div>
@@ -43,6 +62,12 @@
 
 <script setup>
 import { ref } from "vue";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const faqData = ref([
     {
