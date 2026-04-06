@@ -61,5 +61,5 @@
 }
 
 .search-modal-category-link {
-    @apply hover:text-white;
+    @apply hover:text-primary-foreground;
 }

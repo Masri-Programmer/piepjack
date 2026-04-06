@@ -30,7 +30,7 @@
 }
 
 .cart-page-table-row {
-    @apply bg-accent border-b border-gray;
+    @apply bg-background border-b border-gray;
 }
 
 .cart-page-table-cell {

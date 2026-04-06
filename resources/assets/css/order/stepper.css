@@ -32,11 +32,11 @@
 }
 
 .stepper-step-active {
-    @apply bg-accent dark:bg-gray-main border-2 border-main dark:border-main;
+    @apply bg-background dark:bg-gray-main border-2 border-main dark:border-main;
 }
 
 .stepper-step-inactive {
-    @apply bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700;
+    @apply bg-background dark:bg-gray-800 border-2 border-muted dark:border-gray-700;
 }
 
 .stepper-step-number {
@@ -52,7 +52,7 @@
 }
 
 .stepper-title {
-    @apply mt-4 sm:mt-6 text-xl font-semibold leading-tight text-gray-900 dark:text-white md:mt-10;
+    @apply mt-4 sm:mt-6 text-xl font-semibold leading-tight text-gray-900 dark:text-primary-foreground md:mt-10;
 }
 
 .stepper-description {

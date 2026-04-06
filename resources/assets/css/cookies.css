@@ -13,4 +13,4 @@
 }
 
 .cookie-button {
-    @apply bg-accent px-3 py-2 rounded border-0; }
+    @apply bg-background px-3 py-2 rounded border-0; }
