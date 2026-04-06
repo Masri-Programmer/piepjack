@@ -31,6 +31,8 @@ class PublicProductResource extends JsonResource
             'category_id' => $collection ? $collection->id : null,
             'category_name' => $collection ? $collection->translateAttribute('name') : null,
             'items' => PublicVariantResource::collection($this->whenLoaded('variants')),
+            'price' => $this->variants->first()?->prices->first()?->price->decimal,
+            'formatted_price' => $this->variants->first()?->prices->first()?->price->formatted,
         ];
     }
 }

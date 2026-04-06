@@ -22,9 +22,10 @@ class PublicVariantResource extends JsonResource
         return [
             'id' => $this->id,
             'sku' => $this->sku,
-            'stock' => $this->stock, 
+            'stock' => $this->stock,
             'quantity' => $this->stock, // Alias for compatibility with shop.js
             'price' => $price,
+            'formatted_price' => $this->prices->first()?->price->formatted,
             'options' => $options,
         ];
     }

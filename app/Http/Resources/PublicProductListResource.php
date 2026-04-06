@@ -35,6 +35,9 @@ class PublicProductListResource extends JsonResource
             // 5. Lunar uses "variants" instead of "items"
             // We keep the 'items' key so your Vue frontend doesn't need to change!
             'items' => PublicVariantResource::collection($this->whenLoaded('variants')),
+
+            'price' => $this->variants->first()?->prices->first()?->price->decimal,
+            'formatted_price' => $this->variants->first()?->prices->first()?->price->formatted,
         ];
     }
 }
