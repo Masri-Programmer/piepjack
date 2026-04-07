@@ -19,7 +19,7 @@
             </header>
 
             <div
-                v-if="['paid', 'shipped', 'delivered'].includes(orderStatus)"
+                v-if="['paid', 'payment-received', 'shipped', 'delivered'].includes(orderStatus)"
                 class="space-y-12 animate-in fade-in duration-700"
             >
                 <div
@@ -244,7 +244,12 @@ const { data: orderData, isError } = useQuery({
         apiRequest("get", `/order-lookup/${cartId}`, {}, { email: userEmail }),
     enabled: !!cartId && !!userEmail,
     refetchInterval: (data) => {
-        if (data?.status === "paid" || isTimeout.value) return false;
+        if (
+            data?.status === "paid" ||
+            data?.status === "payment-received" ||
+            isTimeout.value
+        )
+            return false;
         return 3000;
     },
     retry: false,
@@ -264,7 +269,9 @@ const { data: orderDetailsData } = useQuery({
         ),
     enabled: computed(
         () =>
-            (orderStatus.value === "paid" || orderStatus.value === "shipped") &&
+            (orderStatus.value === "paid" ||
+                orderStatus.value === "payment-received" ||
+                orderStatus.value === "shipped") &&
             !!orderReference.value &&
             !!userEmail,
     ),
@@ -282,6 +289,7 @@ onMounted(() => {
 });
 
 watch(orderStatus, (newStatus) => {
-    if (newStatus === "paid") isTimeout.value = false;
+    if (newStatus === "paid" || newStatus === "payment-received")
+        isTimeout.value = false;
 });
 </script>

@@ -41,6 +41,9 @@ class PublicOrderController extends Controller
         // Lunar uses 'reference' instead of 'order_number'
         $order = Order::with([
             'lines.purchasable.product',
+            'lines.purchasable.media',
+            'currency',
+            'shippingAddress.country',
             'user',
             'shippingAddress',
             'billingAddress',

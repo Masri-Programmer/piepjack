@@ -73,7 +73,7 @@ class CheckoutController extends Controller
         $options = ShippingManifest::getOptions($cart);
 
         return response()->json([
-            'data' => $options->map(fn ($option) => [
+            'data' => $options->map(fn($option) => [
                 'id' => $option->identifier,
                 'name' => $option->name,
                 'description' => $option->description,
@@ -89,23 +89,19 @@ class CheckoutController extends Controller
     public function lookupOrder(Request $request, string $cartId): JsonResponse
     {
         $request->validate(['email' => 'required|email']);
-        $cart = Cart::with('completedOrder.user')->find($cartId);
 
-        if (! $cart) {
-            return response()->json(['message' => 'Cart not found'], 404);
-        }
+        // NEW: Query the Order directly by cart_id instead of using completedOrder
+        $order = Order::with('user')->where('cart_id', $cartId)->latest()->first();
 
-        $order = $cart->completedOrder;
-
-        if ($order && $order->user && $order->user->email !== $request->query('email')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        if (! $order) {
+        if (!$order) {
             return response()->json([
                 'status' => 'pending',
                 'message' => 'Order is being processed',
             ]);
+        }
+
+        if ($order->user && $order->user->email !== $request->query('email')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         return response()->json([
@@ -127,7 +123,7 @@ class CheckoutController extends Controller
         try {
             // 1. User Handling
             $user = $this->findOrCreateUser($validated);
-            if (! $user->active) {
+            if (!$user->active) {
                 return response()->json(['message' => 'You are banned from using this website.'], 403);
             }
 
@@ -139,23 +135,28 @@ class CheckoutController extends Controller
 
             // 4. Shipping Method Handling
             $shippingHandle = $validated['shipping_method_id'];
-
-            // Important: Fresh look at the manifest using the updated cart/address
             $availableOptions = ShippingManifest::getOptions($cart);
-            $shippingOption = $availableOptions->first(fn ($option) => $option->identifier === $shippingHandle);
+            $shippingOption = $availableOptions->first(fn($option) => $option->identifier === $shippingHandle);
 
-            if (! $shippingOption) {
+            if (!$shippingOption) {
                 Log::warning('Shipping method mismatch during checkout', [
                     'requested' => $shippingHandle,
                     'available' => $availableOptions->pluck('identifier')->toArray(),
                     'cart_id' => $cart->id,
                     'address' => $validated['postal_code'],
                 ]);
+
                 throw new Exception('Selected shipping method is no longer available for this address or order total. Please re-select your shipping method.');
             }
 
+            $cart->lines()->where('type', 'shipping')->delete();
             $cart->setShippingOption($shippingOption);
 
+            if (!empty($validated['promo_code'])) {
+                $cart->update([
+                    'meta' => array_merge($cart->meta ?? [], ['promo_code' => $validated['promo_code']]),
+                ]);
+            }
             // 5. Calculate Cart (Lunar internal pipelines)
             $cart->calculate();
 
@@ -170,7 +171,7 @@ class CheckoutController extends Controller
             ]);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Checkout error: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('Checkout error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
 
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -183,7 +184,7 @@ class CheckoutController extends Controller
     {
         $cart = CartSession::current();
 
-        if (! $cart) {
+        if (!$cart) {
             $cart = Cart::create([
                 'user_id' => $user?->id,
                 'currency_id' => Currency::getDefault()->id,
@@ -253,7 +254,7 @@ class CheckoutController extends Controller
         if (empty($user->stripe_id)) {
             $customer = Customer::create([
                 'email' => $user->email,
-                'name' => $user->first_name.' '.$user->last_name,
+                'name' => $user->first_name . ' ' . $user->last_name,
             ]);
             $user->update(['stripe_id' => $customer->id]);
         }
@@ -296,8 +297,8 @@ class CheckoutController extends Controller
             'mode' => 'payment',
             'customer' => $user->stripe_id,
             'line_items' => $lineItems,
-            'success_url' => config('services.frontend_url').'/success?cart_id='.$cart->id.'&email='.urlencode($user->email),
-            'cancel_url' => config('services.frontend_url').'/checkout',
+            'success_url' => config('services.frontend_url') . '/success?cart_id=' . $cart->id . '&email=' . urlencode($user->email),
+            'cancel_url' => config('services.frontend_url') . '/checkout',
             'metadata' => [
                 'cart_id' => $cart->id,
                 'user_id' => $user->id,
@@ -316,7 +317,7 @@ class CheckoutController extends Controller
             $manualDiscount += 1000; // 10 EUR in cents
         }
 
-        $discountTotal = ($cart->discountTotal?->value ?? 0) + $manualDiscount;
+        $discountTotal = $cart->discountTotal?->value ?? 0;
 
         if ($discountTotal > 0) {
             $coupon = Coupon::create([
@@ -333,15 +334,17 @@ class CheckoutController extends Controller
 
     private function findOrCreateUser(array $data): User
     {
-        return User::firstOrCreate(
+        $user = User::firstOrCreate(
             ['email' => $data['email']],
-            [
-                'first_name' => $data['first_name'],
-                'last_name' => $data['last_name'],
-                'password' => Hash::make(Str::random(24)),
-                'active' => true,
-            ]
+            ['password' => Hash::make(Str::random(24)), 'active' => true]
         );
+
+        $user->update([
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+        ]);
+
+        return $user;
     }
 
     /**
@@ -356,7 +359,7 @@ class CheckoutController extends Controller
             'sig' => $sigHeader ? 'present' : 'missing',
         ]);
 
-        if (! $sigHeader) {
+        if (!$sigHeader) {
             return response()->json(['message' => 'Missing Stripe-Signature header'], 400);
         }
 
@@ -368,31 +371,39 @@ class CheckoutController extends Controller
             );
             Log::info('Stripe event constructed', ['type' => $event->type]);
         } catch (Exception $e) {
-            Log::error('Stripe webhook construction failed: '.$e->getMessage());
-
+            Log::error('Stripe webhook construction failed: ' . $e->getMessage());
             return response()->json(['message' => 'Invalid request'], 400);
         }
 
+        // 1. Define the only events we actually care about
+        $handledEvents = [
+            'checkout.session.completed',
+            'checkout.session.async_payment_succeeded'
+        ];
+
+        // 2. If it's a payment intent, charge, or coupon event, ignore it and return 200 OK
+        if (!in_array($event->type, $handledEvents)) {
+            return response()->json(['message' => 'Event ignored successfully']);
+        }
+
+        // 3. Now we are safely guaranteed to be looking at a Checkout Session object
         $session = $event->data->object;
         $cartId = $session->metadata->cart_id ?? null;
 
         Log::info('Webhook processing', ['cart_id' => $cartId, 'event' => $event->type]);
 
-        if (! $cartId) {
+        if (!$cartId) {
             return response()->json(['message' => 'Cart ID not found'], 400);
         }
 
         $cart = Cart::find($cartId);
 
-        if (! $cart) {
+        if (!$cart) {
             Log::warning('Cart not found for webhook', ['cart_id' => $cartId]);
-
             return response()->json(['message' => 'Cart not found'], 404);
         }
 
-        if ($event->type === 'checkout.session.completed' || $event->type === 'checkout.session.async_payment_succeeded') {
-            $this->handleSuccessfulPayment($cart);
-        }
+        $this->handleSuccessfulPayment($cart);
 
         return response()->json(['message' => 'Webhook handled successfully']);
     }
@@ -401,21 +412,35 @@ class CheckoutController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Lunar transition: Cart -> Order
+            $cart->calculate();
             $order = $cart->createOrder();
             Log::info('Lunar order created', ['order_id' => $order->id, 'cart_id' => $cart->id]);
-            $order->update(['status' => 'paid']);
 
-            // Custom post-checkout logic (Sendcloud, Emails)
+            // Fix: Add Placed At and Kundenreferenz
+            $order->update([
+                'status' => 'payment-received',
+                'placed_at' => now(),
+                'customer_reference' => 'USER-' . $order->user_id, // Adds the reference!
+            ]);
+
+            // Fix: Create the Transaction so Lunar shows it as "Bezahlt"
+            $order->transactions()->create([
+                'success' => true,
+                'type' => 'capture',
+                'driver' => 'stripe',
+                'amount' => $order->total->value,
+                'reference' => 'Stripe Checkout',
+                'status' => 'succeeded',
+                'card_type' => 'stripe',
+            ]);
+
             $this->processShippingAndNotifications($order);
-
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Failed to finalize order: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('Failed to finalize order: ' . $e->getMessage());
         }
     }
-
     private function processShippingAndNotifications(Order $order): void
     {
         // Avoid deep eager load on lines to prevent MorphTo errors with non-Eloquent types like ShippingOption
@@ -423,7 +448,7 @@ class CheckoutController extends Controller
 
         // 1. Sendcloud integration
         $customerData = [
-            'name' => $order->user->first_name.' '.$order->user->last_name,
+            'name' => $order->user->first_name . ' ' . $order->user->last_name,
             'address' => $order->shippingAddress->line_one,
             'city' => $order->shippingAddress->city,
             'zip' => $order->shippingAddress->postcode,
@@ -442,7 +467,7 @@ class CheckoutController extends Controller
                 ]);
             }
         } catch (Exception $e) {
-            Log::warning('Shipping label generation failed: '.$e->getMessage());
+            Log::warning('Shipping label generation failed: ' . $e->getMessage());
         }
 
         // 2. Email Notification
@@ -451,13 +476,9 @@ class CheckoutController extends Controller
 
     private function sendOrderConfirmationEmail(Order $order): void
     {
-        // Only map physical product lines to the 'products' array
-        $productLines = $order->lines->filter(fn ($line) => $line->type === 'physical');
+        $productLines = $order->lines->filter(fn($line) => $line->type === 'physical');
 
-        // Manually load purchasable.product for these lines if needed,
-        // or just use description which is usually the product name in Lunar order lines
         $products = $productLines->map(function ($line) {
-            // If purchasable is loaded, use it; otherwise fallback to description
             $name = $line->description;
             if ($line->purchasable && $line->purchasable->product) {
                 $name = $line->purchasable->product->translateAttribute('name');
@@ -466,7 +487,8 @@ class CheckoutController extends Controller
             return [
                 'name' => $name,
                 'quantity' => $line->quantity,
-                'price_per_item' => $line->unit_price->decimal,
+                // MUST be unitPrice (camelCase)
+                'price_per_item' => $line->unitPrice?->decimal ?? 0,
             ];
         });
 
@@ -475,13 +497,15 @@ class CheckoutController extends Controller
             'user' => $order->user,
             'address' => $order->shippingAddress,
             'products' => $products,
-            'total' => $order->total->decimal,
+            // MUST be camelCase
+            'subtotal' => $order->subTotal?->decimal ?? 0,
+            'discount' => $order->discountTotal?->decimal ?? 0,
+            'shipping' => $order->shippingTotal?->decimal ?? 0,
+            'total' => $order->total?->decimal ?? 0,
         ];
 
-        // Send to User
         Mail::to($order->user->email)->send(new OrderConfirmation($orderData));
 
-        // Send to Admin
         if (config('app.admin_email')) {
             Mail::to(config('app.admin_email'))->send(new AdminOrderNotification($orderData));
         }

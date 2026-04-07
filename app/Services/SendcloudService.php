@@ -55,12 +55,19 @@ class SendcloudService
                 ];
             }
 
-            Log::error('Sendcloud API Error', ['response' => $response->body()]);
+            Log::error('Sendcloud API Error', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'parcel_data' => $customerData,
+            ]);
 
             $errorMsg = $response->json('error.message') ?? 'Unknown Sendcloud API error';
             throw new \Exception('Sendcloud Error: '.$errorMsg);
         } catch (\Exception $e) {
-            Log::error('Sendcloud Exception: '.$e->getMessage());
+            Log::error('Sendcloud Exception: '.$e->getMessage(), [
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString(),
+            ]);
             throw $e;
         }
     }

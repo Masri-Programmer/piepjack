@@ -13,6 +13,8 @@
                     type="email"
                     autofocus
                     autocomplete="email"
+                    @input="clearError('email')"
+                    @blur="validateField('email')"
                     :placeholder="$t('common.forms.emailPlaceholder')"
                     :class="[
                         'rounded-none border-gray-300 focus:ring-accent_dark',
@@ -34,7 +36,13 @@
                 <Label class="text-xs font-bold uppercase">
                     {{ $t("common.forms.country") || "Land / Region" }}
                 </Label>
-                <Select v-model="checkoutform.land">
+                <Select
+                    v-model="checkoutform.land"
+                    @update:modelValue="
+                        clearError('land');
+                        validateField('land');
+                    "
+                >
                     <SelectTrigger
                         :class="[
                             'rounded-none h-12 border-gray-300',
@@ -68,6 +76,8 @@
                     }}</Label>
                     <Input
                         v-model="checkoutform.firstName"
+                        @input="clearError('firstName')"
+                        @blur="validateField('firstName')"
                         :class="[
                             'rounded-none border-gray-300',
                             errors.firstName && 'border-red-500',
@@ -86,6 +96,8 @@
                     }}</Label>
                     <Input
                         v-model="checkoutform.lastName"
+                        @input="clearError('lastName')"
+                        @blur="validateField('lastName')"
                         :class="[
                             'rounded-none border-gray-300',
                             errors.lastName && 'border-red-500',
@@ -103,6 +115,8 @@
                 }}</Label>
                 <Input
                     v-model="checkoutform.address"
+                    @input="clearError('address')"
+                    @blur="validateField('address')"
                     :class="[
                         'rounded-none border-gray-300',
                         errors.address && 'border-red-500',
@@ -120,6 +134,8 @@
                     }}</Label>
                     <Input
                         v-model="checkoutform.zip"
+                        @input="clearError('zip')"
+                        @blur="validateField('zip')"
                         :class="[
                             'rounded-none border-gray-300',
                             errors.zip && 'border-red-500',
@@ -135,6 +151,8 @@
                     }}</Label>
                     <Input
                         v-model="checkoutform.city"
+                        @input="clearError('city')"
+                        @blur="validateField('city')"
                         :class="[
                             'rounded-none border-gray-300',
                             errors.city && 'border-red-500',
@@ -152,6 +170,8 @@
                 }}</Label>
                 <Input
                     v-model="checkoutform.stateProvince"
+                    @input="clearError('stateProvince')"
+                    @blur="validateField('stateProvince')"
                     :placeholder="$t('common.forms.state')"
                     :class="[
                         'rounded-none border-gray-300',
@@ -231,15 +251,43 @@ const errors = reactive({
 const validationSchema = Yup.object().shape({
     email: Yup.string()
         .email(t("validation.validation.email.invalid"))
+        .max(255, t("validation.validation.email.max", { max: 255 }))
         .required(t("validation.validation.email.required")),
-    firstName: Yup.string().required(t("validation.validation.firstName")),
-    lastName: Yup.string().required(t("validation.validation.lastName")),
-    address: Yup.string().required(t("validation.validation.address")),
+    firstName: Yup.string()
+        .max(255, t("validation.validation.firstNameMax", { max: 255 }))
+        .required(t("validation.validation.firstName")),
+    lastName: Yup.string()
+        .max(255, t("validation.validation.lastNameMax", { max: 255 }))
+        .required(t("validation.validation.lastName")),
+    address: Yup.string()
+        .max(255, t("validation.validation.addressMax", { max: 255 }))
+        .required(t("validation.validation.address")),
     land: Yup.mixed().required(t("validation.validation.land")),
-    zip: Yup.string().required(t("validation.validation.zip")),
-    city: Yup.string().required(t("validation.validation.city")),
-    stateProvince: Yup.string().required(t("validation.validation.state")),
+    zip: Yup.string()
+        .max(12, t("validation.validation.zipMax", { max: 12 }))
+        .required(t("validation.validation.zip")),
+    city: Yup.string()
+        .max(255, t("validation.validation.cityMax", { max: 255 }))
+        .required(t("validation.validation.city")),
+    stateProvince: Yup.string()
+        .max(255, t("validation.validation.stateMax", { max: 255 }))
+        .required(t("validation.validation.state")),
 });
+
+const clearError = (field) => {
+    errors[field] = null;
+};
+
+const validateField = async (field) => {
+    try {
+        await Yup.reach(validationSchema, field).validate(
+            checkoutform.value[field],
+        );
+        errors[field] = null;
+    } catch (error) {
+        errors[field] = error.message;
+    }
+};
 
 const countries = ref([]);
 const fetchCountries = async () => {

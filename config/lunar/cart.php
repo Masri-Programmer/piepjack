@@ -1,5 +1,6 @@
 <?php
 
+use App\Modifiers\StoreDiscountModifier;
 use Lunar\Actions\Carts\AddAddress;
 use Lunar\Actions\Carts\AddOrUpdatePurchasable;
 use Lunar\Actions\Carts\CreateOrder;
@@ -60,18 +61,19 @@ return [
     'pipelines' => [
         /*
          * Run these pipelines when the cart is calculating.
-        */
+         */
         'cart' => [
             CalculateLines::class,
             ApplyShipping::class,
             ApplyDiscounts::class,
             CalculateTax::class,
             Calculate::class,
+            StoreDiscountModifier::class,
         ],
 
         /*
          * Run these pipelines when the cart lines are being calculated.
-        */
+         */
         'cart_lines' => [
             GetUnitPrice::class,
         ],

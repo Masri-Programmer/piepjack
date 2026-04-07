@@ -37,7 +37,8 @@ export const useShopGlobalState = createGlobalState(() => {
         city: "",
         stateProvince: "",
         phone: "",
-        shippingMethodId: 8,
+        shippingMethodId: "DE_STD",
+        shippingMethod: { id: "DE_STD", name: "DHL Standard", price: 4.95 },
         billingSameAsShipping: true,
         billing: {
             firstName: "",
@@ -47,12 +48,17 @@ export const useShopGlobalState = createGlobalState(() => {
             city: "",
             land: "",
             stateProvince: "",
-        }
+        },
     };
 
-    const checkoutform = useStorage("checkout-form", defaultCheckoutForm, undefined, {
-        mergeDefaults: true // This ensures new fields are added to existing storage objects
-    });
+    const checkoutform = useStorage(
+        "checkout-form",
+        defaultCheckoutForm,
+        undefined,
+        {
+            mergeDefaults: true, // This ensures new fields are added to existing storage objects
+        },
+    );
 
     // Ensure structure integrity after loading from storage
     if (checkoutform.value && !checkoutform.value.billing) {
@@ -106,7 +112,10 @@ export const useShopGlobalState = createGlobalState(() => {
                 ...product,
                 items: product.items.map((item) => ({
                     ...item,
-                    cartQuantity: Math.max(1, Math.min(1, Number(item.quantity) || 0)),
+                    cartQuantity: Math.max(
+                        1,
+                        Math.min(1, Number(item.quantity) || 0),
+                    ),
                 })),
             };
             cartState.value.cartItems.push(newProduct);

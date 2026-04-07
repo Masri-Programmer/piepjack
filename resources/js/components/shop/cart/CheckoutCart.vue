@@ -143,13 +143,33 @@ const promoApplied = ref(false);
 const promoError = ref(false);
 
 const selectedShippingMethod = computed(() => {
-    const isExpress = checkoutform.value.shippingMethodId === 9;
-    return {
-        id: checkoutform.value.shippingMethodId,
-        name: isExpress ? "DHL Express" : "DHL Standard",
-        price: isExpress ? 9.9 : cartTotalPrice.value >= 100 ? 0 : 5.9,
-    };
+    // Rely on the API data stored in the state
+    return (
+        checkoutform.value.shippingMethod || {
+            price: 0,
+            name: "Select Shipping",
+        }
+    );
 });
+
+const calculateFinalPrice = () => {
+    let price = cartTotalPrice.value;
+
+    // Apply Promo Discount
+    if (promoApplied.value && promoDiscount.value > 0) {
+        price = Math.max(0, price - promoDiscount.value);
+    }
+
+    // Apply 5% discount for orders > 100 EUR
+    if (price > 100) {
+        price = price * 0.95;
+    }
+
+    // Add API-driven Shipping
+    price += selectedShippingMethod.value.price;
+
+    return price.toFixed(2);
+};
 
 const applyPromoCode = () => {
     promoApplied.value = false;
@@ -167,25 +187,6 @@ const applyPromoCode = () => {
     } else {
         promoError.value = true;
     }
-};
-
-const calculateFinalPrice = () => {
-    let price = cartTotalPrice.value;
-
-    // Apply 5% discount for orders > 100 EUR
-    if (price > 100) {
-        price = price * 0.95;
-    }
-
-    // Add Shipping
-    price += selectedShippingMethod.value.price;
-
-    // Apply Promo Discount
-    if (promoApplied.value && promoDiscount.value > 0) {
-        price = Math.max(0, price - promoDiscount.value);
-    }
-
-    return price.toFixed(2);
 };
 
 onBeforeMount(() => {

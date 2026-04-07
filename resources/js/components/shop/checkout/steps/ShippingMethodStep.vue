@@ -19,7 +19,10 @@
             <div
                 v-for="method in shippingMethods"
                 :key="method.id"
-                @click="checkoutform.shippingMethodId = method.id"
+                @click="
+                    checkoutform.shippingMethodId = method.id;
+                    checkoutform.shippingMethod = method;
+                "
                 class="flex items-center justify-between p-5 border cursor-pointer transition-all duration-200"
                 :class="
                     checkoutform.shippingMethodId === method.id
