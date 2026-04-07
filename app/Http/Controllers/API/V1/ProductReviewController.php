@@ -30,13 +30,13 @@ class ProductReviewController extends Controller
         $user = User::where('email', $validated['email'])->first();
 
         if (! $user) {
-            return response()->json(['message' => 'No user found with that email address.'], 404);
+            return response()->json(['message' => __('No user found with that email address.')], 404);
         }
 
         $product = Product::find($validated['product_id']);
 
         if (! $product) {
-            return response()->json(['message' => 'Product not found.'], 404);
+            return response()->json(['message' => __('Product not found.')], 404);
         }
 
         // Check if user bought any variant of this Lunar Product in a delivered order
@@ -50,7 +50,7 @@ class ProductReviewController extends Controller
             ->exists();
 
         if (! $canReview) {
-            return response()->json(['message' => 'You can only review products from a delivered order.'], 403);
+            return response()->json(['message' => __('You can only review products from a delivered order.')], 403);
         }
 
         $hasAlreadyReviewed = ProductReview::where('product_id', $product->id)
@@ -58,7 +58,7 @@ class ProductReviewController extends Controller
             ->exists();
 
         if ($hasAlreadyReviewed) {
-            return response()->json(['message' => 'You have already submitted a review for this product.'], 409);
+            return response()->json(['message' => __('You have already submitted a review for this product.')], 409);
         }
 
         $review = ProductReview::create([
@@ -71,7 +71,7 @@ class ProductReviewController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Thank you for your review! It is pending approval.',
+            'message' => __('Thank you for your review! It is pending approval.'),
             'review' => $review->load('user:id,first_name,last_name'),
         ], 201);
     }

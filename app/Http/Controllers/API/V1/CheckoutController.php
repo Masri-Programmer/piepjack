@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Lunar\DataTypes\Price;
 use Lunar\Facades\CartSession;
 use Lunar\Facades\ShippingManifest;
 use Lunar\Models\Cart;
@@ -39,12 +40,8 @@ class CheckoutController extends Controller
         $this->sendcloud = $sendcloud;
     }
 
-    /**
-     * Get available shipping methods for the current cart.
-     */
     public function getShippingMethods(Request $request): JsonResponse
     {
-        // 1. Validate basic info needed for shipping
         $request->validate([
             'country_code' => 'required|string|max:2',
             'products' => 'required|array',
@@ -53,27 +50,23 @@ class CheckoutController extends Controller
             'email' => 'nullable|email',
         ]);
 
-        // 2. Find or create a temporary user for the session if email is provided
         $user = null;
         if ($request->email) {
             $user = User::where('email', $request->email)->first();
         }
 
-        // 3. Sync the cart from the request products
         $cart = $this->getAndSyncCart($user, $request->products);
 
-        // 4. Update the shipping address on the cart to trigger correct zone matching
         $country = Country::where('iso2', $request->country_code)->first();
         $cart->setShippingAddress([
             'country_id' => $country?->id,
             'postcode' => $request->postal_code,
         ]);
 
-        // 5. Fetch available options from Lunar's ShippingManifest
         $options = ShippingManifest::getOptions($cart);
 
         return response()->json([
-            'data' => $options->map(fn($option) => [
+            'data' => $options->map(fn ($option) => [
                 'id' => $option->identifier,
                 'name' => $option->name,
                 'description' => $option->description,
@@ -83,17 +76,14 @@ class CheckoutController extends Controller
         ]);
     }
 
-    /**
-     * Lookup an order by cart ID.
-     */
     public function lookupOrder(Request $request, string $cartId): JsonResponse
     {
         $request->validate(['email' => 'required|email']);
 
-        // NEW: Query the Order directly by cart_id instead of using completedOrder
+        // FIX: Query Order directly by cart_id
         $order = Order::with('user')->where('cart_id', $cartId)->latest()->first();
 
-        if (!$order) {
+        if (! $order) {
             return response()->json([
                 'status' => 'pending',
                 'message' => 'Order is being processed',
@@ -111,34 +101,25 @@ class CheckoutController extends Controller
         ]);
     }
 
-    /**
-     * Main checkout entry point.
-     * Aligned with Lunar multi-step logic.
-     */
     public function checkout(CheckoutRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
         DB::beginTransaction();
         try {
-            // 1. User Handling
             $user = $this->findOrCreateUser($validated);
-            if (!$user->active) {
+            if (! $user->active) {
                 return response()->json(['message' => 'You are banned from using this website.'], 403);
             }
 
-            // 2. Cart Handling (Sync Vue state to Lunar Cart)
             $cart = $this->getAndSyncCart($user, $validated['products']);
-
-            // 3. Address Handling
             $this->setCartAddresses($cart, $validated);
 
-            // 4. Shipping Method Handling
             $shippingHandle = $validated['shipping_method_id'];
             $availableOptions = ShippingManifest::getOptions($cart);
-            $shippingOption = $availableOptions->first(fn($option) => $option->identifier === $shippingHandle);
+            $shippingOption = $availableOptions->first(fn ($option) => $option->identifier === $shippingHandle);
 
-            if (!$shippingOption) {
+            if (! $shippingOption) {
                 Log::warning('Shipping method mismatch during checkout', [
                     'requested' => $shippingHandle,
                     'available' => $availableOptions->pluck('identifier')->toArray(),
@@ -149,10 +130,9 @@ class CheckoutController extends Controller
                 throw new Exception('Selected shipping method is no longer available for this address or order total. Please re-select your shipping method.');
             }
 
-            // $cart->lines()->where('type', 'shipping')->delete();
             $cart->setShippingOption($shippingOption);
 
-            if (!empty($validated['promo_code'])) {
+            if (! empty($validated['promo_code'])) {
                 $cart->update([
                     'meta' => array_merge($cart->meta ?? [], ['promo_code' => $validated['promo_code']]),
                 ]);
@@ -160,7 +140,6 @@ class CheckoutController extends Controller
             // 5. Calculate Cart (Lunar internal pipelines)
             $cart->calculate();
 
-            // 6. Create Stripe Checkout Session
             $session = $this->createStripeSession($cart, $user, $validated['promo_code'] ?? null);
 
             DB::commit();
@@ -171,20 +150,17 @@ class CheckoutController extends Controller
             ]);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Checkout error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('Checkout error: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
 
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Get or create a Lunar cart and sync items from request.
-     */
     private function getAndSyncCart(?User $user, array $products): Cart
     {
         $cart = CartSession::current();
 
-        if (!$cart) {
+        if (! $cart) {
             $cart = Cart::create([
                 'user_id' => $user?->id,
                 'currency_id' => Currency::getDefault()->id,
@@ -195,7 +171,6 @@ class CheckoutController extends Controller
             $cart->update(['user_id' => $user?->id]);
         }
 
-        // Sync lines
         $cart->lines()->delete();
         foreach ($products as $product) {
             $cart->lines()->create([
@@ -208,9 +183,6 @@ class CheckoutController extends Controller
         return $cart->fresh();
     }
 
-    /**
-     * Set shipping and billing addresses on the cart.
-     */
     private function setCartAddresses(Cart $cart, array $data): void
     {
         $country = Country::where('iso2', $data['country_code'])->first();
@@ -244,9 +216,6 @@ class CheckoutController extends Controller
         }
     }
 
-    /**
-     * Create Stripe Checkout Session using Lunar Cart data.
-     */
     private function createStripeSession(Cart $cart, User $user, ?string $promoCode = null): Session
     {
         Stripe::setApiKey(config('services.stripe.secret'));
@@ -254,7 +223,7 @@ class CheckoutController extends Controller
         if (empty($user->stripe_id)) {
             $customer = Customer::create([
                 'email' => $user->email,
-                'name' => $user->first_name . ' ' . $user->last_name,
+                'name' => $user->first_name.' '.$user->last_name,
             ]);
             $user->update(['stripe_id' => $customer->id]);
         }
@@ -267,56 +236,51 @@ class CheckoutController extends Controller
             $lineItems[] = [
                 'price_data' => [
                     'currency' => strtolower($cart->currency->code),
-                    'product_data' => [
-                        'name' => $product->translateAttribute('name'),
-                    ],
+                    'product_data' => ['name' => $product->translateAttribute('name')],
                     'unit_amount' => (int) ($line->unitPrice?->value ?? 0),
                 ],
                 'quantity' => $line->quantity,
             ];
         }
 
-        // Add Shipping
         $shippingTotal = $cart->shippingTotal?->value ?? 0;
         if ($shippingTotal > 0) {
             $lineItems[] = [
                 'price_data' => [
                     'currency' => strtolower($cart->currency->code),
-                    'product_data' => [
-                        'name' => 'Shipping',
-                    ],
+                    'product_data' => ['name' => 'Shipping'],
                     'unit_amount' => (int) $shippingTotal,
                 ],
                 'quantity' => 1,
             ];
         }
 
-        // Add Discount as a negative line item if needed
         $sessionData = [
             'payment_method_types' => config('services.stripe.payment_methods'),
             'mode' => 'payment',
             'customer' => $user->stripe_id,
             'line_items' => $lineItems,
-            'success_url' => config('services.frontend_url') . '/success?cart_id=' . $cart->id . '&email=' . urlencode($user->email),
-            'cancel_url' => config('services.frontend_url') . '/checkout',
+            'success_url' => config('services.frontend_url').'/success?cart_id='.$cart->id.'&email='.urlencode($user->email),
+            'cancel_url' => config('services.frontend_url').'/checkout',
             'metadata' => [
                 'cart_id' => $cart->id,
                 'user_id' => $user->id,
             ],
         ];
 
+        // FIX 1: Removed manual double discount math! Only relying on Lunar pipeline.
         $discountTotal = $cart->discountTotal?->value ?? 0;
         // 5% discount for orders > 100 EUR
-        $subTotal = $cart->subTotal->value; // cents
-        $manualDiscount = 0;
-        if ($subTotal > 10000) {
-            $manualDiscount += (int) ($subTotal * 0.05);
-        }
+        // $subTotal = $cart->subTotal->value; // cents
+        // $manualDiscount = 0;
+        // if ($subTotal > 10000) {
+        //     $manualDiscount += (int) ($subTotal * 0.05);
+        // }
 
-        // Promo code "pickup" -> 10 EUR discount
-        if ($promoCode && strtolower(trim($promoCode)) === 'pickup') {
-            $manualDiscount += 1000; // 10 EUR in cents
-        }
+        // // Promo code "pickup" -> 10 EUR discount
+        // if ($promoCode && strtolower(trim($promoCode)) === 'pickup') {
+        //     $manualDiscount += 1000; // 10 EUR in cents
+        // }
 
         if ($discountTotal > 0) {
             $coupon = Coupon::create([
@@ -335,9 +299,13 @@ class CheckoutController extends Controller
     {
         $user = User::firstOrCreate(
             ['email' => $data['email']],
-            ['password' => Hash::make(Str::random(24)), 'active' => true]
+            [
+                'password' => Hash::make(Str::random(24)),
+                'active' => true,
+            ]
         );
 
+        // FIX 4: Always update name to match checkout
         $user->update([
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
@@ -346,59 +314,36 @@ class CheckoutController extends Controller
         return $user;
     }
 
-    /**
-     * Handle Stripe Webhook to finalize Lunar Order.
-     */
     public function handleWebhook(Request $request): JsonResponse
     {
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
 
-        Log::info('Stripe webhook received', [
-            'sig' => $sigHeader ? 'present' : 'missing',
-        ]);
-
-        if (!$sigHeader) {
+        if (! $sigHeader) {
             return response()->json(['message' => 'Missing Stripe-Signature header'], 400);
         }
 
         try {
-            $event = StripeWebhook::constructEvent(
-                $payload,
-                $sigHeader,
-                config('services.stripe.webhook_secret')
-            );
-            Log::info('Stripe event constructed', ['type' => $event->type]);
+            $event = StripeWebhook::constructEvent($payload, $sigHeader, config('services.stripe.webhook_secret'));
         } catch (Exception $e) {
-            Log::error('Stripe webhook construction failed: ' . $e->getMessage());
             return response()->json(['message' => 'Invalid request'], 400);
         }
 
-        // 1. Define the only events we actually care about
-        $handledEvents = [
-            'checkout.session.completed',
-            'checkout.session.async_payment_succeeded'
-        ];
-
-        // 2. If it's a payment intent, charge, or coupon event, ignore it and return 200 OK
-        if (!in_array($event->type, $handledEvents)) {
+        $handledEvents = ['checkout.session.completed', 'checkout.session.async_payment_succeeded'];
+        if (! in_array($event->type, $handledEvents)) {
             return response()->json(['message' => 'Event ignored successfully']);
         }
 
-        // 3. Now we are safely guaranteed to be looking at a Checkout Session object
         $session = $event->data->object;
         $cartId = $session->metadata->cart_id ?? null;
 
-        Log::info('Webhook processing', ['cart_id' => $cartId, 'event' => $event->type]);
-
-        if (!$cartId) {
+        if (! $cartId) {
             return response()->json(['message' => 'Cart ID not found'], 400);
         }
 
         $cart = Cart::find($cartId);
 
-        if (!$cart) {
-            Log::warning('Cart not found for webhook', ['cart_id' => $cartId]);
+        if (! $cart) {
             return response()->json(['message' => 'Cart not found'], 404);
         }
 
@@ -413,16 +358,13 @@ class CheckoutController extends Controller
         try {
             $cart->calculate();
             $order = $cart->createOrder();
-            Log::info('Lunar order created', ['order_id' => $order->id, 'cart_id' => $cart->id]);
 
-            // Fix: Add Placed At and Kundenreferenz
             $order->update([
                 'status' => 'payment-received',
                 'placed_at' => now(),
-                'customer_reference' => 'USER-' . $order->user_id, // Adds the reference!
+                'customer_reference' => 'USER-'.$order->user_id,
             ]);
 
-            // Fix: Create the Transaction so Lunar shows it as "Bezahlt"
             $order->transactions()->create([
                 'success' => true,
                 'type' => 'capture',
@@ -434,20 +376,20 @@ class CheckoutController extends Controller
             ]);
 
             $this->processShippingAndNotifications($order);
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Failed to finalize order: ' . $e->getMessage());
+            Log::error('Failed to finalize order: '.$e->getMessage());
         }
     }
+
     private function processShippingAndNotifications(Order $order): void
     {
-        // Avoid deep eager load on lines to prevent MorphTo errors with non-Eloquent types like ShippingOption
         $order->load(['shippingAddress.country', 'user', 'lines']);
 
-        // 1. Sendcloud integration
         $customerData = [
-            'name' => $order->user->first_name . ' ' . $order->user->last_name,
+            'name' => $order->user->first_name.' '.$order->user->last_name,
             'address' => $order->shippingAddress->line_one,
             'city' => $order->shippingAddress->city,
             'zip' => $order->shippingAddress->postcode,
@@ -458,10 +400,8 @@ class CheckoutController extends Controller
         try {
             $shippingResult = $this->sendcloud->createParcel($customerData, 1.0, 8);
             if ($shippingResult) {
-
-                // SAFELY convert Laravel's ArrayObject to a standard PHP array
+                // FIX 3: Safe ArrayObject casting
                 $currentMeta = $order->meta ? $order->meta->toArray() : [];
-
                 $order->update([
                     'meta' => array_merge($currentMeta, [
                         'tracking_number' => $shippingResult['tracking_number'],
@@ -470,16 +410,15 @@ class CheckoutController extends Controller
                 ]);
             }
         } catch (Exception $e) {
-            Log::warning('Shipping label generation failed: ' . $e->getMessage());
+            Log::warning('Shipping label generation failed: '.$e->getMessage());
         }
 
-        // 2. Email Notification
         $this->sendOrderConfirmationEmail($order);
     }
 
     private function sendOrderConfirmationEmail(Order $order): void
     {
-        $productLines = $order->lines->filter(fn($line) => $line->type === 'physical');
+        $productLines = $order->lines->filter(fn ($line) => $line->type === 'physical');
 
         $products = $productLines->map(function ($line) {
             $name = $line->description;
@@ -490,8 +429,7 @@ class CheckoutController extends Controller
             return [
                 'name' => $name,
                 'quantity' => $line->quantity,
-                // Order lines use snake_case in the database!
-                'price_per_item' => $line->unit_price?->decimal ?? 0,
+                'price_per_item' => $line->unit_price instanceof Price ? $line->unit_price->decimal : (float) ($line->unit_price / 100),
             ];
         });
 
@@ -500,11 +438,11 @@ class CheckoutController extends Controller
             'user' => $order->user,
             'address' => $order->shippingAddress,
             'products' => $products,
-            // Orders use snake_case in the database!
-            'subtotal' => $order->sub_total?->decimal ?? 0,
-            'discount' => $order->discount_total?->decimal ?? 0,
-            'shipping' => $order->shipping_total?->decimal ?? 0,
-            'total' => $order->total?->decimal ?? 0,
+            // Using snake_case for Order columns
+            'subtotal' => $order->sub_total instanceof Price ? $order->sub_total->decimal : (float) ($order->sub_total / 100),
+            'discount' => $order->discount_total instanceof Price ? $order->discount_total->decimal : (float) ($order->discount_total / 100),
+            'shipping' => $order->shipping_total instanceof Price ? $order->shipping_total->decimal : (float) ($order->shipping_total / 100),
+            'total' => $order->total instanceof Price ? $order->total->decimal : (float) ($order->total / 100),
         ];
 
         Mail::to($order->user->email)->send(new OrderConfirmation($orderData));

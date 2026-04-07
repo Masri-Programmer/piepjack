@@ -4,8 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PublicProductListResource;
-use App\Http\Resources\PublicProductResource;
-use Illuminate\Http\JsonResponse; // IMPORTANT: Using the Lunar Model
+use Illuminate\Http\JsonResponse;
 use Lunar\Models\Product;
 
 class PublicProductController extends Controller
@@ -54,6 +53,6 @@ class PublicProductController extends Controller
             'media',
         ]);
 
-        return (new PublicProductResource($product))->response();
+        return (new PublicProductListResource($product))->response();
     }
 }

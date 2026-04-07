@@ -37,7 +37,7 @@ class ReturningController extends Controller
 
         if ($order->status !== 'paid') {
             return response()->json([
-                'message' => 'Returns can only be created for paid orders.',
+                'message' => __('Returns can only be created for paid orders.'),
             ], 422);
         }
 
@@ -50,7 +50,7 @@ class ReturningController extends Controller
         $this->processReturnItems($returning, $validated['items']);
 
         return response()->json([
-            'message' => 'Return record created successfully',
+            'message' => __('Return record created successfully'),
             'data' => $returning->load('items'),
         ], 201);
     }
@@ -68,7 +68,7 @@ class ReturningController extends Controller
         }
 
         return response()->json([
-            'message' => 'Return record updated successfully',
+            'message' => __('Return record updated successfully'),
             'data' => $returning->load(['items.orderProduct']),
         ]);
     }
@@ -82,11 +82,11 @@ class ReturningController extends Controller
             $returning->delete();
 
             return response()->json([
-                'message' => 'Return record and associated items deleted successfully',
+                'message' => __('Return record and associated items deleted successfully'),
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to delete return record: ' . $e->getMessage(),
+                'message' => __('Failed to delete return record: ') . $e->getMessage(),
             ], 500);
         }
     }
@@ -99,7 +99,7 @@ class ReturningController extends Controller
                 ->first();
 
             if ($existingReturnItem) {
-                throw new \Exception("Product with ID {$item['id']} has already been returned.");
+                throw new \Exception(__("Product with ID :id has already been returned.", ['id' => $item['id']]));
             }
 
             $returnItem = ReturnItem::updateOrCreate(

@@ -5,20 +5,18 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Controllers\Controller;
 use App\Mail\AdminReturnNotification;
 use App\Mail\ReturnConfirmation;
-use App\Models\Order;
-use App\Models\OrderProduct;
 use App\Models\Returning;
 use App\Models\ReturnItem;
-use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
+use Lunar\Models\Order;
+use Lunar\Models\Product;
 use Stripe\Checkout\Session;
 use Stripe\Exception\SignatureVerificationException;
-use Stripe\Stripe;
 use Stripe\Webhook as StripeWebhook;
 
 class PublicReturningController extends Controller
@@ -36,30 +34,33 @@ class PublicReturningController extends Controller
     /**
      * Store a new return request.
      */
+    /**
+     * Store a new return request.
+     */
     public function store(Request $request): JsonResponse
     {
         $validated = $this->validateRequest($request);
 
-        $order = Order::with('user')->findOrFail($validated['order_id']);
-        $user = $order->user;
+        $order = Order::with(['user', 'billingAddress'])->findOrFail($validated['order_id']);
 
-        if (! $user->active) {
-            return $this->forbiddenResponse('You are banned from using this website.');
+        // Check email against billing address or user email
+        $orderEmail = $order->billingAddress?->contact_email ?? $order->user?->email;
+
+        if ($orderEmail !== $validated['email']) {
+            return $this->unprocessableEntityResponse(__('The provided email does not match the email associated with this order.'));
         }
 
-        // FIX: Ensure the email matches the order's user directly
-        if ($user->email !== $validated['email']) {
-            return $this->unprocessableEntityResponse('The provided email does not match the user associated with this order.');
-        }
         if (! in_array($order->status, ['paid', 'shipped', 'delivered'])) {
-            return $this->unprocessableEntityResponse('Returns can only be created for paid, shipped, or delivered orders.');
+            return $this->unprocessableEntityResponse(__('Returns can only be created for paid, shipped, or delivered orders.'));
         }
 
+        // Create the RMA record
         $return = Returning::updateOrCreate(
             ['order_id' => $validated['order_id']],
             [
-                'status' => $validated['status'],
+                'status' => 'requested',
                 'reason' => $validated['reason'],
+                'return_fee' => $validated['total'],
             ]
         );
 
@@ -74,18 +75,9 @@ class PublicReturningController extends Controller
             ]);
         }
 
-        try {
-            $checkoutSession = $this->createStripeSession($order, $return, $validated['total'], $user->email);
-
-            return $this->successResponse('Return record created successfully. Redirect to payment.', [
-                'data' => $return->load('items'),
-                'checkout_url' => $checkoutSession->url,
-            ]);
-        } catch (Exception $e) {
-            Log::error('Failed to create Stripe session: '.$e->getMessage());
-
-            return $this->serverErrorResponse('Failed to create Stripe session.', $e->getMessage());
-        }
+        return $this->successResponse(__('Return request submitted successfully.'), [
+            'data' => $return->load('items'),
+        ]);
     }
 
     /**
@@ -97,7 +89,7 @@ class PublicReturningController extends Controller
         $sigHeader = $request->header('Stripe-Signature');
 
         if (! $sigHeader) {
-            return $this->badRequestResponse('Missing Stripe-Signature header.');
+            return $this->badRequestResponse(__('Missing Stripe-Signature header.'));
         }
 
         try {
@@ -107,9 +99,9 @@ class PublicReturningController extends Controller
                 config('services.stripe.webhook_return_secret')
             );
         } catch (\UnexpectedValueException $e) {
-            return $this->badRequestResponse('Invalid payload.');
+            return $this->badRequestResponse(__('Invalid payload.'));
         } catch (SignatureVerificationException $e) {
-            return $this->badRequestResponse('Invalid signature.');
+            return $this->badRequestResponse(__('Invalid signature.'));
         }
 
         $metadata = $event->data->object->metadata ?? [];
@@ -117,18 +109,18 @@ class PublicReturningController extends Controller
         $returnId = $metadata['return_id'] ?? null;
 
         if (! $orderId || ! $returnId) {
-            return $this->badRequestResponse('Missing required metadata.');
+            return $this->badRequestResponse(__('Missing required metadata.'));
         }
 
         $order = Order::find($orderId);
         $return = Returning::find($returnId);
 
         if (! $order || ! $return) {
-            return $this->notFoundResponse('Order or Return not found.');
+            return $this->notFoundResponse(__('Order or Return not found.'));
         }
 
         if ($order->status !== 'paid') {
-            return $this->okResponse('Order not paid.');
+            return $this->okResponse(__('Order not paid.'));
         }
 
         switch ($event->type) {
@@ -148,10 +140,10 @@ class PublicReturningController extends Controller
                 break;
 
             default:
-                return response()->json(['message' => 'Unhandled event type'], 400);
+                return response()->json(['message' => __('Unhandled event type')], 400);
         }
 
-        return $this->okResponse('Webhook handled successfully.');
+        return $this->okResponse(__('Webhook handled successfully.'));
     }
 
     /**
@@ -161,14 +153,14 @@ class PublicReturningController extends Controller
     {
         return $request->validate([
             'total' => 'required|numeric',
-            'order_id' => 'required|exists:orders,id',
-            'email' => 'required|email|exists:users,email',
+            'order_id' => 'required|exists:lunar_orders,id',
+            'email' => 'required|email', // Removed exists:users,email as guest orders exist
             'status' => 'required|in:not_requested,requested,approved,rejected',
             'reason' => 'nullable|string|max:1000',
             'items' => 'required|array',
             'items.*.id' => [
                 'required',
-                Rule::exists('order_products', 'product_item_id')->where('order_id', $request->order_id),
+                Rule::exists('lunar_order_lines', 'purchasable_id')->where('order_id', $request->order_id),
             ],
             'items.*.cartQuantity' => 'required|integer|min:1',
         ]);
@@ -252,7 +244,7 @@ class PublicReturningController extends Controller
 
         $productItemIds = $return->items->pluck('product_item_id');
 
-        $orderProducts = OrderProduct::where('order_id', $order->id)
+        $orderProducts = Product::where('order_id', $order->id)
             ->whereIn('product_item_id', $productItemIds)
             ->get()
             ->keyBy('product_item_id');
