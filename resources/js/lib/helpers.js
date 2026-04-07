@@ -4,6 +4,7 @@ import { useQuery, useInfiniteQuery } from "@tanstack/vue-query";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { useDateFormat } from "@vueuse/core";
 import { i18n } from "@lib/config.js";
+import { computed } from "vue";
 import { useApiNotifications } from "@lib/useApiNotifications";
 import { useApiShopNotifications } from "@lib/useApiShopNotifications";
 import { useArea } from "@lib/useArea.js";
@@ -14,11 +15,12 @@ const userSessionStorage = useSessionStorage("user", {});
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
-axios.defaults.headers.common["Accept-Language"] = i18n.global.locale;
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
 export const apiRequest = async (method, url, data = {}, params = {}) => {
+    const locale = i18n.global.locale.value || i18n.global.locale;
+    axios.defaults.headers.common["Accept-Language"] = locale;
     axios.defaults.headers.common["Authorization"] = `Bearer ${
         userSessionStorage.value.token || userStorage.value.token || ""
     }`;
@@ -64,10 +66,12 @@ export const apiQuery = (resource) => {
     const queryClient = useQueryClient();
     const { handleError, handleSuccess } = useApiShopNotifications();
 
+    const locale = computed(() => i18n.global.locale.value || i18n.global.locale);
+
     return {
         useGet: (params) =>
             useQuery({
-                queryKey: [resource, params],
+                queryKey: [resource, params, locale],
                 queryFn: () => api.get(params?.value),
                 keepPreviousData: true,
                 staleTime: 1000 * 60 * 5,
@@ -78,7 +82,7 @@ export const apiQuery = (resource) => {
 
         useGetById: (id, params) =>
             useQuery({
-                queryKey: [resource, id, params],
+                queryKey: [resource, id, params, locale],
                 queryFn: () => api.getById(id.value, params?.value),
                 cacheTime: 0,
                 staleTime: 0,

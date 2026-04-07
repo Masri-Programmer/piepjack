@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\V1\TestIntegrationController;
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\AuthenticatedUser;
+use App\Http\Middleware\LocalizationMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -48,6 +49,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'doNotCacheResponse' => DoNotCacheResponse::class,
         ]);
         $middleware->web(append: [
+            LocalizationMiddleware::class,
             // \Spatie\ResponseCache\Middlewares\CacheResponse::class,
         ]);
         $middleware->validateCsrfTokens(except: [
