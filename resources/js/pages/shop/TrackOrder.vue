@@ -1,151 +1,322 @@
 <template>
     <div
-        class="min-h-[60vh] flex items-center justify-center p-6 selection:bg-main selection:text-accent"
+        class="min-h-screen bg-background p-4 md:p-8 lg:p-12 selection:bg-primary selection:text-primary-foreground font-sans"
     >
-        <div
-            class="w-full max-w-2xl bg-background border-2 border-border p-8 sm:p-12 animate-in fade-in zoom-in-95 duration-500"
-        >
-            <header
-                class="mb-10 border-b-4 border-main pb-6 flex justify-between items-end"
-            >
-                <div>
-                    <p
-                        class="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground"
-                    >
-                        {{ activeStep === 1 ? "Logistics" : "Details" }}
-                    </p>
-                    <h1
-                        class="text-4xl sm:text-5xl font-bold uppercase tracking-tighter italic text-foreground leading-none"
-                    >
-                        {{ $t("pages.tracking.title") }}
-                    </h1>
-                </div>
-                <button
-                    v-if="activeStep === 2"
-                    @click="goBack"
-                    class="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-main transition-colors mb-1 underline underline-offset-4"
-                >
-                    {{ $t("components.buttons.back") }}
-                </button>
-            </header>
-
-            <div
-                v-if="errorMessage"
-                class="mb-8 p-4 bg-destructive text-destructive-foreground font-bold uppercase text-sm tracking-wider border-2 border-destructive animate-in slide-in-from-top-2"
-            >
-                ⚠️ {{ errorMessage }}
-            </div>
-
-            <form
-                v-if="activeStep === 1"
-                class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500"
-                @submit.prevent="handleSubmit"
-                aria-label="Track Order Form"
-            >
-                <div class="space-y-2">
-                    <label
-                        class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                    >
-                        {{ $t("validation.form.email") }}
-                    </label>
-                    <input
-                        v-model="form.email"
-                        type="email"
-                        class="w-full bg-accent_light border-2 border-border p-5 text-base focus:border-main outline-none rounded-none transition-all"
-                        required
-                        aria-label="Email Address"
-                    />
-                </div>
-
-                <div class="space-y-2">
-                    <label
-                        class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                    >
-                        {{ $t("validation.form.orderNumber") }}
-                    </label>
-                    <input
-                        v-model="form.orderNr"
-                        type="text"
-                        class="w-full bg-accent_light border-2 border-border p-5 text-base focus:border-main outline-none rounded-none transition-all"
-                        required
-                        aria-label="Order Number"
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    :disabled="isLoadingOrder"
-                    class="view-all w-full h-16 mt-4 text-lg font-bold uppercase tracking-widest flex items-center justify-center disabled:opacity-50"
-                    aria-label="Track Order Button"
-                >
-                    <Spinner v-if="isLoadingOrder" size="xs" />
-                    <span v-else>{{ $t("components.buttons.track") }}</span>
-                </button>
-            </form>
-
-            <div
-                v-if="
-                    activeStep === 2 && !isLoadingOrder && order?.data?.products
-                "
-                class="space-y-8 animate-in fade-in duration-500"
-            >
+        <div class="max-w-4xl mx-auto">
+            <header class="mb-12 space-y-6">
                 <div
-                    class="bg-main text-accent p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border-2 border-main"
+                    class="flex items-center justify-between border-b-4 border-primary pb-6"
                 >
                     <div>
-                        <p
-                            class="text-xs font-bold uppercase tracking-[0.2em] opacity-70 mb-1"
+                        <div
+                            class="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2"
                         >
-                            {{ $t("pages.tracking.status") }}
-                        </p>
-                        <p
-                            class="text-2xl font-bold uppercase italic tracking-wide"
+                            <span
+                                :class="activeStep === 1 ? 'text-primary' : ''"
+                                >01 {{ $t("pages.tracking.verification") }}</span
+                            >
+                            <ChevronRight class="w-3 h-3" />
+                            <span
+                                :class="activeStep === 2 ? 'text-primary' : ''"
+                                >02 {{ $t("pages.tracking.logistics") }}</span
+                            >
+                        </div>
+                        <h1
+                            class="text-5xl md:text-7xl font-bold uppercase tracking-tighter italic leading-none text-foreground"
                         >
-                            {{ order?.data.status || $t("common.unknown") }}
-                        </p>
+                            {{
+                                activeStep === 1
+                                    ? $t("pages.tracking.title")
+                                    : $t("pages.tracking.status")
+                            }}
+                        </h1>
                     </div>
-                    <div class="mt-4 sm:mt-0 sm:text-right">
-                        <p
-                            class="text-xs font-bold uppercase tracking-[0.2em] opacity-70 mb-1"
-                        >
-                            {{ $t("pages.tracking.orderNr") }}
-                        </p>
-                        <p class="text-lg font-mono font-bold">
-                            {{ order?.data.order_number }}
-                        </p>
-                    </div>
+
+                    <Button
+                        v-if="activeStep === 2"
+                        variant="ghost"
+                        @click="goBack"
+                        class="rounded-none h-auto p-0 uppercase tracking-widest text-xs font-black hover:bg-transparent hover:text-primary transition-colors"
+                    >
+                        <ArrowLeft class="w-4 h-4 mr-2" />
+                        {{ $t("components.buttons.back") }}
+                    </Button>
                 </div>
 
-                <div
-                    class="flex items-center justify-between border-b-2 border-border pb-4"
+                <Alert
+                    v-if="errorMessage"
+                    variant="destructive"
+                    class="rounded-none border-2 bg-destructive text-destructive-foreground animate-in slide-in-from-top-2"
+                >
+                    <AlertCircle class="w-4 h-4" />
+                    <AlertTitle
+                        class="uppercase font-black tracking-widest text-xs"
+                        >{{ $t("pages.tracking.error") }}</AlertTitle
+                    >
+                    <AlertDescription class="font-bold uppercase text-[10px]">
+                        {{ errorMessage }}
+                    </AlertDescription>
+                </Alert>
+            </header>
+
+            <main class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <section
+                    v-if="activeStep === 1"
+                    class="lg:col-span-6 space-y-8 animate-in fade-in slide-in-from-bottom-4"
                 >
                     <p
-                        class="text-sm font-bold uppercase tracking-widest text-muted-foreground"
+                        class="text-muted-foreground text-sm leading-relaxed max-w-sm"
                     >
-                        {{ $t("pages.tracking.date") }}
+                        {{ $t("pages.tracking.credentialsDesc") }}
                     </p>
-                    <p class="font-bold text-foreground">
-                        {{ formatDateLocal(order?.data.created_at) }}
-                    </p>
-                </div>
 
-                <div>
-                    <h2
-                        class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4"
-                    >
-                        Items in Shipment
-                    </h2>
-                    <div class="grid gap-4 border-l-2 border-border pl-4">
-                        <ProductSmallCard
-                            v-for="product in order?.data.products"
-                            :key="product.item.id || product.item"
-                            :product="product"
-                            :item="product.item"
-                            class="border border-border hover:border-main transition-colors"
-                        />
-                    </div>
-                </div>
-            </div>
+                    <form @submit.prevent="handleSubmit" class="space-y-6">
+                        <div class="space-y-2">
+                            <Label
+                                class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
+                            >
+                                {{ $t("validation.form.email") }}
+                            </Label>
+                            <Input
+                                v-model="form.email"
+                                type="email"
+                                required
+                                class="rounded-none border-2 border-border bg-accent_light h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
+                            />
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label
+                                class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
+                            >
+                                {{ $t("validation.form.orderNumber") }}
+                            </Label>
+                            <Input
+                                v-model="form.orderNr"
+                                type="text"
+                                required
+                                class="rounded-none border-2 border-border bg-accent_light h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
+                            />
+                        </div>
+
+                        <Button
+                            type="submit"
+                            :disabled="isLoadingOrder"
+                            class="rounded-none w-full h-20 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+                        >
+                            <Spinner
+                                v-if="isLoadingOrder"
+                                size="xs"
+                                class="mr-2"
+                            />
+                            {{ $t("components.buttons.track") }}
+                        </Button>
+                    </form>
+                </section>
+
+                <template v-else-if="activeStep === 2 && order?.data">
+                    <section class="lg:col-span-7 space-y-12">
+                        <Card
+                            class="rounded-none border-none bg-primary text-primary-foreground overflow-hidden"
+                        >
+                            <CardHeader
+                                class="flex flex-row items-center justify-between space-y-0 p-8"
+                            >
+                                <div>
+                                    <p
+                                        class="text-[10px] font-bold uppercase tracking-widest opacity-60"
+                                    >
+                                        {{ $t("pages.tracking.status") }}
+                                    </p>
+                                    <CardTitle
+                                        class="text-4xl font-black uppercase italic tracking-tighter"
+                                    >
+                                        {{
+                                            order.data.status ||
+                                            $t("common.unknown")
+                                        }}
+                                    </CardTitle>
+                                </div>
+                                <PackageCheck class="w-12 h-12 opacity-20" />
+                            </CardHeader>
+                            <CardContent class="px-8 pb-8">
+                                <div
+                                    class="grid grid-cols-2 gap-4 border-t border-primary-foreground/20 pt-6"
+                                >
+                                    <div>
+                                        <p
+                                            class="text-[10px] font-bold uppercase tracking-widest opacity-60"
+                                        >
+                                            {{ $t("pages.tracking.reference") }}
+                                        </p>
+                                        <p class="font-mono font-bold">
+                                            {{ order.data.order_number }}
+                                        </p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p
+                                            class="text-[10px] font-bold uppercase tracking-widest opacity-60"
+                                        >
+                                            {{ $t("pages.tracking.date") }}
+                                        </p>
+                                        <p class="font-bold">
+                                            {{
+                                                formatDateLocal(
+                                                    order.data.created_at,
+                                                )
+                                            }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <div class="space-y-6">
+                            <h3
+                                class="flex items-center space-x-2 text-xs font-black uppercase tracking-[0.2em]"
+                            >
+                                <Box class="w-4 h-4" />
+                                <span>{{ $t("pages.tracking.items") }}</span>
+                            </h3>
+                            <div class="space-y-4">
+                                <ProductSmallCard
+                                    v-for="product in order.data.products"
+                                    :key="product.item.id || product.item"
+                                    :product="product"
+                                    :item="product.item"
+                                    class="rounded-none border-2 border-border"
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    <aside class="lg:col-span-5 space-y-8">
+                        <Card
+                            v-if="order.data.tracking.number"
+                            class="rounded-none border-2 border-primary bg-transparent"
+                        >
+                            <CardHeader class="p-6">
+                                <div
+                                    class="flex justify-between items-center mb-4"
+                                >
+                                    <Badge
+                                        variant="outline"
+                                        class="rounded-none border-primary text-primary font-black uppercase text-[9px]"
+                                        >{{ $t("pages.tracking.liveTracking") }}</Badge
+                                    >
+                                    <Truck class="w-5 h-5" />
+                                </div>
+                                <p class="font-mono text-xl font-bold">
+                                    {{ order.data.tracking.number }}
+                                </p>
+                                <p
+                                    class="text-[10px] uppercase font-bold text-muted-foreground"
+                                >
+                                    {{ order.data.tracking.carrier }}
+                                </p>
+                            </CardHeader>
+                            <CardFooter class="p-6 pt-0">
+                                <Button
+                                    as="a"
+                                    :href="order.data.tracking.url"
+                                    target="_blank"
+                                    class="w-full rounded-none uppercase font-black tracking-widest text-xs h-12"
+                                >
+                                    {{ $t("pages.tracking.carrierSite") }}
+                                </Button>
+                            </CardFooter>
+                        </Card>
+
+                        <Card
+                            class="rounded-none border-2 border-border bg-accent_light shadow-none"
+                        >
+                            <CardHeader class="p-6">
+                                <CardTitle
+                                    class="text-xs font-black uppercase tracking-widest"
+                                    >{{ $t("pages.tracking.deliveryAddress") }}</CardTitle
+                                >
+                            </CardHeader>
+                            <CardContent
+                                class="p-6 pt-0 text-sm font-bold uppercase leading-tight italic"
+                            >
+                                <div v-if="order.data.shipping_address">
+                                    {{ order.data.shipping_address.first_name }}
+                                    {{ order.data.shipping_address.last_name
+                                    }}<br />
+                                    <span
+                                        class="text-muted-foreground not-italic"
+                                        >{{
+                                            order.data.shipping_address.line_one
+                                        }}</span
+                                    ><br />
+                                    <span
+                                        class="text-muted-foreground not-italic"
+                                        >{{
+                                            order.data.shipping_address.postcode
+                                        }}
+                                        {{
+                                            order.data.shipping_address.city
+                                        }}</span
+                                    >
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card
+                            class="rounded-none border-2 border-border shadow-none"
+                        >
+                            <CardHeader class="p-6">
+                                <CardTitle
+                                    class="text-xs font-black uppercase tracking-widest border-b border-border pb-3"
+                                    >{{ $t("pages.tracking.summary") }}</CardTitle
+                                >
+                            </CardHeader>
+                            <CardContent
+                                class="p-6 pt-0 space-y-3 uppercase font-bold text-xs"
+                            >
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground"
+                                        >{{ $t("pages.tracking.subtotal") }}</span
+                                    >
+                                    <span
+                                        >{{
+                                            order.data.totals.sub_total
+                                        }}
+                                        {{ $currency }}</span
+                                    >
+                                </div>
+                                <div
+                                    v-if="order.data.totals.shipping_total > 0"
+                                    class="flex justify-between"
+                                >
+                                    <span class="text-muted-foreground"
+                                        >{{ $t("pages.tracking.shipping") }}</span
+                                    >
+                                    <span
+                                        >+
+                                        {{
+                                            order.data.totals.shipping_total
+                                        }}
+                                        {{ $currency }}</span
+                                    >
+                                </div>
+                                <Separator class="bg-primary h-[2px]" />
+                                <div
+                                    class="flex justify-between text-lg font-black pt-2"
+                                >
+                                    <span>{{ $t("pages.tracking.total") }}</span>
+                                    <span
+                                        >{{
+                                            order.data.totals.total_price
+                                        }}
+                                        {{ $currency }}</span
+                                    >
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </aside>
+                </template>
+            </main>
         </div>
     </div>
 </template>
@@ -156,12 +327,33 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useSessionStorage } from "@vueuse/core";
+import {
+    ChevronRight,
+    ArrowLeft,
+    PackageCheck,
+    Truck,
+    AlertCircle,
+    Box,
+} from "lucide-vue-next";
 
-// Components
+// shadcn-vue components
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardContent,
+    CardFooter,
+} from "@/components/ui/card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+
+// Existing custom components & logic
 import Spinner from "@components/ui/Spinner.vue";
 import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
-
-// Logic
 import { apiQuery } from "@lib/helpers";
 import { checkoutform } from "@lib/store/shop/index.js";
 
@@ -170,7 +362,6 @@ const toast = useToast();
 const route = useRoute();
 const slug = route.params.slug;
 
-// State
 const activeStep = ref(1);
 const errorMessage = ref("");
 const form = useSessionStorage("active-track-form", {
@@ -178,7 +369,6 @@ const form = useSessionStorage("active-track-form", {
     orderNr: route.params.id || "",
 });
 
-// API
 const orderQueryKey = computed(() => form.value.orderNr);
 const orderQueryParams = computed(() => ({ email: form.value.email }));
 const {
@@ -187,7 +377,6 @@ const {
     refetch: refetchOrder,
 } = apiQuery("orders").useGetById(orderQueryKey, orderQueryParams);
 
-// Helpers
 const formatDateLocal = (dateString) => {
     if (!dateString) return t("common.unknown");
     const date = new Date(dateString);
@@ -222,7 +411,6 @@ const goBack = () => {
     errorMessage.value = "";
 };
 
-// Lifecycle
 onMounted(() => {
     if (slug === "success") {
         activeStep.value = 1;
