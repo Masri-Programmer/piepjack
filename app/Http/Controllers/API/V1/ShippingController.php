@@ -28,7 +28,7 @@ class ShippingController extends Controller
         $order = Order::with(['user', 'shippingAddress'])->findOrFail($validated['order_id']);
 
         if (! $order->shippingAddress || ! $order->user) {
-            return response()->json(['error' => 'Incomplete order customer data.'], 400);
+            return response()->json(['error' => __('Incomplete order customer data.')], 400);
         }
 
         // Format customer data for Sendcloud
@@ -56,12 +56,12 @@ class ShippingController extends Controller
 
             // 4. Return the data
             return response()->json([
-                'message' => 'Label generated successfully!',
+                'message' => __('Label generated successfully!'),
                 'tracking_number' => $shippingResult['tracking_number'],
                 'label_url' => $shippingResult['label_url'],
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to generate shipping label: '.$e->getMessage()], 500);
+            return response()->json(['error' => __('Failed to generate shipping label: ') . $e->getMessage()], 500);
         }
     }
 }

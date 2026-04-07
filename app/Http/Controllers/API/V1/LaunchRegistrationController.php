@@ -23,9 +23,9 @@ class LaunchRegistrationController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:launch_registrations,email',
         ], [
-            'email.unique' => 'Diese E-Mail-Adresse ist bereits registriert.',
-            'email.required' => 'Bitte geben Sie eine E-Mail-Adresse ein.',
-            'name.required' => 'Bitte geben Sie Ihren Namen ein.',
+            'email.unique' => __('Diese E-Mail-Adresse ist bereits registriert.'),
+            'email.required' => __('Bitte geben Sie eine E-Mail-Adresse ein.'),
+            'name.required' => __('Bitte geben Sie Ihren Namen ein.'),
         ]);
 
         if ($validator->fails()) {
@@ -47,7 +47,7 @@ class LaunchRegistrationController extends Controller
         }
 
         return response()->json([
-            'message' => 'Erfolgreich registriert! Wir werden dich benachrichtigen.',
+            'message' => __('Erfolgreich registriert! Wir werden dich benachrichtigen.'),
         ], 201);
     }
 
@@ -66,7 +66,7 @@ class LaunchRegistrationController extends Controller
             Log::warning('Launch date not reached yet. Difference: '.$now->diffForHumans($target));
 
             return response()->json([
-                'message' => 'Launch date has not been reached yet.',
+                'message' => __('Launch date has not been reached yet.'),
                 'now' => $now->toIso8601String(),
                 'target' => $target->toIso8601String(),
             ], 403);
@@ -78,7 +78,7 @@ class LaunchRegistrationController extends Controller
 
         if ($pendingCount === 0) {
             return response()->json([
-                'message' => 'All registrants have already been notified.',
+                'message' => __('All registrants have already been notified.'),
             ]);
         }
 
@@ -89,7 +89,7 @@ class LaunchRegistrationController extends Controller
         Log::info('Artisan Command Output: '.$output);
 
         return response()->json([
-            'message' => 'Notification process triggered successfully.',
+            'message' => __('Notification process triggered successfully.'),
             'count' => $pendingCount,
             'details' => $output,
         ]);
