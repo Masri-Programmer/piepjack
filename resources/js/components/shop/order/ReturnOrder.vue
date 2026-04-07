@@ -1,269 +1,316 @@
 <template>
     <div
-        class="max-w-4xl mx-auto px-6 py-16 sm:py-24 selection:bg-main selection:text-accent"
+        class="min-h-screen bg-background p-4 md:p-8 lg:p-12 selection:bg-primary selection:text-primary-foreground"
     >
-        <header class="mb-12 border-b-12 border-border pb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <Button
-                    v-if="activeStep > 1"
-                    variant="ghost"
-                    size="icon"
-                    @click="goBack()"
-                    class="hover:bg-accent_light rounded-none p-0 h-10 w-10 border border-main"
-                >
-                    <ChevronLeft class="w-6 h-6" />
-                </Button>
-                <p
-                    class="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground"
-                >
-                    {{ $t("common.return.step", { current: activeStep, total: 3 }) }}
-                </p>
-            </div>
-            <h1
-                class="text-5xl sm:text-7xl font-bold uppercase tracking-tighter italic leading-none text-foreground"
-            >
-                {{ $t("common.titles.return_exchange") }}
-            </h1>
-        </header>
-
-        <section
-            v-if="activeStep === 1"
-            class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"
-        >
-            <form @submit.prevent="submitForm" class="grid gap-6">
-                <div class="space-y-2">
-                    <label
-                        class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                        >{{ $t("common.forms.emailLabel") }}</label
-                    >
-                    <input
-                        v-model="form.email"
-                        type="email"
-                        :placeholder="$t('common.input.email')"
-                        class="w-full bg-accent_light border-2 border-border p-4 text-base focus:border-main outline-none rounded-none transition-all"
-                        required
-                    />
-                </div>
-                <div class="space-y-2">
-                    <label
-                        class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                        >{{ $t("validation.form.orderNumber") }}</label
-                    >
-                    <input
-                        v-model="form.orderNr"
-                        type="text"
-                        :placeholder="$t('common.input.orderTracking')"
-                        class="w-full bg-accent_light border-2 border-border p-4 text-base focus:border-main outline-none rounded-none transition-all"
-                        required
-                    />
-                </div>
-                <Button
-                    type="submit"
-                    :disabled="isLoadingOrder"
-                    class="view-all w-full h-16 text-lg font-bold uppercase tracking-widest"
-                >
-                    <Spinner v-if="isLoadingOrder" size="xs" />
-                    <span v-else>{{
-                        $t("components.buttons.returnOrder")
-                    }}</span>
-                </Button>
-            </form>
-        </section>
-
-        <section
-            v-if="activeStep === 2 && order?.data"
-            class="space-y-10 animate-in fade-in duration-500"
-        >
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="max-w-4xl mx-auto">
+            <header class="mb-12 space-y-6">
                 <div
-                    v-for="product in order.data.products"
-                    :key="product.item.id"
-                    @click="toggleProductSelection(product.item)"
-                    :class="[
-                        'relative cursor-pointer border-2 transition-all duration-300 p-2',
-                        isSelected(product.item)
-                            ? 'border-main bg-accent_light'
-                            : 'border-border opacity-60 hover:opacity-100',
-                    ]"
+                    class="flex items-center justify-between border-b-4 border-primary pb-6"
                 >
-                    <div
-                        v-if="isSelected(product.item)"
-                        class="absolute top-2 right-2 z-10 bg-main text-accent px-2 py-1 text-[10px] font-bold uppercase"
-                    >
-                        {{ $t("common.return.selected") }}
+                    <div>
+                        <div
+                            class="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2"
+                        >
+                            <span :class="activeStep >= 1 ? 'text-primary' : ''"
+                                >01 {{ $t("common.return.verify") }}</span
+                            >
+                            <ChevronRight class="w-3 h-3" />
+                            <span :class="activeStep >= 2 ? 'text-primary' : ''"
+                                >02 {{ $t("common.return.select") }}</span
+                            >
+                            <ChevronRight class="w-3 h-3" />
+                            <span
+                                :class="activeStep === 3 ? 'text-primary' : ''"
+                                >03 {{ $t("common.return.logistics") }}</span
+                            >
+                        </div>
+                        <h1
+                            class="text-5xl md:text-7xl font-bold uppercase tracking-tighter italic leading-none text-foreground"
+                        >
+                            {{ $t("common.titles.return_exchange") }}
+                        </h1>
                     </div>
-                    <ProductSmallCard
-                        :product="product"
-                        :item="product.item"
-                        class="border-none"
-                    />
+
+                    <Button
+                        v-if="activeStep > 1"
+                        variant="ghost"
+                        @click="goBack"
+                        class="rounded-none h-auto p-0 uppercase tracking-widest text-xs font-black hover:bg-transparent hover:text-primary transition-colors"
+                    >
+                        <ArrowLeft class="w-4 h-4 mr-2" />
+                        {{ $t("components.buttons.back") }}
+                    </Button>
                 </div>
-            </div>
+            </header>
 
-            <div class="space-y-4">
-                <h2 class="text-xl font-bold uppercase italic tracking-tight">
-                    {{ $t("common.return.provide_reason") }}
-                </h2>
-                <textarea
-                    v-model="form.reason"
-                    :placeholder="$t('common.return.reason_placeholder')"
-                    class="w-full bg-accent_light border-2 border-border p-6 min-h-[150px] outline-none focus:border-main rounded-none transition-all"
-                    required
-                ></textarea>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-4">
-                <Button
-                    @click="goBack"
-                    variant="outline"
-                    class="flex-1 h-16 border-2 border-main uppercase font-bold rounded-none"
+            <main class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <section
+                    v-if="activeStep === 1"
+                    class="lg:col-span-8 lg:col-start-3 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"
                 >
-                    {{ $t("common.return.back") }}
-                </Button>
-                <Button
-                    @click="goToNextStep"
-                    class="view-all flex-1 h-16 uppercase font-bold"
-                >
-                    {{ $t("common.return.next") }}
-                </Button>
-            </div>
-        </section>
-
-        <section
-            v-if="activeStep === 3"
-            class="space-y-12 animate-in fade-in duration-500"
-        >
-            <div class="border-2 border-main p-8 space-y-8 bg-background">
-                <h2
-                    class="text-2xl font-bold uppercase italic border-b-2 border-border pb-4"
-                >
-                    {{ $t("common.return.select_shipping") }}
-                </h2>
-
-                <label
-                    class="flex items-center justify-between cursor-pointer group"
-                >
-                    <div class="flex items-center gap-4">
-                        <input
-                            type="radio"
-                            value="DHL Parcel Shop"
-                            v-model="selectedService"
-                            class="w-5 h-5 accent-main"
-                        />
-                        <span
-                            class="font-bold uppercase tracking-wider group-hover:italic"
-                            >{{ $t("common.return.dhl") }}</span
-                        >
-                    </div>
-                    <span class="font-mono font-bold text-lg">4,90 €</span>
-                </label>
-
-                <div class="pt-8 border-t-2 border-border space-y-6">
-                    <h3
-                        class="text-sm font-bold uppercase tracking-widest text-muted-foreground"
+                    <p
+                        class="text-muted-foreground text-sm font-bold uppercase tracking-widest leading-relaxed text-center"
                     >
-                        {{ $t("common.return.insurance") }}
-                    </h3>
-                    <div class="grid gap-4">
-                        <label
-                            class="flex flex-col p-4 border-2 border-border cursor-pointer transition-colors"
-                            :class="{
-                                'border-main bg-accent_light': addInsurance,
-                            }"
-                        >
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-3">
-                                    <input
-                                        type="radio"
-                                        :value="true"
-                                        v-model="addInsurance"
-                                        class="w-4 h-4 accent-main"
-                                    />
-                                    <span
-                                        class="font-bold uppercase text-sm italic"
-                                        >{{
-                                            $t("common.return.insurance_yes")
-                                        }}</span
-                                    >
-                                </div>
-                                <span class="font-mono font-bold">1,99 €</span>
-                            </div>
-                            <p class="text-xs text-muted-foreground">
-                                {{
-                                    $t("common.return.insurance_info", {
-                                        amount: coverageAmount,
-                                    })
-                                }}
-                            </p>
-                        </label>
+                        {{ $t("common.return.identify_desc") }}
+                    </p>
 
-                        <label
-                            class="flex flex-col p-4 border-2 border-border cursor-pointer transition-colors"
-                            :class="{
-                                'border-main bg-accent_light': !addInsurance,
-                            }"
+                    <form
+                        @submit.prevent="submitForm"
+                        class="space-y-6 p-8 border-2 border-border bg-muted/30"
+                    >
+                        <div class="space-y-2">
+                            <Label
+                                class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
+                            >
+                                {{ $t("common.forms.emailLabel") }}
+                            </Label>
+                            <Input
+                                v-model="form.email"
+                                type="email"
+                                required
+                                :placeholder="$t('common.input.email')"
+                                class="rounded-none border-2 border-border bg-background h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
+                            />
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label
+                                class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
+                            >
+                                {{ $t("validation.form.orderNumber") }}
+                            </Label>
+                            <Input
+                                v-model="form.orderNr"
+                                type="text"
+                                required
+                                :placeholder="$t('common.input.orderTracking')"
+                                class="rounded-none border-2 border-border bg-background h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
+                            />
+                        </div>
+
+                        <Button
+                            type="submit"
+                            :disabled="isLoadingOrder"
+                            class="w-full rounded-none h-16 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 mt-4"
                         >
-                            <div class="flex items-center gap-3 mb-2">
-                                <input
-                                    type="radio"
-                                    :value="false"
-                                    v-model="addInsurance"
-                                    class="w-4 h-4 accent-main"
-                                />
-                                <span
-                                    class="font-bold uppercase text-sm italic"
-                                    >{{
-                                        $t("common.return.insurance_no")
-                                    }}</span
+                            <Spinner
+                                v-if="isLoadingOrder"
+                                size="xs"
+                                class="mr-2"
+                            />
+                            {{ $t("components.buttons.returnOrder") }}
+                        </Button>
+                    </form>
+                </section>
+
+                <section
+                    v-else-if="activeStep === 2 && order?.data"
+                    class="lg:col-span-12 space-y-10 animate-in fade-in duration-500"
+                >
+                    <div class="space-y-4">
+                        <h2
+                            class="text-xl font-black uppercase tracking-widest border-b-2 border-border pb-2"
+                        >
+                            {{ $t("common.return.select_items_title") }}
+                        </h2>
+                        <div
+                            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                        >
+                            <div
+                                v-for="product in order.data.products"
+                                :key="product.item.id"
+                                @click="
+                                    toggleProductSelection(
+                                        product.item,
+                                        product.quantity,
+                                    )
+                                "
+                                :class="[
+                                    'relative cursor-pointer border-2 transition-all duration-200 bg-background group',
+                                    isSelected(product.item)
+                                        ? 'border-primary shadow-[4px_4px_0px_0px_var(--theme-primary)]'
+                                        : 'border-border hover:border-primary/50',
+                                ]"
+                            >
+                                <div
+                                    v-if="isSelected(product.item)"
+                                    class="absolute top-2 right-2 z-10 bg-primary text-primary-foreground px-3 py-1 text-[10px] font-black uppercase tracking-widest"
                                 >
+                                    {{ $t("common.return.selected") }}
+                                </div>
+                                <ProductSmallCard
+                                    :product="product"
+                                    :item="product.item"
+                                    class="border-none pointer-events-none p-4"
+                                />
                             </div>
-                            <p class="text-xs text-muted-foreground">
-                                {{ $t("common.return.insurance_warning") }}
-                            </p>
-                        </label>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="bg-main text-accent p-8 space-y-6">
-                <div
-                    class="flex justify-between items-center text-2xl font-bold uppercase italic"
-                >
-                    <span>{{ $t("common.return.total_amount_label") }}</span>
-                    <span class="font-mono">{{ total.toFixed(2) }} €</span>
-                </div>
-                <label class="flex gap-3 items-start cursor-pointer">
-                    <input
-                        type="checkbox"
-                        v-model="termsAccepted"
-                        class="mt-1 w-5 h-5 accent-accent"
-                    />
-                    <span
-                        class="text-xs font-medium uppercase tracking-tighter leading-tight opacity-80"
-                    >
-                        {{ $t("common.return.terms") }}
-                    </span>
-                </label>
-            </div>
+                    <div class="space-y-4">
+                        <Label
+                            class="text-xl font-black uppercase tracking-widest border-b-2 border-border pb-2 block"
+                        >
+                            {{ $t("common.return.provide_reason") }}
+                        </Label>
+                        <Textarea
+                            v-model="form.reason"
+                            :placeholder="
+                                $t('common.return.reason_placeholder')
+                            "
+                            required
+                            class="rounded-none border-2 border-border bg-muted/30 focus-visible:ring-primary focus-visible:border-primary min-h-[150px] font-bold text-sm resize-y"
+                        />
+                    </div>
 
-            <div class="flex flex-col sm:flex-row gap-4">
-                <Button
-                    @click="goBack"
-                    variant="outline"
-                    class="flex-1 h-16 border-2 border-main uppercase font-bold rounded-none"
+                    <div class="flex justify-end pt-4">
+                        <Button
+                            @click="goToNextStep"
+                            class="rounded-none h-16 px-12 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto"
+                        >
+                            {{ $t("common.return.next") }}
+                            <ChevronRight class="w-5 h-5 ml-2" />
+                        </Button>
+                    </div>
+                </section>
+
+                <section
+                    v-else-if="activeStep === 3"
+                    class="lg:col-span-12 space-y-12 animate-in fade-in slide-in-from-right-4 duration-500"
                 >
-                    {{ $t("common.return.back_items") }}
-                </Button>
-                <Button
-                    :disabled="!termsAccepted || isLoading"
-                    @click="submitReturn"
-                    class="view-all flex-1 h-16"
-                >
-                    <Spinner v-if="isLoading" size="xs" />
-                    <span v-else>{{ $t("common.return.next_step") }}</span>
-                </Button>
-            </div>
-        </section>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <div class="lg:col-span-7 space-y-8">
+                            <Card
+                                class="rounded-none border-2 border-border shadow-none bg-background"
+                            >
+                                <CardHeader
+                                    class="border-b-2 border-border p-6 bg-muted/30"
+                                >
+                                    <CardTitle
+                                        class="text-xl font-black uppercase tracking-widest"
+                                    >
+                                        {{
+                                            $t("common.return.select_shipping")
+                                        }}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent class="p-6">
+                                    <label
+                                        class="flex items-center justify-between cursor-pointer group p-4 border-2 border-primary bg-primary/5"
+                                    >
+                                        <div class="flex items-center gap-4">
+                                            <input
+                                                type="radio"
+                                                value="DHL Parcel Shop"
+                                                v-model="selectedService"
+                                                class="w-5 h-5 accent-primary cursor-pointer"
+                                            />
+                                            <div class="space-y-1">
+                                                <span
+                                                    class="block font-black uppercase tracking-widest text-sm group-hover:text-primary transition-colors"
+                                                >
+                                                    {{
+                                                        $t("common.return.dhl")
+                                                    }}
+                                                </span>
+                                                <span
+                                                    class="block text-xs font-bold text-muted-foreground uppercase"
+                                                    >{{ $t("common.return.drop_off_desc") }}</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <span
+                                            class="font-black uppercase tracking-widest text-sm text-primary"
+                                            >{{ $t("common.forms.free") }}</span
+                                        >
+                                    </label>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <div class="lg:col-span-5 space-y-8">
+                            <Card
+                                class="rounded-none border-none bg-primary text-primary-foreground shadow-none"
+                            >
+                                <CardHeader class="p-8 pb-4">
+                                    <CardTitle
+                                        class="text-sm font-black uppercase tracking-[0.2em] opacity-80"
+                                    >
+                                        {{ $t("common.return.summary_title") }}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent class="p-8 pt-0 space-y-6">
+                                    <div
+                                        class="space-y-3 text-sm font-bold uppercase tracking-widest"
+                                    >
+                                        <div class="flex justify-between">
+                                            <span class="opacity-80"
+                                                >{{ $t("common.return.selected_carrier") }}</span
+                                            >
+                                            <span class="font-mono">{{
+                                                selectedService
+                                            }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="opacity-80"
+                                                >{{ $t("common.return.fee") }}</span
+                                            >
+                                            <span class="font-mono"
+                                                >0.00 €</span
+                                            >
+                                        </div>
+                                        <div class="flex justify-between pt-2 border-t border-primary-foreground/20">
+                                            <span class="font-black">{{ $t("common.return.total_amount_label") }}</span>
+                                            <span class="font-black"
+                                                >0.00 €</span
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <Separator
+                                        class="bg-primary-foreground/20 h-[2px]"
+                                    />
+
+                                    <div class="pt-2">
+                                        <label
+                                            class="flex gap-4 items-start cursor-pointer group"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                v-model="termsAccepted"
+                                                class="mt-1 w-5 h-5 accent-primary-foreground cursor-pointer flex-shrink-0"
+                                            />
+                                            <span
+                                                class="text-[10px] font-bold uppercase tracking-wider leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                {{ $t("common.return.terms") }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                </CardContent>
+                                <div class="p-8 pt-0 mt-4">
+                                    <Button
+                                        :disabled="!termsAccepted || isLoading"
+                                        @click="submitReturn"
+                                        variant="outline"
+                                        class="w-full rounded-none h-16 text-lg font-black uppercase tracking-[0.2em] border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-primary-foreground"
+                                    >
+                                        <Spinner
+                                            v-if="isLoading"
+                                            size="xs"
+                                            class="mr-2"
+                                        />
+                                        <span v-else>{{
+                                            $t("common.return.next_step")
+                                        }}</span>
+                                    </Button>
+                                </div>
+                            </Card>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
     </div>
 </template>
 
@@ -271,16 +318,21 @@
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
-import { ChevronLeft } from "lucide-vue-next";
+import { ChevronRight, ArrowLeft } from "lucide-vue-next";
 import { useToast } from "vue-toastification";
 import { useSessionStorage } from "@vueuse/core";
 
-// Components
+// shadcn-vue components
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
+// Existing custom components & logic
 import Spinner from "@components/ui/Spinner.vue";
 import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
-import { Button } from "@/components/ui/button";
-
-// Logic
 import { apiQuery } from "@lib/helpers";
 import { checkoutform } from "@lib/store/shop/index.js";
 
@@ -333,14 +385,14 @@ const submitForm = async () => {
     await fetchOrder();
 };
 
-const toggleProductSelection = (item) => {
+const toggleProductSelection = (item, orderQuantity = 1) => {
     const index = selectedReturnedProducts.value.findIndex(
         (p) => p.id === item.id,
     );
     if (index === -1) {
         selectedReturnedProducts.value.push({
             ...item,
-            cartQuantity: item.cartQuantity,
+            cartQuantity: item.cartQuantity || orderQuantity,
         });
     } else {
         selectedReturnedProducts.value.splice(index, 1);
@@ -350,7 +402,9 @@ const toggleProductSelection = (item) => {
 const isSelected = (item) =>
     selectedReturnedProducts.value.some((p) => p.id === item.id);
 
-const goBack = () => (activeStep.value = Math.max(activeStep.value - 1, 1));
+const goBack = () => {
+    activeStep.value = Math.max(activeStep.value - 1, 1);
+};
 
 const goToNextStep = () => {
     if (selectedReturnedProducts.value.length === 0) {
@@ -364,15 +418,9 @@ const goToNextStep = () => {
     activeStep.value = 3;
 };
 
+// Logistics State
 const selectedService = ref("DHL Parcel Shop");
 const termsAccepted = ref(false);
-const addInsurance = ref(false);
-const shippingFee = 4.9;
-const insuranceFee = 1.99;
-const coverageAmount = 20;
-const total = computed(() =>
-    addInsurance.value ? shippingFee + insuranceFee : shippingFee,
-);
 
 const { mutate: returnOrder, isLoading } = apiQuery("returns").useStore();
 
@@ -380,7 +428,7 @@ const submitReturn = () => {
     if (!order.value?.data) return;
 
     const payload = {
-        total: total.value, // This is now the deduction amount
+        total: 0, // Deduction amount is 0 for free returns
         order_number: form.value.orderNr,
         order_id: order.value.data.id,
         email: form.value.email,
@@ -391,11 +439,7 @@ const submitReturn = () => {
 
     returnOrder(payload, {
         onSuccess: (data) => {
-            // Because there is no checkout_url anymore, we just redirect directly to success
             window.location.href = `/return-order/success?return_number=${data.data.return_number}`;
-        },
-        onError: (error) => {
-            toast.error(error.message || t("common.alerts.submissionFailed"));
         },
     });
 };
