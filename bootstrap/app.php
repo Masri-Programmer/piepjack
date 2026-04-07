@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\V1\TestIntegrationController;
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\AuthenticatedUser;
 use Illuminate\Foundation\Application;
@@ -29,8 +30,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
             Route::prefix('api/V1/test')
                 ->group(function () {
-                    Route::get('/email', [\App\Http\Controllers\API\V1\TestIntegrationController::class, 'testEmail']);
-                    Route::get('/sendcloud', [\App\Http\Controllers\API\V1\TestIntegrationController::class, 'testSendcloud']);
+                    Route::get('/email', [TestIntegrationController::class, 'testEmail']);
+                    Route::get('/sendcloud', [TestIntegrationController::class, 'testSendcloud']);
                 });
 
             // This catch-all route must be at the very bottom of all routes
@@ -52,6 +53,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'api/V1/shop/webhook/*',
             'api/V1/shop/webhooks/*',
+            'api/V1/shop/launch-registration',
+            'api/V1/shop/trigger-online-notification',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

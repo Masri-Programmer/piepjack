@@ -1,56 +1,60 @@
 <template>
     <div
-        class="max-w-6xl mx-auto px-6 py-16 sm:py-24 selection:bg-accent_dark selection:text-[#f2f0a1]"
+        class="max-w-5xl mx-auto px-6 py-16 sm:py-24 selection:bg-main selection:text-accent"
     >
-        <header class="mb-16 border-b-[12px] border-accent_dark pb-8">
-            <h1
-                class="text-5xl sm:text-7xl md:text-8xl font-accent_dark uppercase tracking-tighter leading-none italic"
-            >
-                ABOUT US
-            </h1>
+        <header
+            class="mb-20 border-b-[12px] border-border pb-10 text-center md:text-left"
+        >
             <p
-                class="mt-4 text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
             >
                 The Vision // The Story
             </p>
+            <h1
+                class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground"
+            >
+                ABOUT US
+            </h1>
         </header>
 
-        <div class="space-y-16 sm:space-y-24">
+        <div class="space-y-24">
             <section
-                class="bg-primary text-primary-foreground p-8 sm:p-12 lg:p-16 rounded-none shadow-[8px_8px_0px_0px_#f2f0a1] border-2 border-accent_dark"
+                class="bg-main text-accent p-8 sm:p-12 lg:p-16 border-4 border-border rounded-none relative"
             >
                 <h2
-                    class="text-2xl sm:text-4xl lg:text-5xl font-accent_dark uppercase italic leading-tight tracking-tight"
+                    class="text-3xl sm:text-5xl lg:text-6xl font-bold uppercase italic leading-[0.9] tracking-tighter mb-8"
                 >
-                    At <span class="text-[#f2f0a1]">Piepjack</span>, we believe
-                    in the power of progress.
+                    At
+                    <span class="underline decoration-4 underline-offset-8"
+                        >Piepjack</span
+                    >, we believe in the power of progress.
                 </h2>
                 <div
-                    class="mt-8 space-y-4 text-lg sm:text-xl lg:text-2xl font-bold uppercase tracking-wide text-gray-300"
+                    class="space-y-6 text-lg sm:text-2xl font-bold uppercase tracking-widest text-accent/80"
                 >
                     <p>
                         Every step, every challenge, every moment is an
                         opportunity to grow.
                     </p>
-                    <p class="text-primary-foreground">
+                    <p class="text-accent">
                         Don’t just dream - make it happen.
                     </p>
                     <p>We’re here to help you reach new heights.</p>
-                    <p class="text-[#f2f0a1] italic">
+                    <p class="italic pt-4 border-t-2 border-accent/20">
                         Keep pushing. The journey starts now.
                     </p>
                 </div>
             </section>
 
             <section
-                class="border-l-[12px] border-accent_dark pl-6 sm:pl-12 lg:pr-24"
+                class="border-l-[12px] border-main pl-6 sm:pl-12 lg:pr-24 py-4"
             >
                 <div
-                    class="space-y-6 text-lg sm:text-xl font-medium leading-relaxed text-gray-800 dark:text-gray-300 text-pretty"
+                    class="space-y-8 text-lg sm:text-xl font-medium leading-relaxed text-foreground text-pretty"
                 >
                     <p>
                         Vor über 10 Jahren habe ich
-                        <span class="font-accent_dark uppercase text-main"
+                        <span class="font-bold uppercase tracking-widest italic"
                             >Piepjack</span
                         >
                         ins Leben gerufen – nicht als Business, sondern als
@@ -58,14 +62,14 @@
                         mein Logo auf ein Blatt Papier gezeichnet – wieder und
                         wieder.
                     </p>
-                    <p>
+                    <p class="text-xl sm:text-2xl">
                         Es war mehr als nur eine Skizze. Es war ein Versprechen
-                        an mich selbst:
+                        an mich selbst:<br />
                         <span
-                            class="font-bold italic underline decoration-2 underline-offset-4"
-                            >Ich will jemand sein, an den man sich
-                            erinnert.</span
+                            class="font-bold italic uppercase tracking-wider text-main border-b-4 border-main pb-1 inline-block mt-2"
                         >
+                            "Ich will jemand sein, an den man sich erinnert."
+                        </span>
                     </p>
                     <p>
                         Die Zeit verging, und ich konnte damals nicht das zu
@@ -75,19 +79,39 @@
                     </p>
 
                     <ul
-                        class="py-6 space-y-4 font-accent_dark uppercase text-xl sm:text-2xl tracking-tighter"
+                        class="py-8 space-y-6 font-bold uppercase text-xl sm:text-3xl tracking-tighter italic border-y-2 border-border"
                     >
-                        <li class="flex items-center gap-4">
-                            <Zap class="w-6 h-6 shrink-0" /> Gib niemals auf.
+                        <li class="flex items-center gap-6">
+                            <div
+                                class="p-2 bg-main text-accent rounded-none shrink-0"
+                            >
+                                <Zap
+                                    class="w-6 h-6 sm:w-8 sm:h-8"
+                                    stroke-width="2"
+                                />
+                            </div>
+                            Gib niemals auf.
                         </li>
-                        <li class="flex items-center gap-4">
-                            <Zap class="w-6 h-6 shrink-0" /> Behalte ein
-                            positives Mindset.
+                        <li class="flex items-center gap-6">
+                            <div
+                                class="p-2 bg-main text-accent rounded-none shrink-0"
+                            >
+                                <Zap
+                                    class="w-6 h-6 sm:w-8 sm:h-8"
+                                    stroke-width="2"
+                                />
+                            </div>
+                            Behalte ein positives Mindset.
                         </li>
-                        <li class="flex items-center gap-4">
-                            <Zap
-                                class="w-6 h-6 shrink-0 text-main fill-accent_dark"
-                            />
+                        <li class="flex items-center gap-6 text-main">
+                            <div
+                                class="p-2 bg-main text-accent rounded-none shrink-0"
+                            >
+                                <Zap
+                                    class="w-6 h-6 sm:w-8 sm:h-8"
+                                    stroke-width="2"
+                                />
+                            </div>
                             CHASE YOUR PASSION.
                         </li>
                     </ul>
@@ -98,28 +122,29 @@
                         auch wenn der Weg hart ist. Für die, die etwas
                         hinterlassen wollen.
                     </p>
-                    <p class="font-accent_dark uppercase text-2xl pt-4">
+                    <p
+                        class="font-bold uppercase tracking-widest text-2xl pt-4"
+                    >
                         Willkommen bei Piepjack. <br class="hidden sm:block" />
                         Lass uns gemeinsam Geschichte schreiben.
                     </p>
                 </div>
             </section>
 
-            <section class="pt-8">
+            <section class="pt-12 border-t-4 border-border">
                 <Button
                     as-child
-                    class="rounded-none bg-[#f2f0a1] text-main hover:bg-accent_dark hover:text-primary-foreground border-4 border-accent_dark px-8 py-10 sm:px-12 sm:py-12 text-sm sm:text-lg font-accent_dark uppercase tracking-widest transition-all group w-full sm:w-auto"
+                    class="view-all w-full sm:w-auto h-auto px-8 py-8 sm:px-16 sm:py-10 text-lg sm:text-xl font-bold uppercase tracking-widest flex items-center justify-center gap-4 group rounded-none"
                 >
                     <a
                         href="https://www.piepjack-clothing.de/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="flex items-center justify-center gap-4"
                     >
                         JOIN THE MOVEMENT
                         <ArrowRight
-                            class="w-6 h-6 transition-transform group-hover:translate-x-2"
-                            stroke-width="3"
+                            class="w-8 h-8 transition-transform duration-300 group-hover:translate-x-4"
+                            stroke-width="2.5"
                         />
                     </a>
                 </Button>

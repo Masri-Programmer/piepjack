@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\ShopIsOnlineMail;
 use App\Models\LaunchRegistration;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class NotifyRegistrantsShopOnline extends Command
@@ -30,15 +31,16 @@ class NotifyRegistrantsShopOnline extends Command
     {
         $query = LaunchRegistration::query();
 
-        if (!$this->option('force')) {
+        if (! $this->option('force')) {
             $query->whereNull('sent_online_notification_at');
         }
 
         $registrants = $query->get();
-        \Illuminate\Support\Facades\Log::info("NotifyRegistrantsShopOnline: Found " . $registrants->count() . " registrants.");
+        Log::info('NotifyRegistrantsShopOnline: Found '.$registrants->count().' registrants.');
 
         if ($registrants->isEmpty()) {
             $this->info('No registrants found to notify.');
+
             return 0;
         }
 
@@ -49,18 +51,18 @@ class NotifyRegistrantsShopOnline extends Command
 
         foreach ($registrants as $registrant) {
             try {
-                \Illuminate\Support\Facades\Log::info("NotifyRegistrantsShopOnline: Sending to " . $registrant->email);
+                Log::info('NotifyRegistrantsShopOnline: Sending to '.$registrant->email);
                 Mail::to($registrant->email)->send(new ShopIsOnlineMail($registrant));
-                
+
                 $registrant->update([
                     'sent_online_notification_at' => now(),
                 ]);
-                \Illuminate\Support\Facades\Log::info("NotifyRegistrantsShopOnline: Sent successfully to " . $registrant->email);
+                Log::info('NotifyRegistrantsShopOnline: Sent successfully to '.$registrant->email);
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("NotifyRegistrantsShopOnline: Failed for " . $registrant->email . ": " . $e->getMessage());
+                Log::error('NotifyRegistrantsShopOnline: Failed for '.$registrant->email.': '.$e->getMessage());
                 $this->error("\nFailed to send email to {$registrant->email}: {$e->getMessage()}");
             }
-            
+
             $bar->advance();
         }
 
