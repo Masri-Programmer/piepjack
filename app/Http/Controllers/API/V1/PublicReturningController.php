@@ -34,9 +34,6 @@ class PublicReturningController extends Controller
     /**
      * Store a new return request.
      */
-    /**
-     * Store a new return request.
-     */
     public function store(Request $request): JsonResponse
     {
         $validated = $this->validateRequest($request);
