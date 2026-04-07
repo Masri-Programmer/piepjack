@@ -111,6 +111,8 @@ export default {
         apply: "Anwenden",
         promoApplied: "Promo -Code erfolgreich angewendet!",
         invalidPromo: "Ungültiger Promo -Code",
+        orderDiscount: "5% Rabatt (Bestellungen > 100€)",
+        selectShipping: "Versand auswählen",
     },
     faq: {
         help: "BRAUCHST DU HILFE?",

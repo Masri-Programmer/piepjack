@@ -149,7 +149,7 @@ class CheckoutController extends Controller
                 throw new Exception('Selected shipping method is no longer available for this address or order total. Please re-select your shipping method.');
             }
 
-            $cart->lines()->where('type', 'shipping')->delete();
+            // $cart->lines()->where('type', 'shipping')->delete();
             $cart->setShippingOption($shippingOption);
 
             if (!empty($validated['promo_code'])) {
@@ -305,6 +305,7 @@ class CheckoutController extends Controller
             ],
         ];
 
+        $discountTotal = $cart->discountTotal?->value ?? 0;
         // 5% discount for orders > 100 EUR
         $subTotal = $cart->subTotal->value; // cents
         $manualDiscount = 0;
@@ -316,8 +317,6 @@ class CheckoutController extends Controller
         if ($promoCode && strtolower(trim($promoCode)) === 'pickup') {
             $manualDiscount += 1000; // 10 EUR in cents
         }
-
-        $discountTotal = $cart->discountTotal?->value ?? 0;
 
         if ($discountTotal > 0) {
             $coupon = Coupon::create([
@@ -459,8 +458,12 @@ class CheckoutController extends Controller
         try {
             $shippingResult = $this->sendcloud->createParcel($customerData, 1.0, 8);
             if ($shippingResult) {
+
+                // SAFELY convert Laravel's ArrayObject to a standard PHP array
+                $currentMeta = $order->meta ? $order->meta->toArray() : [];
+
                 $order->update([
-                    'meta' => array_merge($order->meta ?? [], [
+                    'meta' => array_merge($currentMeta, [
                         'tracking_number' => $shippingResult['tracking_number'],
                         'label_url' => $shippingResult['label_url'],
                     ]),
@@ -487,8 +490,8 @@ class CheckoutController extends Controller
             return [
                 'name' => $name,
                 'quantity' => $line->quantity,
-                // MUST be unitPrice (camelCase)
-                'price_per_item' => $line->unitPrice?->decimal ?? 0,
+                // Order lines use snake_case in the database!
+                'price_per_item' => $line->unit_price?->decimal ?? 0,
             ];
         });
 
@@ -497,10 +500,10 @@ class CheckoutController extends Controller
             'user' => $order->user,
             'address' => $order->shippingAddress,
             'products' => $products,
-            // MUST be camelCase
-            'subtotal' => $order->subTotal?->decimal ?? 0,
-            'discount' => $order->discountTotal?->decimal ?? 0,
-            'shipping' => $order->shippingTotal?->decimal ?? 0,
+            // Orders use snake_case in the database!
+            'subtotal' => $order->sub_total?->decimal ?? 0,
+            'discount' => $order->discount_total?->decimal ?? 0,
+            'shipping' => $order->shipping_total?->decimal ?? 0,
             'total' => $order->total?->decimal ?? 0,
         ];
 

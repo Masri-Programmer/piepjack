@@ -1,6 +1,6 @@
 @extends('emails.layout')
 
-@section('title', 'Neue Bestellung: #' . $order->order_number)
+@section('title', 'Neue Bestellung: #' . $order->reference)
 
 @section('preheader')
     Eine neue Bestellung von {{ $user->first_name }} {{ $user->last_name }} ist eingegangen.
@@ -13,7 +13,7 @@
                 <tr>
                     <td colspan="2"
                         style="padding-bottom: 15px; border-bottom: 1px solid #eeeeee; font-size: 16px; font-weight: bold; color: #111111;">
-                        Bestellübersicht (Admin) <span class="accent-color" style="float: right;">#{{ $order->order_number }}</span>
+                        Bestellübersicht (Admin) <span class="accent-color" style="float: right;">#{{ $order->reference }}</span>
                     </td>
                 </tr>
                 <tr>
@@ -31,7 +31,7 @@
                         <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">{{ $order->created_at->format('d.m.Y H:i') }}</p>
 
                         <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">Gesamtbetrag:</p>
-                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #111111; font-weight: bold;">€{{ number_format($total, 2, ',', '.') }}</p>
+                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #111111; font-weight: bold;">€{{ number_format($total ?? 0, 2, ',', '.') }}</p>
                     </td>
                 </tr>
             </table>
@@ -73,6 +73,16 @@
                         {{ $address->country->name }}
                     </td>
                 </tr>
+
+                {{-- NEW: Added tracking info for the admin to see as well --}}
+                @if(!empty($order->meta['tracking_number']))
+                <tr>
+                    <td style="padding-top: 20px; font-size: 13px; line-height: 1.6; color: #666666; border-top: 1px solid #f3f4f6; margin-top: 20px;">
+                        <strong>Sendungsnummer (Sendcloud):</strong> <span style="font-family: monospace; background-color: #f3f4f6; padding: 2px 5px;">{{ $order->meta['tracking_number'] }}</span>
+                    </td>
+                </tr>
+                @endif
+
                 <tr>
                     <td style="padding-top: 25px;" align="center">
                         <a href="{{ config('app.url') }}/lunar/orders/{{ $order->id }}"

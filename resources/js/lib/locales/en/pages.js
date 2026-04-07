@@ -97,7 +97,9 @@ export default {
     enterPromoCode: "Enter promo code",
     apply: "Apply",
     promoApplied: "Promo code applied successfully!",
-    invalidPromo: "Invalid promo code"
+    invalidPromo: "Invalid promo code",
+    orderDiscount: "5% Discount (Orders > 100€)",
+    selectShipping: "Select Shipping",
   },
   faq: {
     help: "NEED HELP?",

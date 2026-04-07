@@ -38,6 +38,7 @@ class OrderConfirmation extends Mailable
                 'subtotal' => $this->orderData['subtotal'] ?? 0,
                 'discount' => $this->orderData['discount'] ?? 0,
                 'shipping' => $this->orderData['shipping'] ?? 0,
+                'total' => $this->orderData['total'] ?? 0,
             ],
         );
     }

@@ -19,7 +19,14 @@
             </header>
 
             <div
-                v-if="['paid', 'payment-received', 'shipped', 'delivered'].includes(orderStatus)"
+                v-if="
+                    [
+                        'paid',
+                        'payment-received',
+                        'shipped',
+                        'delivered',
+                    ].includes(orderStatus)
+                "
                 class="space-y-12 animate-in fade-in duration-700"
             >
                 <div
@@ -136,12 +143,12 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 pt-8">
-                    <Button
+                    <!-- <Button
                         as-child
                         class="view-all flex-1 h-16 text-sm font-bold uppercase tracking-widest"
                     >
                         <router-link to="/shop">Continue Shopping</router-link>
-                    </Button>
+                    </Button> -->
                     <Button
                         as-child
                         variant="outline"
@@ -155,7 +162,7 @@
             </div>
 
             <div
-                v-else-if="orderStatus === 'pending'"
+                v-else-if="orderStatus === 'pending' && !isTimeout"
                 class="text-center py-32 border-4 border-border animate-pulse"
             >
                 <div class="relative w-24 h-24 mx-auto mb-8 text-main">

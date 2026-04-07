@@ -12,21 +12,23 @@ class PublicOrderListResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user_name' => $this->user ? $this->user->first_name.' '.$this->user->last_name : null,
-            // Lunar stores totals in cents and casts them to a Price object.
-            // ->decimal gives you the clean float (e.g., 74.95)
+            'user_name' => $this->user ? $this->user->first_name . ' ' . $this->user->last_name : null,
             'total_price' => $this->total->decimal,
-            // Lunar uses 'reference' for the public order number
-            'order_number' => $this->reference,
+            'order_number' => $this->reference, // Lunar uses 'reference' as the human-readable ID
             'order_notes' => $this->notes,
             'status' => $this->status,
 
-            // Map over Lunar's OrderLines
+            // Ensure we are mapping over 'lines' (Lunar's relationship name for order items)
             'products' => $this->lines->map(function ($line) {
-                // The 'purchasable' is the ProductVariant that was bought
+                // 'purchasable' is usually the ProductVariant in Lunar
                 $variant = $line->purchasable;
-                $product = $variant->product;
+                $product = $variant ? $variant->product : null;
 
+                if (!$product) {
+                    return null;
+                }
+
+                // Get media from the product level
                 $media = $product->getFirstMedia('primary') ?: $product->getFirstMedia('images');
                 $collection = $product->collections->first();
 
@@ -41,26 +43,25 @@ class PublicOrderListResource extends JsonResource
                     'category_id' => $collection ? $collection->id : null,
                     'category_name' => $collection ? $collection->translateAttribute('name') : null,
 
-                    // Maintain your frontend's 'item' structure for the variant
+                    // Data structure expected by your Vue 'ProductSmallCard' component
                     'item' => [
                         'id' => $variant->id,
                         'quantity' => $line->quantity,
                         'image_url' => $media ? $media->getUrl() : null,
                         // Get the price they actually paid for this line item
                         'price' => $line->unit_price->decimal,
-
                         'options' => $variant->values->map(function ($value) {
                             return [
                                 'variation_id' => $value->option->id,
-                                'value' => $value->translate('name'),
                                 'name' => $value->option->translate('name'),
-                                'variation_option_id' => $value->id,
+                                'value' => $value->translate('name'),
                             ];
                         }),
                         'cartQuantity' => $line->quantity,
                     ],
                 ];
-            }),
+            })->filter()->values(), // Filter out any null products and reset array keys
+
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }

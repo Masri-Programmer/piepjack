@@ -5,6 +5,7 @@ const { setupInspiraUI } = require("@inspira-ui/plugins");
 /** @type {import('tailwindcss').Config} */
 export default {
     content: ["./resources/js/**/*.{vue,js}"],
+    darkMode: "class",
 
     theme: {
         container: {

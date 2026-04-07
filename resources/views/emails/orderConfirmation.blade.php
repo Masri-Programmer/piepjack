@@ -3,7 +3,7 @@
 @section('title', 'Danke für deine Bestellung')
 
 @section('preheader')
-    Hallo {{ $user->first_name ?? '' }}, wir haben deine Bestellung #{{ $order->order_number }} erhalten.
+    Hallo {{ $user->first_name ?? '' }}, wir haben deine Bestellung #{{ $order->reference }} erhalten.
 @endsection
 
 @section('content')
@@ -14,14 +14,14 @@
                 <tr>
                     <td colspan="2"
                         style="padding-bottom: 15px; border-bottom: 1px solid #eeeeee; font-size: 16px; font-weight: bold; color: #111111;">
-                        Bestelldetails <span class="accent-color" style="float: right;">#{{ $order->order_number }}</span>
+                        Bestelldetails <span class="accent-color" style="float: right;">#{{ $order->reference }}</span>
                     </td>
                 </tr>
                 <tr>
                     {{-- Left Column --}}
                     <td valign="top" width="50%" style="padding-top: 15px; padding-right: 10px;">
                         <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">Bestellung:</p>
-                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">#{{ $order->order_number }}</p>
+                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">#{{ $order->reference }}</p>
 
                         <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">Kunde:</p>
                         <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">{{ $user->first_name }}
@@ -126,19 +126,20 @@
                 </tr>
                 <tr>
                     <td style="padding-top: 25px;" align="center">
-                        <a href="{{ config('app.url') }}/track-order/{{ $order->order_number }}"
+                        <a href="{{ config('app.url') }}/track-order/{{ $order->reference }}"
                             style="display: inline-block; background-color: #171717; color: #ffffff; padding: 12px 30px; text-decoration: none; font-size: 14px; font-weight: bold; border-radius: 0; text-transform: uppercase; letter-spacing: 1px;">
                             Bestellstatus verfolgen
                         </a>
                     </td>
                 </tr>
-                @if($order->tracking_number)
+                
+                @if(!empty($order->meta['tracking_number']))
                 <tr>
                     <td style="padding-top: 20px; font-size: 13px; line-height: 1.6; color: #666666; border-top: 1px solid #f3f4f6; margin-top: 20px;">
                         <strong>Sendungsnummer (DHL):</strong><br>
-                        <span style="font-family: monospace; background-color: #f3f4f6; padding: 2px 5px;">{{ $order->tracking_number }}</span>
-                        @if($order->label_url)
-                            <br><a href="{{ $order->label_url }}" style="color: #4f46e5; text-decoration: underline; font-weight: bold;">Tracking Link öffnen &rarr;</a>
+                        <span style="font-family: monospace; background-color: #f3f4f6; padding: 2px 5px;">{{ $order->meta['tracking_number'] }}</span>
+                        @if(!empty($order->meta['label_url']))
+                            <br><a href="{{ $order->meta['label_url'] }}" style="color: #4f46e5; text-decoration: underline; font-weight: bold;">Tracking Link öffnen &rarr;</a>
                         @endif
                     </td>
                 </tr>

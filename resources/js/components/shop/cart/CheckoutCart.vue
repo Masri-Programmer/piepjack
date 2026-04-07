@@ -29,7 +29,7 @@
             <!-- Selected Shipping Method Display -->
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium">Versand</p>
+                    <p class="text-sm font-medium">{{ $t("pages.checkout.shipping") }}</p>
                     <p
                         class="text-[10px] text-muted-foreground uppercase tracking-wider"
                     >
@@ -39,8 +39,8 @@
                 <p class="text-sm font-bold">
                     {{
                         selectedShippingMethod.price === 0
-                            ? "Kostenlos"
-                            : selectedShippingMethod.price.toFixed(2) + " €"
+                            ? $t("pages.checkout.free")
+                            : selectedShippingMethod.price.toFixed(2) + " " + $currency
                     }}
                 </p>
             </div>
@@ -50,7 +50,7 @@
                 v-if="cartTotalPrice > 100"
                 class="flex justify-between items-center text-green-600"
             >
-                <p class="text-sm font-medium">5% Discount (Orders > 100€)</p>
+                <p class="text-sm font-medium">{{ $t("pages.checkout.orderDiscount") }}</p>
                 <p class="text-sm font-bold">
                     -{{ (cartTotalPrice * 0.05).toFixed(2) }} {{ $currency }}
                 </p>
@@ -128,6 +128,7 @@
 import ProductSmallCard from "../product/ProductSmallCard.vue";
 import { reactive, computed, ref, onBeforeMount } from "vue";
 import { loadStripe } from "@stripe/stripe-js";
+import { useI18n } from "vue-i18n";
 import {
     cartState,
     cartTotalPrice,
@@ -136,6 +137,8 @@ import {
 } from "@lib/store/shop/index.js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
+const { t } = useI18n();
 
 const promoCode = ref("");
 const promoDiscount = ref(0);
@@ -147,7 +150,7 @@ const selectedShippingMethod = computed(() => {
     return (
         checkoutform.value.shippingMethod || {
             price: 0,
-            name: "Select Shipping",
+            name: t("pages.checkout.selectShipping"),
         }
     );
 });
