@@ -62,15 +62,7 @@ export const createApiResource = (resource) => ({
 export const apiQuery = (resource) => {
     const api = createApiResource(resource);
     const queryClient = useQueryClient();
-    const { handleError: handleAdminError, handleSuccess: handleAdminSuccess } =
-        useApiNotifications();
-    const { handleError: handleShopError, handleSuccess: handleShopSuccess } =
-        useApiShopNotifications();
-
-    const area = localStorage.getItem("area");
-    const handleError = area === "admin" ? handleAdminError : handleShopError;
-    const handleSuccess =
-        area === "admin" ? handleAdminSuccess : handleShopSuccess;
+    const { handleError, handleSuccess } = useApiShopNotifications();
 
     return {
         useGet: (params) =>

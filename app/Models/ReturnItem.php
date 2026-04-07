@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Models\Archive;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Returning;
 use Lunar\Models\Product;
 
 class ReturnItem extends Model
@@ -19,5 +18,4 @@ class ReturnItem extends Model
     {
         return $this->belongsTo(Product::class, 'product_item_id');
     }
-
 }

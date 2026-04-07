@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Models\Archive;
+namespace App\Models;
 
 use App\Traits\HasFilters;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 use Lunar\Models\Order;
 
 class Returning extends Model
@@ -19,7 +18,7 @@ class Returning extends Model
         static::creating(function ($return) {
             $lastReturn = self::orderByDesc('id')->first();
             $nextNumber = $lastReturn ? $lastReturn->id + 1 : 1;
-            $return->return_number = 'RET-' . date('Ym') . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+            $return->return_number = 'RET-'.date('Ym').'-'.str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
         });
     }
 
