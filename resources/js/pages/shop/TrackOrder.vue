@@ -13,7 +13,8 @@
                         >
                             <span
                                 :class="activeStep === 1 ? 'text-primary' : ''"
-                                >01 {{ $t("pages.tracking.verification") }}</span
+                                >01
+                                {{ $t("pages.tracking.verification") }}</span
                             >
                             <ChevronRight class="w-3 h-3" />
                             <span
@@ -22,7 +23,7 @@
                             >
                         </div>
                         <h1
-                            class="text-5xl md:text-7xl font-bold uppercase tracking-tighter italic leading-none text-foreground"
+                            class="text-5xl md:text-7xl font-black uppercase tracking-tighter italic leading-none text-foreground"
                         >
                             {{
                                 activeStep === 1
@@ -53,7 +54,7 @@
                         class="uppercase font-black tracking-widest text-xs"
                         >{{ $t("pages.tracking.error") }}</AlertTitle
                     >
-                    <AlertDescription class="font-bold uppercase text-[10px]">
+                    <AlertDescription class="font-black uppercase text-[10px]">
                         {{ errorMessage }}
                     </AlertDescription>
                 </Alert>
@@ -81,7 +82,7 @@
                                 v-model="form.email"
                                 type="email"
                                 required
-                                class="rounded-none border-2 border-border bg-accent_light h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
+                                class="rounded-none border-2 border-border bg-accent_light h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-black text-xs"
                             />
                         </div>
 
@@ -95,7 +96,7 @@
                                 v-model="form.orderNr"
                                 type="text"
                                 required
-                                class="rounded-none border-2 border-border bg-accent_light h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
+                                class="rounded-none border-2 border-border bg-accent_light h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-black text-xs"
                             />
                         </div>
 
@@ -124,7 +125,7 @@
                             >
                                 <div>
                                     <p
-                                        class="text-[10px] font-bold uppercase tracking-widest opacity-60"
+                                        class="text-[10px] font-black uppercase tracking-widest opacity-60"
                                     >
                                         {{ $t("pages.tracking.status") }}
                                     </p>
@@ -145,21 +146,21 @@
                                 >
                                     <div>
                                         <p
-                                            class="text-[10px] font-bold uppercase tracking-widest opacity-60"
+                                            class="text-[10px] font-black uppercase tracking-widest opacity-60"
                                         >
                                             {{ $t("pages.tracking.reference") }}
                                         </p>
-                                        <p class="font-mono font-bold">
+                                        <p class="font-black">
                                             {{ order.data.order_number }}
                                         </p>
                                     </div>
                                     <div class="text-right">
                                         <p
-                                            class="text-[10px] font-bold uppercase tracking-widest opacity-60"
+                                            class="text-[10px] font-black uppercase tracking-widest opacity-60"
                                         >
                                             {{ $t("pages.tracking.date") }}
                                         </p>
-                                        <p class="font-bold">
+                                        <p class="font-black">
                                             {{
                                                 formatDateLocal(
                                                     order.data.created_at,
@@ -202,18 +203,20 @@
                                     <Badge
                                         variant="outline"
                                         class="rounded-none border-primary text-primary font-black uppercase text-[9px]"
-                                        >{{ $t("pages.tracking.liveTracking") }}</Badge
+                                        >{{
+                                            $t("pages.tracking.liveTracking")
+                                        }}</Badge
                                     >
                                     <Truck class="w-5 h-5" />
                                 </div>
-                                <p class="font-mono text-xl font-bold">
+                                <p class="text-xl font-black">
                                     {{ order.data.tracking.number }}
                                 </p>
-                                <p
-                                    class="text-[10px] uppercase font-bold text-muted-foreground"
+                                <!-- <p
+                                    class="text-[10px] uppercase font-black text-muted-foreground"
                                 >
                                     {{ order.data.tracking.carrier }}
-                                </p>
+                                </p> -->
                             </CardHeader>
                             <CardFooter class="p-6 pt-0">
                                 <Button
@@ -233,11 +236,13 @@
                             <CardHeader class="p-6">
                                 <CardTitle
                                     class="text-xs font-black uppercase tracking-widest"
-                                    >{{ $t("pages.tracking.deliveryAddress") }}</CardTitle
+                                    >{{
+                                        $t("pages.tracking.deliveryAddress")
+                                    }}</CardTitle
                                 >
                             </CardHeader>
                             <CardContent
-                                class="p-6 pt-0 text-sm font-bold uppercase leading-tight italic"
+                                class="p-6 pt-0 text-sm font-black uppercase leading-tight italic"
                             >
                                 <div v-if="order.data.shipping_address">
                                     {{ order.data.shipping_address.first_name }}
@@ -268,20 +273,20 @@
                             <CardHeader class="p-6">
                                 <CardTitle
                                     class="text-xs font-black uppercase tracking-widest border-b border-border pb-3"
-                                    >{{ $t("pages.tracking.summary") }}</CardTitle
+                                    >{{
+                                        $t("pages.tracking.summary")
+                                    }}</CardTitle
                                 >
                             </CardHeader>
                             <CardContent
-                                class="p-6 pt-0 space-y-3 uppercase font-bold text-xs"
+                                class="p-6 pt-0 space-y-3 uppercase font-black text-xs"
                             >
                                 <div class="flex justify-between">
-                                    <span class="text-muted-foreground"
-                                        >{{ $t("pages.tracking.subtotal") }}</span
-                                    >
+                                    <span class="text-muted-foreground">{{
+                                        $t("pages.tracking.subtotal")
+                                    }}</span>
                                     <span
-                                        >{{
-                                            order.data.totals.sub_total
-                                        }}
+                                        >{{ order.data.totals.sub_total }}
                                         {{ $currency }}</span
                                     >
                                 </div>
@@ -289,14 +294,12 @@
                                     v-if="order.data.totals.shipping_total > 0"
                                     class="flex justify-between"
                                 >
-                                    <span class="text-muted-foreground"
-                                        >{{ $t("pages.tracking.shipping") }}</span
-                                    >
+                                    <span class="text-muted-foreground">{{
+                                        $t("pages.tracking.shipping")
+                                    }}</span>
                                     <span
                                         >+
-                                        {{
-                                            order.data.totals.shipping_total
-                                        }}
+                                        {{ order.data.totals.shipping_total }}
                                         {{ $currency }}</span
                                     >
                                 </div>
@@ -304,11 +307,11 @@
                                 <div
                                     class="flex justify-between text-lg font-black pt-2"
                                 >
-                                    <span>{{ $t("pages.tracking.total") }}</span>
+                                    <span>{{
+                                        $t("pages.tracking.total")
+                                    }}</span>
                                     <span
-                                        >{{
-                                            order.data.totals.total_price
-                                        }}
+                                        >{{ order.data.totals.total_price }}
                                         {{ $currency }}</span
                                     >
                                 </div>
@@ -390,17 +393,29 @@ const formatDateLocal = (dateString) => {
 const fetchOrder = async () => {
     errorMessage.value = "";
     try {
-        const { data } = await refetchOrder();
-        if (!data?.data) throw new Error(t("common.alerts.orderNotFound"));
+        const { data, isError, error } = await refetchOrder();
+
+        if (isError) {
+            errorMessage.value = error?.message || t("common.alerts.fetchError");
+            toast.error(errorMessage.value);
+            return;
+        }
+
+        if (!data?.data) {
+            throw new Error(t("common.alerts.orderNotFound"));
+        }
+
         activeStep.value = 2;
     } catch (error) {
         errorMessage.value = error.message;
+        toast.error(errorMessage.value);
     }
 };
 
 const handleSubmit = async () => {
     if (!form.value.email || !form.value.orderNr) {
         errorMessage.value = t("common.alerts.fillAllFields");
+        toast.error(errorMessage.value);
         return;
     }
     await fetchOrder();

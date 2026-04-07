@@ -299,25 +299,37 @@ const form = useSessionStorage("active-return-form", {
 });
 
 const orderQueryKey = computed(() => form.value.orderNr);
+const orderQueryParams = computed(() => ({ email: form.value.email }));
 const {
     data: order,
     isLoading: isLoadingOrder,
     refetch: refetchOrder,
-} = apiQuery("orders").useGetById(orderQueryKey);
+} = apiQuery("orders").useGetById(orderQueryKey, orderQueryParams);
 
 const fetchOrder = async () => {
     try {
-        const { data } = await refetchOrder();
-        if (!data?.data?.products)
+        const { data, isError, error } = await refetchOrder();
+
+        if (isError) {
+            toast.error(error?.message || t("common.alerts.fetchError"));
+            return;
+        }
+
+        if (!data?.data?.products) {
             throw new Error(t("common.alerts.orderNotFound"));
+        }
+
         activeStep.value = 2;
     } catch (error) {
-        alert(error.message || t("common.alerts.fetchError"));
+        toast.error(error.message || t("common.alerts.fetchError"));
     }
 };
 
 const submitForm = async () => {
-    if (!form.value.email || !form.value.orderNr) return;
+    if (!form.value.email || !form.value.orderNr) {
+        toast.error(t("common.alerts.fillAllFields"));
+        return;
+    }
     await fetchOrder();
 };
 
@@ -366,8 +378,9 @@ const { mutate: returnOrder, isLoading } = apiQuery("returns").useStore();
 
 const submitReturn = () => {
     if (!order.value?.data) return;
+
     const payload = {
-        total: total.value,
+        total: total.value, // This is now the deduction amount
         order_number: form.value.orderNr,
         order_id: order.value.data.id,
         email: form.value.email,
@@ -378,7 +391,11 @@ const submitReturn = () => {
 
     returnOrder(payload, {
         onSuccess: (data) => {
-            if (data?.checkout_url) window.location.href = data.checkout_url;
+            // Because there is no checkout_url anymore, we just redirect directly to success
+            window.location.href = `/return-order/success?return_number=${data.data.return_number}`;
+        },
+        onError: (error) => {
+            toast.error(error.message || t("common.alerts.submissionFailed"));
         },
     });
 };

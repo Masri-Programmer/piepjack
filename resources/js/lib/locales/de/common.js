@@ -151,6 +151,7 @@ export default {
     },
     alerts: {
         orderNotFound: "Nicht gefunden.",
+        fetchError: "Beim Abrufen Ihrer Bestellung ist ein Fehler aufgetreten.",
         fillAllFields: "Bitte füllen Sie alle Felder aus.",
         selectAtLeastOneProduct: "Bitte wählen Sie mindestens ein Produkt.",
         provideReason: "Bitte geben Sie einen Grund für Ihre Rückkehr an.",

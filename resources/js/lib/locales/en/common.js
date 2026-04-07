@@ -147,6 +147,7 @@ export default {
     },
     alerts: {
         orderNotFound: "Order not found.",
+        fetchError: "There was an error fetching your order.",
         fillAllFields: "Please fill out all fields.",
         selectAtLeastOneProduct: "Please select at least one product.",
         provideReason: "Please provide a reason for your return.",
