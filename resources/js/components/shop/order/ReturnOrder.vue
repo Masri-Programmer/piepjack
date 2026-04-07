@@ -16,7 +16,7 @@
                 <p
                     class="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground"
                 >
-                    Step {{ activeStep }} / 3
+                    {{ $t("common.return.step", { current: activeStep, total: 3 }) }}
                 </p>
             </div>
             <h1
@@ -34,7 +34,7 @@
                 <div class="space-y-2">
                     <label
                         class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                        >Email Address</label
+                        >{{ $t("common.forms.emailLabel") }}</label
                     >
                     <input
                         v-model="form.email"
@@ -47,7 +47,7 @@
                 <div class="space-y-2">
                     <label
                         class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                        >Order Number</label
+                        >{{ $t("validation.form.orderNumber") }}</label
                     >
                     <input
                         v-model="form.orderNr"
@@ -90,7 +90,7 @@
                         v-if="isSelected(product.item)"
                         class="absolute top-2 right-2 z-10 bg-main text-accent px-2 py-1 text-[10px] font-bold uppercase"
                     >
-                        Selected
+                        {{ $t("common.return.selected") }}
                     </div>
                     <ProductSmallCard
                         :product="product"
@@ -162,7 +162,7 @@
                     <h3
                         class="text-sm font-bold uppercase tracking-widest text-muted-foreground"
                     >
-                        Insurance Protection
+                        {{ $t("common.return.insurance") }}
                     </h3>
                     <div class="grid gap-4">
                         <label
@@ -252,7 +252,7 @@
                     variant="outline"
                     class="flex-1 h-16 border-2 border-main uppercase font-bold rounded-none"
                 >
-                    Back to items
+                    {{ $t("common.return.back_items") }}
                 </Button>
                 <Button
                     :disabled="!termsAccepted || isLoading"
@@ -354,11 +354,11 @@ const goBack = () => (activeStep.value = Math.max(activeStep.value - 1, 1));
 
 const goToNextStep = () => {
     if (selectedReturnedProducts.value.length === 0) {
-        alert(t("common.alerts.selectAtLeastOneProduct"));
+        toast.error(t("common.alerts.selectAtLeastOneProduct"));
         return;
     }
     if (!form.value.reason.trim()) {
-        alert(t("common.alerts.provideReason"));
+        toast.error(t("common.alerts.provideReason"));
         return;
     }
     activeStep.value = 3;

@@ -143,7 +143,10 @@ export default {
         total_amount: "Total Amount: {total} €",
         terms: "I accept the terms and conditions.*",
         back_products: "Back to products",
+        back_items: "Back to items",
         next_step: "Proceed to the next step",
+        selected: "Selected",
+        step: "Step {current} / {total}",
     },
     alerts: {
         orderNotFound: "Order not found.",

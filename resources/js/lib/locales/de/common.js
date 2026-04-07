@@ -147,7 +147,10 @@ export default {
         total_amount: "Gesamtbetrag: {total} €",
         terms: "Ich akzeptiere die Nutzungsbedingungen.*",
         back_products: "Zurück zu den Produkten",
+        back_items: "Zurück zu den Produkten",
         next_step: "Zum nächsten Schritt",
+        selected: "Ausgewählt",
+        step: "Schritt {current} / {total}",
     },
     alerts: {
         orderNotFound: "Nicht gefunden.",
