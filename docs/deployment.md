@@ -4,9 +4,9 @@ Piepjackclothing uses a automated shipping script for deployments to the product
 
 ## Production Environment
 
-- **Host:** `gienah.uberspace.de`
-- **User:** `masri`
-- **Path:** `/var/www/virtual/masri/piepjack`
+- **Host:** `barnard.uberspace.de`
+- **User:** `piepjack`
+- **Path:** `/var/www/virtual/piepjack/testing-piepjack`
 - **Process Manager:** PM2 (for SSR)
 
 ## Shipping Process
@@ -14,18 +14,23 @@ Piepjackclothing uses a automated shipping script for deployments to the product
 The `ship.sh` script in the root directory handles the entire deployment workflow, including asset building and remote synchronization.
 
 ### 1. Check Status
+
 Before shipping, you can check the remote server status:
+
 ```bash
 bash ship.sh status
 ```
 
 ### 2. Deploy Updates
+
 To deploy the latest changes:
+
 ```bash
 bash ship.sh
 ```
 
 **What the script does:**
+
 1.  **Version Bump:** Prompts for an NPM version bump (patch/minor/major).
 2.  **Commit:** Automatically commits all changes with the new version number.
 3.  **Translations:** Syncs local translations.
@@ -40,16 +45,20 @@ bash ship.sh
 ## Safety & Rollback
 
 The `ship.sh` script includes a safety trap. If any step fails during the upload or synchronization, it will automatically:
+
 - Attempt to restore the previous `public/build` from the backup.
 - Disable maintenance mode (`php artisan up`) to ensure the site remains live.
 
 ## Manual Maintenance
 
 If you need to manually put the site in maintenance mode on production:
+
 ```bash
-ssh masri@gienah.uberspace.de "cd /var/www/virtual/masri/piepjack && php artisan down"
+ssh piepjack@barnard.uberspace.de "cd /var/www/virtual/piepjack/testing-piepjack && php artisan down"
 ```
+
 And to bring it back up:
+
 ```bash
-ssh masri@gienah.uberspace.de "cd /var/www/virtual/masri/piepjack && php artisan up"
+ssh piepjack@barnard.uberspace.de "cd /var/www/virtual/piepjack/testing-piepjack && php artisan up"
 ```

@@ -3,9 +3,9 @@
 set -e
 
 # --- CONFIGURATION ---
-REMOTE_USER="masri"
+REMOTE_USER="piepjack"
 REMOTE_HOST="gienah.uberspace.de"
-REMOTE_APP_PATH="/var/www/virtual/masri/piepjack"
+REMOTE_APP_PATH="/var/www/virtual/piepjack/testing-piepjack"
 REMOTE_DEPLOY_SCRIPT="${REMOTE_APP_PATH}/deploy.sh"
 SSR_PROCESS="piepjack-ssr"
 
@@ -25,7 +25,7 @@ if [ "$1" == "status" ]; then
         echo '📊 PM2 Process Status:'
         # Uberspace specific: Use standard path or localized bin
         pm2 list
-        
+
         echo ''
         echo '🛠️  Laravel Maintenance Mode:'
         if [ -f ${REMOTE_APP_PATH}/storage/framework/down ]; then
@@ -33,7 +33,7 @@ if [ "$1" == "status" ]; then
         else
             echo '✅ Application is LIVE'
         fi
-        
+
         echo ''
         echo '💾 Disk Usage (Build Folder):'
         du -sh ${REMOTE_APP_PATH}/public/build 2>/dev/null || echo '⚠️ Build folder missing'
@@ -66,7 +66,7 @@ if [ -z "$BUMP" ]; then BUMP="patch"; fi
 if [ "$BUMP" != "none" ]; then
     echo "🔖 Bumping version ($BUMP)..."
     npm version $BUMP --no-git-tag-version
-    
+
     echo "📸 Committing ALL changes (Code + Version)..."
     git add .
     git commit -m "chore: shipment release $(node -p "require('./package.json').version")"
@@ -82,7 +82,7 @@ npm run build
 echo "🛡️  Backing up remote assets..."
 ssh "${REMOTE_USER}@${REMOTE_HOST}" "
     # Turn off silent exit so we can see errors, handle them manually
-    set +e 
+    set +e
 
     echo '📂 CD into: ${REMOTE_APP_PATH}'
     cd ${REMOTE_APP_PATH} || { echo '❌ ERROR: Could not find directory!'; exit 1; }
@@ -97,7 +97,7 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" "
     else
         echo '⚠️ public/build folder missing - nothing to backup (This is normal for first run).'
     fi
-    
+
     echo '🔄 Resetting Git...'
     # We add || echo to see if it fails without stopping script
     git reset --hard HEAD || echo '❌ Git Reset Failed'
@@ -105,7 +105,7 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" "
 
     echo '🛑 Activating Maintenance Mode...'
     php artisan down --render='errors::503' || echo '❌ Artisan command failed'
-    
+
     echo '✅ Step 3 Complete'
 "
 

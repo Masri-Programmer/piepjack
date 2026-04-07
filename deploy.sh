@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-cd /var/www/virtual/masri/piepjack
+cd /var/www/virtual/piepjack/testing-piepjack
 
 echo "🚀 Starting Deployment Logic..."
 
