@@ -1,85 +1,196 @@
 export default {
-  about: {
-    title: "About us",
-    description: "At Piepjack we believe in the power of progress. Every step, every challenge, every moment is an opportunity to grow. Dreams not only - do it. We are here to help you get new heights. Stay on.",
-    linktext: "Connect the movement on beepjack-clothing.de"
-  },
-  privacy: {
-    title: "Privacy Policy",
-    lastUpdated: "Last updated: {date}",
-    intro: "We at {company} take the protection of your personal data very seriously. In this privacy policy, we inform you about how we collect, process, and protect your personal data when you visit our website, purchase products, or otherwise contact us.",
-    responsible: {
-      title: "Responsible Entity",
-      description: "The entity responsible for processing your personal data is: {company}, {phone}, {email}"
-    },
-    dataCollection: {
-      title: "Collection and Processing of Personal Data",
-      description: "We collect and process personal data only in accordance with legal regulations, especially the GDPR. The data is used for the following purposes:",
-      items: [
-        {
-          title: "When visiting our website",
-          description: "Collected data: IP address, browser type, operating system, access time, and visited pages. Purpose: Ensure website functionality, analyze, and improve our online services."
+    about: {
+        title: "ABOUT US",
+        description:
+            "Piepjack Clothing - Our vision, our story, and our journey to help you reach new heights.",
+        vision_story_label: "The Vision // The Story",
+        vision_title: "About Us",
+        quote: {
+            title: "At Piepjack, we believe in the power of progress.",
+            p1: "Every step, every challenge, every moment is an opportunity to grow.",
+            p2: "Don't just dream - make it happen.",
+            p3: "We're here to help you reach new heights.",
+            footer: "Keep pushing. The journey starts now.",
         },
-        {
-          title: "When shopping in our online store",
-          description: "Collected data: Name, address, email, phone number, payment details. Purpose: Process your order, ship products, and provide customer service."
+        story: {
+            p1: "Over 10 years ago, I brought Piepjack to life – not as a business, but as a vision. While others followed their paths, I drew my logo on a piece of paper – again and again.",
+            p2: "It was more than just a sketch. It was a promise to myself:",
+            promise: '"I want to be someone who is remembered."',
+            p3: "Time passed, and I couldn't finish what I started back then – but I will now. Because Piepjack is not just a brand. It's a statement:",
+            values: [
+                "Never give up.",
+                "Maintain a positive mindset.",
+                "CHASE YOUR PASSION.",
+            ],
+            p4: "Piepjack stands for all the dreamers, the doers, the fighters out there. For people who believe in themselves – even when the path is hard. For those who want to leave something behind.",
+            welcome: "Welcome to Piepjack. Let's write history together.",
         },
-        {
-          title: "When contacting us",
-          description: "Collected data: Name, email, phone number, message content. Purpose: Respond to your inquiry and communicate with you."
-        }
-      ]
+        linkText: "JOIN THE MOVEMENT",
     },
-    dataSharing: {
-      title: "Sharing Data with Third Parties",
-      description: "Your personal data will only be shared if required for contract fulfillment or if you have given explicit consent. For example:",
-      services: [
-        "Shipping providers (e.g., DHL, Hermes)",
-        "Payment providers (e.g., PayPal, credit card companies)",
-        "IT service providers (for website operation and maintenance)"
-      ]
-    },
-    retention: {
-      title: "Data Retention",
-      description: "We store your personal data only as long as necessary for the stated purposes or as required by legal retention periods. After expiration, the data will be deleted."
-    },
-    rights: {
-      title: "Your Rights",
-      list: [
-        "Right to access: Request information about stored data.",
-        "Right to rectification: Correct inaccurate or incomplete data.",
-        "Right to erasure: Request deletion of your data, unless legal obligations prevent it.",
-        "Right to data portability: Receive your data in a structured, machine-readable format.",
-        "Right to object: Object to processing based on legitimate interests."
-      ]
-    },
-    cookies: {
-      title: "Cookies and Tracking Tools",
-      description: "Our website uses cookies to improve usability and enable certain features.",
-      types: [
-        {
-          title: "Necessary Cookies",
-          description: "Required for the website’s operation."
+    tos: {
+        title: "Terms of Service",
+        subtitle: "General Terms and Conditions & Customer Information",
+        description:
+            "General terms and conditions and customer information for Piepjack Clothing.",
+        footer: "As of: 29.08.2023 // PIEPJACK LEGAL DEPT.",
+        backToShop: "Back to Shop",
+        sections: {
+            title: "I. General Terms and Conditions",
+            s1: {
+                title: "§ 1 Basic Provisions",
+                p1: "(1) The following terms and conditions apply to contracts that you conclude with us as the provider (Marvin Pieprzyk) via this website.",
+                p2: "(2) A consumer is any natural person who enters into a legal transaction for purposes that can predominantly be attributed neither to their commercial nor their independent professional activity.",
+            },
+            s2: {
+                title: "§ 2 Conclusion of the Contract",
+                p1: "(1) The subject of the contract is the sale of goods. Our offers on the internet are non-binding and do not represent a binding offer to conclude a contract.",
+            },
+            s3: {
+                title: "§ 3 Exchange and Return",
+                p1: "(1) An exchange is a voluntary service. There is no legal claim to it.",
+                p2: "(2) In the event of defective goods, we will bear the return costs and provide a replacement.",
+                p3: "(3) Hygiene Note: Sealed goods are excluded from the right of withdrawal once the seal has been removed.",
+            },
+            s4: {
+                title: "§ 4 Retention of Title",
+                p1: "(1) The goods remain our property until the purchase price has been paid in full.",
+            },
         },
-        {
-          title: "Analytics Cookies",
-          description: "Used to improve our website (e.g., Google Analytics)."
-        }
-      ]
+        info: {
+            title: "II. Customer Information",
+            provider: "Provider",
+            owner: "Owner: Marvin Pieprzyk",
+            support: "Support",
+            dispute: {
+                title: "Alternative Dispute Resolution",
+                p1: "The EU Commission provides a platform for online dispute resolution:",
+            },
+        },
     },
-    security: {
-      title: "Data Security",
-      description: "We implement technical and organizational measures to protect your data from loss, misuse, and unauthorized access, including encrypted transmission (e.g., SSL) and regular security updates."
+    cancellation: {
+        title: "CANCELLATION POLICY",
+        subtitle: "Right of Withdrawal / Cancellation Policy",
+        description:
+            "Cancellation policy and right of withdrawal for Piepjack Clothing.",
+        footer: "PIEPJACK LEGAL DEPT.",
+        backToShop: "Back to Shop",
+        nav: {
+            title: "Content",
+            s1: "1. Right of Withdrawal",
+            s2: "2. Consequences of Withdrawal",
+            s3: "3. Return Costs",
+            s4: "4. Liability for Value Loss",
+        },
+        consumer_info: "Right of withdrawal for consumers",
+        consumer_desc:
+            "A consumer is any natural person who enters into a legal transaction for purposes that can predominantly be attributed neither to their commercial nor their independent professional activity.",
+        rights: {
+            title: "1. Right of Withdrawal",
+            p1: "You have the right to withdraw from this contract within fourteen days without giving any reason. The withdrawal period is fourteen days from the day on which you or a third party named by you, who is not the carrier, have taken possession of the goods.",
+            p2: "To exercise your right of withdrawal, you must inform us of your decision to withdraw from this contract by means of a clear statement (e.g., a letter sent by post or an email).",
+            p3: "To meet the withdrawal deadline, it is sufficient for you to send the communication concerning your exercise of the right of withdrawal before the withdrawal period has expired.",
+        },
+        consequences: {
+            title: "2. Consequences of Withdrawal",
+            p1: "If you withdraw from this contract, we shall reimburse to you all payments received from you, including the costs of delivery (with the exception of the supplementary costs resulting from your choice of a type of delivery other than the least expensive type of standard delivery offered by us), without undue delay and in any event not later than fourteen days from the day on which we are informed about your decision to withdraw from this contract.",
+            p2: "We will carry out such reimbursement using the same means of payment as you used for the initial transaction. We may withhold reimbursement until we have received the goods back or you have supplied evidence of having sent back the goods, whichever is the earliest.",
+            p3: "You shall send back the goods or hand them over to us without undue delay and in any event not later than fourteen days from the day on which you communicate your withdrawal from this contract to us. The deadline is met if you send back the goods before the period of fourteen days has expired.",
+        },
+        costs: {
+            title: "3. Return Costs",
+            p1: "The customer bears the direct cost of returning the goods.",
+        },
+        compensation: {
+            title: "4. Liability for Value Loss",
+            p1: "You are only liable for any diminished value of the goods resulting from the handling other than what is necessary to establish the nature, characteristics, and functioning of the goods.",
+        },
     },
-    changes: {
-      title: "Changes to this Privacy Policy",
-      description: "We reserve the right to update this privacy policy as necessary, for example, due to legal changes or new technologies. The latest version is always available on our website."
+    impressum: {
+        title: "LEGAL NOTICE",
+        description: "Legal notice and contact information for Piepjack Clothing.",
+        legal_info: "Information according to § 5 TMG",
+        owner: "Owner: Marvin Pieprzyk",
+        contact: "Contact",
+        responsible: "Responsible (§ 55 RStV)",
+        trademark: {
+            title: "Trademark Notice",
+            p1: "PIEPJACK is a registered trademark (No. 30 2025 105 590) with the German Patent and Trade Mark Office.",
+        },
+        backToHome: "Back to Home",
     },
-    contact: {
-      title: "Contact",
-      description: "If you have questions regarding this privacy policy, you can contact us at {company}, {email}, {phone}."
-    }
-  },
+    privacy: {
+        title: "PRIVACY POLICY",
+        description:
+            "Privacy policy and data protection information for Piepjack Clothing.",
+        footer: "PIEPJACK LEGAL DEPT.",
+        backToShop: "Back to Shop",
+        lastUpdated: "Privacy Policy // As of: {date}",
+        intro: "We at {company} take the protection of your personal data very seriously. This privacy policy informs you about the collection, processing, and protection of your personal data.",
+        nav: {
+            title: "Content",
+            s1: "1. Responsible Entity",
+            s2: "2. Data Processing",
+            s3: "3. Third Parties",
+            s4: "4. Data Retention",
+            s5: "5. Your Rights",
+            s6: "6. Cookies",
+            s7: "7. Data Security",
+        },
+        responsible: {
+            title: "1. Responsible Entity",
+            description: "The entity responsible for processing your personal data is:",
+        },
+        dataCollection: {
+            title: "2. Collection and Processing",
+            visit: {
+                title: "When visiting the website",
+                description: "IP address, browser type, operating system, access time, visited pages.",
+            },
+            purchase: {
+                title: "When shopping",
+                description: "Name, address, email, phone number, payment details.",
+            },
+            contact: {
+                title: "When contacting us",
+                description: "Name, email, phone number, message content.",
+            },
+        },
+        dataSharing: {
+            title: "3. Sharing Data with Third Parties",
+            items: [
+                "Shipping providers (e.g., DHL, Hermes)",
+                "Payment providers (e.g., PayPal)",
+                "IT service providers (website maintenance)",
+            ],
+        },
+        retention: {
+            title: "4. Data Retention",
+            description: "Your data will only be stored as long as necessary or as required by law.",
+        },
+        rights: {
+            title: "5. Your Rights",
+            list: [
+                "Right to access, rectification, and erasure",
+                "Right to data portability",
+                "Right to object to data processing",
+            ],
+        },
+        cookies: {
+            title: "6. Cookies and Tracking",
+            description: "Our website uses cookies to optimize the user experience.",
+            necessary: "Necessary Cookies",
+            analytics: "Analytics Cookies",
+        },
+        security: {
+            title: "7. Data Security",
+            description: "We use technical and organizational measures to protect your data (e.g., SSL encryption).",
+        },
+        changes: {
+            title: "8. Changes",
+            description: "This privacy policy may be updated in the event of legal or technical changes.",
+        },
+    },
+
   tracking: {
     title: "Track Your Order",
     orderDetails: "Order Details",

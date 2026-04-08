@@ -5,9 +5,16 @@
             customClass,
         ]"
     >
+        <!-- Full Width Content (e.g. Hero Banners) -->
+        <div v-if="$slots.fullWidth" class="w-full">
+            <slot name="fullWidth" />
+        </div>
+
         <!-- Standardized Page Wrapper -->
         <div
-            class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20 py-10 md:py-20 lg:py-24"
+            :class="[
+                !noContainer ? 'max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20 py-10 md:py-20 lg:py-24' : '',
+            ]"
         >
             <!-- Optional Page Header Slot (for titles, breadcrumbs etc) -->
             <header v-if="$slots.header" class="mb-12 md:mb-16">
@@ -38,6 +45,10 @@ const props = defineProps({
     customClass: {
         type: String,
         default: "",
+    },
+    noContainer: {
+        type: Boolean,
+        default: false,
     },
 });
 

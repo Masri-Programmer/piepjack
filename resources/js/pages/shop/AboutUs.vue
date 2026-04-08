@@ -1,15 +1,21 @@
 <template>
     <PageLayout
-        title="About Us"
-        description="Piepjack Clothing - Our vision, our story, and our journey to help you reach new heights."
+        :title="$t('pages.about.vision_title')"
+        :description="$t('pages.about.description')"
     >
         <template #header>
-            <div class="border-b-[12px] border-border pb-10 text-center md:text-left">
-                <p class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">
-                    The Vision // The Story
+            <div
+                class="border-b-[12px] border-border pb-10 text-center md:text-left"
+            >
+                <p
+                    class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
+                >
+                    {{ $t("pages.about.vision_story_label") }}
                 </p>
-                <h1 class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground">
-                    ABOUT US
+                <h1
+                    class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground"
+                >
+                    {{ $t("pages.about.title") }}
                 </h1>
             </div>
         </template>
@@ -21,24 +27,20 @@
                 <h2
                     class="text-3xl sm:text-5xl lg:text-6xl font-bold uppercase italic leading-[0.9] tracking-tighter mb-8"
                 >
-                    At
-                    <span class="underline decoration-4 underline-offset-8"
-                        >Piepjack</span
-                    >, we believe in the power of progress.
+                    {{ $t("pages.about.quote.title") }}
                 </h2>
                 <div
                     class="space-y-6 text-lg sm:text-2xl font-bold uppercase tracking-widest text-accent/80"
                 >
                     <p>
-                        Every step, every challenge, every moment is an
-                        opportunity to grow.
+                        {{ $t("pages.about.quote.p1") }}
                     </p>
                     <p class="text-accent">
-                        Don’t just dream - make it happen.
+                        {{ $t("pages.about.quote.p2") }}
                     </p>
-                    <p>We’re here to help you reach new heights.</p>
+                    <p>{{ $t("pages.about.quote.p3") }}</p>
                     <p class="italic pt-4 border-t-2 border-accent/20">
-                        Keep pushing. The journey starts now.
+                        {{ $t("pages.about.quote.footer") }}
                     </p>
                 </div>
             </section>
@@ -50,35 +52,31 @@
                     class="space-y-8 text-lg sm:text-xl font-medium leading-relaxed text-foreground text-pretty"
                 >
                     <p>
-                        Vor über 10 Jahren habe ich
-                        <span class="font-bold uppercase tracking-widest italic"
-                            >Piepjack</span
-                        >
-                        ins Leben gerufen – nicht als Business, sondern als
-                        Vision. Während andere ihren Weg gegangen sind, habe ich
-                        mein Logo auf ein Blatt Papier gezeichnet – wieder und
-                        wieder.
+                        {{ $t("pages.about.story.p1") }}
                     </p>
                     <p class="text-xl sm:text-2xl">
-                        Es war mehr als nur eine Skizze. Es war ein Versprechen
-                        an mich selbst:<br />
+                        {{ $t("pages.about.story.p2") }}<br />
                         <span
                             class="font-bold italic uppercase tracking-wider text-main border-b-4 border-main pb-1 inline-block mt-2"
                         >
-                            "Ich will jemand sein, an den man sich erinnert."
+                            {{ $t("pages.about.story.promise") }}
                         </span>
                     </p>
                     <p>
-                        Die Zeit verging, und ich konnte damals nicht das zu
-                        Ende bringen, womit ich begonnen habe – aber das werde
-                        ich jetzt. Denn Piepjack ist nicht nur eine Marke. Es
-                        ist ein Statement:
+                        {{ $t("pages.about.story.p3") }}
                     </p>
 
                     <ul
                         class="py-8 space-y-6 font-bold uppercase text-xl sm:text-3xl tracking-tighter italic border-y-2 border-border"
                     >
-                        <li class="flex items-center gap-6">
+                        <li
+                            v-for="(value, index) in $tm(
+                                'pages.about.story.values'
+                            )"
+                            :key="index"
+                            class="flex items-center gap-6"
+                            :class="{ 'text-main': index === 2 }"
+                        >
                             <div
                                 class="p-2 bg-main text-accent rounded-none shrink-0"
                             >
@@ -87,43 +85,15 @@
                                     stroke-width="2"
                                 />
                             </div>
-                            Gib niemals auf.
-                        </li>
-                        <li class="flex items-center gap-6">
-                            <div
-                                class="p-2 bg-main text-accent rounded-none shrink-0"
-                            >
-                                <Zap
-                                    class="w-6 h-6 sm:w-8 sm:h-8"
-                                    stroke-width="2"
-                                />
-                            </div>
-                            Behalte ein positives Mindset.
-                        </li>
-                        <li class="flex items-center gap-6 text-main">
-                            <div
-                                class="p-2 bg-main text-accent rounded-none shrink-0"
-                            >
-                                <Zap
-                                    class="w-6 h-6 sm:w-8 sm:h-8"
-                                    stroke-width="2"
-                                />
-                            </div>
-                            CHASE YOUR PASSION.
+                            {{ value }}
                         </li>
                     </ul>
 
                     <p>
-                        Piepjack steht für all die Träumer, die Macher, die
-                        Kämpfer da draußen. Für Menschen, die an sich glauben –
-                        auch wenn der Weg hart ist. Für die, die etwas
-                        hinterlassen wollen.
+                        {{ $t("pages.about.story.p4") }}
                     </p>
-                    <p
-                        class="font-bold uppercase tracking-widest text-2xl pt-4"
-                    >
-                        Willkommen bei Piepjack. <br class="hidden sm:block" />
-                        Lass uns gemeinsam Geschichte schreiben.
+                    <p class="font-bold uppercase tracking-widest text-2xl pt-4">
+                        {{ $t("pages.about.story.welcome") }}
                     </p>
                 </div>
             </section>
@@ -138,7 +108,7 @@
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        JOIN THE MOVEMENT
+                        {{ $t("pages.about.linkText") }}
                         <ArrowRight
                             class="w-8 h-8 transition-transform duration-300 group-hover:translate-x-4"
                             stroke-width="2.5"
@@ -152,6 +122,6 @@
 
 <script setup>
 import PageLayout from "@components/shop/general/PageLayout.vue";
+import { ArrowRight, Zap } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
-import { Zap, ArrowRight } from "lucide-vue-next";
 </script>

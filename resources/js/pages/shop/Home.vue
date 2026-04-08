@@ -2,10 +2,12 @@
     <PageLayout
         title="Home"
         description="Piepjack Clothing - Modern apparel for those who believe in progress."
-        customClass="p-0 sm:p-0 md:p-0 lg:p-0 xl:p-0"
     >
-        <HeroBanner />
-        <div class="container mx-auto px-6">
+        <template #fullWidth>
+            <HeroBanner />
+        </template>
+
+        <div class="space-y-24 md:space-y-32">
             <section>
                 <HomeProducts />
             </section>

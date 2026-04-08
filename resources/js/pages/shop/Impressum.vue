@@ -1,116 +1,107 @@
-<template>
-    <PageLayout
-        title="Impressum"
-        description="Legal notice and contact information for Piepjack Clothing."
-    >
-        <template #header>
-            <div class="border-b-4 border-accent_dark pb-6">
-                <h1
-                    class="text-4xl sm:text-6xl font-accent_dark uppercase tracking-tighter italic"
-                >
-                    IMPRESSUM
-                </h1>
-            </div>
-        </template>
-
-        <div class="space-y-12">
-            <section class="space-y-4">
-                <p
-                    class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                >
-                    Angaben gemäß § 5 TMG
-                </p>
-                <div
-                    class="text-xl sm:text-2xl font-accent_dark uppercase tracking-tight"
-                >
-                    PIEPJACK Clothing
-                </div>
-                <div
-                    class="text-lg leading-relaxed text-gray-800 dark:text-gray-300"
-                >
-                    Inhaber: Marvin Pieprzyk<br />
-                    Schollendamm 122a<br />
-                    27751 Delmenhorst<br />
-                    Deutschland
-                </div>
-            </section>
-
-            <Separator class="bg-accent_dark h-[1px]" />
-
-            <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="space-y-2">
-                    <h2
-                        class="text-xs font-bold uppercase tracking-widest text-muted-foreground italic underline decoration-2 underline-offset-4"
-                    >
-                        Kontakt
-                    </h2>
-                    <div class="flex flex-col space-y-1">
-                        <a
-                            href="mailto:info@piepjack-clothing.de"
-                            class="text-lg font-bold hover:bg-accent_dark hover:text-primary-foreground transition-colors w-fit px-1 -ml-1"
-                        >
-                            info@piepjack-clothing.de
-                        </a>
-                        <a
-                            href="https://www.piepjack-clothing.de"
-                            target="_blank"
-                            class="text-lg font-bold hover:bg-accent_dark hover:text-primary-foreground transition-colors w-fit px-1 -ml-1"
-                        >
-                            www.piepjack-clothing.de
-                        </a>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <h2
-                        class="text-xs font-bold uppercase tracking-widest text-muted-foreground italic underline decoration-2 underline-offset-4"
-                    >
-                        Verantwortlich (§ 55 RStV)
-                    </h2>
-                    <p class="text-lg font-bold uppercase leading-tight">
-                        Marvin Pieprzyk<br />
-                        Schollendamm 122a<br />
-                        27751 Delmenhorst
-                    </p>
-                </div>
-            </section>
-
-            <Separator class="bg-accent_dark h-[1px]" />
-
-            <section
-                class="bg-accent_light border-l-8 border-accent_dark p-8 rounded-none"
-            >
-                <h2 class="text-xs font-bold uppercase tracking-widest mb-3">
-                    Markenrechtlicher Hinweis
-                </h2>
-                <p class="text-lg leading-snug font-medium italic">
-                    PIEPJACK ist eine eingetragene Marke
-                    <span class="font-accent_dark">(Nr. 30 2025 105 590)</span>
-                    beim Deutschen Patent- und Markenamt.
-                </p>
-            </section>
-        </div>
-
-        <div class="mt-20">
-            <Button
-                variant="ghost"
-                as-child
-                class="rounded-none px-0 hover:bg-transparent group"
-            >
-                <router-link to="/" class="flex items-center gap-2">
-                    <span
-                        class="text-xs font-accent_dark uppercase tracking-tighter border-b-2 border-accent_dark group-hover:bg-accent_dark group-hover:text-primary-foreground transition-all"
-                    >
-                        Zurück zur Startseite
-                    </span>
-                </router-link>
-            </Button>
-        </div>
-    </PageLayout>
-</template>
-
 <script setup>
 import PageLayout from "@components/shop/general/PageLayout.vue";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-vue-next";
 </script>
+
+<template>
+    <PageLayout
+        :title="$t('pages.impressum.title')"
+        :description="$t('pages.impressum.description')"
+    >
+        <template #header>
+            <div
+                class="border-b-[12px] border-border pb-10 text-center md:text-left"
+            >
+                <p
+                    class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
+                >
+                    {{ $t("pages.impressum.last_updated") }}
+                </p>
+                <h1
+                    class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground"
+                >
+                    {{ $t("pages.impressum.title") }}
+                </h1>
+            </div>
+        </template>
+
+        <div class="max-w-4xl space-y-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Responsible according to TMG -->
+                <section class="space-y-4">
+                    <p class="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        {{ $t("pages.impressum.responsible.label") }}
+                    </p>
+                    <div class="text-3xl font-bold uppercase tracking-tighter italic text-foreground">
+                        PIEPJACK Clothing
+                    </div>
+                    <div class="text-lg font-medium leading-relaxed text-muted-foreground/90">
+                        Inhaber: Marvin Pieprzyk<br />
+                        Schollendamm 122a<br />
+                        27751 Delmenhorst<br />
+                        Deutschland
+                    </div>
+                </section>
+
+                <!-- Contact -->
+                <section class="space-y-4">
+                    <p class="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        {{ $t("pages.impressum.contact.title") }}
+                    </p>
+                    <div class="flex flex-col space-y-2">
+                        <a href="mailto:info@piepjack-clothing.de" class="text-xl font-bold hover:text-main transition-colors">
+                            info@piepjack-clothing.de
+                        </a>
+                        <a href="https://www.piepjack-clothing.de" target="_blank" class="text-xl font-bold hover:text-main transition-colors">
+                            www.piepjack-clothing.de
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+            <Separator class="opacity-20" />
+
+            <!-- Legal Notice / Markenrecht -->
+            <section class="bg-muted p-8 border-2 border-border space-y-4">
+                <h2 class="text-xl font-bold uppercase tracking-tight text-foreground">
+                    {{ $t("pages.impressum.legal.title") }}
+                </h2>
+                <p class="text-lg font-medium italic text-muted-foreground">
+                    {{ $t("pages.impressum.legal.content") }}
+                </p>
+            </section>
+
+            <Separator class="opacity-20" />
+
+            <!-- Dispute Resolution -->
+            <section class="space-y-4">
+                <h2 class="text-xl font-bold uppercase tracking-tight text-foreground">
+                    {{ $t("pages.impressum.dispute.title") }}
+                </h2>
+                <div class="text-muted-foreground font-medium leading-relaxed">
+                    {{ $t("pages.impressum.dispute.content") }}
+                    <a href="https://ec.europa.eu/consumers/odr" target="_blank" class="text-main font-bold hover:underline ml-1">
+                        https://ec.europa.eu/consumers/odr
+                    </a>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <div class="pt-12 border-t-4 border-border flex justify-between items-center">
+                <Button variant="ghost" as-child class="rounded-none px-0 group">
+                    <router-link to="/" class="flex items-center gap-2">
+                        <ArrowLeft class="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                        <span class="text-xs font-bold uppercase tracking-widest border-b-2 border-foreground group-hover:bg-foreground group-hover:text-background transition-all">
+                            Back to Shop
+                        </span>
+                    </router-link>
+                </Button>
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                    PIEPJACK LEGAL DEPT.
+                </p>
+            </div>
+        </div>
+    </PageLayout>
+</template>

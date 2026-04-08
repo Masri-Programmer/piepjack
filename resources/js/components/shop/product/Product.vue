@@ -1,30 +1,39 @@
 <template>
-    <Spinner v-if="isLoading" :center="true" class="w-full h-screen" />
-    <div
-        v-else-if="error && !product"
-        class="p-3 my-3 text-xl text-red-500 border-t border-b border-neutral-200 ont-bold"
+    <PageLayout
+        :title="product?.name || 'Product'"
+        :description="product?.description?.substring(0, 160)"
     >
-        {{ error }}
-    </div>
-    <template v-else>
-        <div class="container flex flex-col w-full gap-12 md:flex-row">
-            <ProductContent :data="product" />
+        <Spinner v-if="isLoading" :center="true" class="w-full h-screen" />
+        <div
+            v-else-if="error && !product"
+            class="p-3 my-3 text-xl text-red-500 border-t border-b border-neutral-200 font-bold"
+        >
+            {{ error }}
         </div>
-        <!-- <hr class="my-6 -mx-4 text-gray md:-mx-8 2xl:-mx-16" /> -->
-        <div class="container">
-            <HomeCarousel
-                :name="product?.category_name"
-                :id="product?.category_id"
-                :title="$t('common.titles.peopleAlsoLiked')"
-            />
-            <ProductReview :data="product" />
+        <div v-else class="space-y-24 md:space-y-32">
+            <section>
+                <ProductContent :data="product" />
+            </section>
+
+            <section>
+                <HomeCarousel
+                    :name="product?.category_name"
+                    :id="product?.category_id"
+                    :title="$t('common.titles.peopleAlsoLiked')"
+                />
+            </section>
+
+            <section>
+                <ProductReview :data="product" />
+            </section>
         </div>
-    </template>
+    </PageLayout>
 </template>
 
 <script setup>
 import { useRoute } from "vue-router";
 import { computed } from "vue";
+import PageLayout from "@components/shop/general/PageLayout.vue";
 import Spinner from "@components/ui/Spinner.vue";
 import ProductContent from "./ProductContent.vue";
 import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
