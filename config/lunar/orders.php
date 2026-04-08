@@ -69,7 +69,7 @@ return [
     'statuses' => [
 
         'awaiting-payment' => [
-            'label' => __('Awaiting Payment'),
+            'label' => 'Awaiting Payment',
             'color' => '#848a8c',
             'mailers' => [],
             'notifications' => [],
@@ -77,7 +77,7 @@ return [
         ],
 
         'payment-offline' => [
-            'label' => __('Payment Offline'),
+            'label' => 'Payment Offline',
             'color' => '#0A81D7',
             'mailers' => [],
             'notifications' => [],
@@ -85,7 +85,7 @@ return [
         ],
 
         'payment-received' => [
-            'label' => __('Payment Received'),
+            'label' => 'Payment Received',
             'color' => '#6a67ce',
             'mailers' => [],
             'notifications' => [],
@@ -93,7 +93,7 @@ return [
         ],
 
         'dispatched' => [
-            'label' => __('Dispatched'),
+            'label' => 'Dispatched',
             'mailers' => [],
             'notifications' => [],
             'favourite' => true,
