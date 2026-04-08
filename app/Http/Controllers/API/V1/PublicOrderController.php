@@ -7,6 +7,7 @@ use App\Http\Resources\PublicOrderListResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Lunar\Models\Order;
 
 class PublicOrderController extends Controller
@@ -54,11 +55,13 @@ class PublicOrderController extends Controller
         }
 
         // Security check
-        $providedEmail = $request->query('email');
-        if (
-            $orderData->billingAddress?->contact_email !== $providedEmail &&
-            $orderData->user?->email !== $providedEmail
-        ) {
+        $providedEmail = strtolower($request->query('email'));
+        $billingEmail = strtolower($orderData->billingAddress?->contact_email ?? '');
+        $userEmail = strtolower($orderData->user?->email ?? '');
+
+        if ($billingEmail !== $providedEmail && $userEmail !== $providedEmail) {
+            Log::warning("Unauthorized order access attempt. Reference: {$reference}, Provided: {$providedEmail}, Expected: {$billingEmail} or {$userEmail}");
+
             return response()->json(['message' => __('Unauthorized.')], 403);
         }
 

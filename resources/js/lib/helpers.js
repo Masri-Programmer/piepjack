@@ -21,9 +21,14 @@ axios.defaults.withXSRFToken = true;
 export const apiRequest = async (method, url, data = {}, params = {}) => {
     const locale = i18n.global.locale.value || i18n.global.locale;
     axios.defaults.headers.common["Accept-Language"] = locale;
-    axios.defaults.headers.common["Authorization"] = `Bearer ${
-        userSessionStorage.value.token || userStorage.value.token || ""
-    }`;
+
+    const token = userSessionStorage.value.token || userStorage.value.token;
+    if (token) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    } else {
+        delete axios.defaults.headers.common["Authorization"];
+    }
+
     axios.defaults.baseURL = getApiUrl();
 
     const resource = url.split("/").pop();

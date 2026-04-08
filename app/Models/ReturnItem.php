@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Lunar\Models\Product;
+use Lunar\Models\ProductVariant;
 
 class ReturnItem extends Model
 {
@@ -15,9 +15,9 @@ class ReturnItem extends Model
         return $this->belongsTo(Returning::class, 'return_id');
     }
 
-    public function product()
+    public function productItem(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_item_id');
+        return $this->belongsTo(ProductVariant::class, 'product_item_id');
     }
 
     public function returnRequest(): BelongsTo

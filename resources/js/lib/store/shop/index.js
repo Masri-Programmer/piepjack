@@ -13,6 +13,7 @@ const {
     updateItemKey,
     validateCart,
     addToCart,
+    fetchDiscounts,
 } = useShopGlobalState();
 
 export {
@@ -28,4 +29,5 @@ export {
     updateItemKey,
     validateCart,
     addToCart,
+    fetchDiscounts,
 }

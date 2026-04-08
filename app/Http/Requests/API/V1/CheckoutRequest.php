@@ -28,7 +28,6 @@ class CheckoutRequest extends FormRequest
             'state_province' => 'required|string|max:255',
             'postal_code' => 'required|string|max:12',
             'country_code' => 'required|string|size:2|exists:lunar_countries,iso2',
-
             // Billing Info (Multi-step)
             'billing_same_as_shipping' => 'required|boolean',
             'billing_first_name' => 'required_if:billing_same_as_shipping,false|nullable|string|max:255',
@@ -50,7 +49,7 @@ class CheckoutRequest extends FormRequest
 
                     $variant = $this->productVariants->get($variantId);
 
-                    if (! $variant) {
+                    if (!$variant) {
                         $fail(__('The selected variant is invalid.'));
 
                         return;
@@ -62,7 +61,7 @@ class CheckoutRequest extends FormRequest
                 },
             ],
 
-            'promo_code' => 'nullable|string|max:6',
+            'promo_code' => ['nullable', 'string'],
             'shipping_method_id' => 'required|string|max:255',
         ];
     }

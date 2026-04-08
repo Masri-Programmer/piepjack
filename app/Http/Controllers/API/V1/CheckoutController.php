@@ -24,6 +24,8 @@ use Lunar\Models\Cart;
 use Lunar\Models\Channel;
 use Lunar\Models\Country;
 use Lunar\Models\Currency;
+use Lunar\Models\Customer as LunarCustomer;
+use Lunar\Models\CustomerGroup;
 use Lunar\Models\Order;
 use Lunar\Models\ProductVariant;
 use Stripe\Checkout\Session;
@@ -74,7 +76,7 @@ class CheckoutController extends Controller
         $options = ShippingManifest::getOptions($cart);
 
         return response()->json([
-            'data' => $options->map(fn ($option) => [
+            'data' => $options->map(fn($option) => [
                 'id' => $option->identifier,
                 'name' => $option->name,
                 'description' => $option->description,
@@ -90,7 +92,7 @@ class CheckoutController extends Controller
 
         $order = Order::with('user')->where('cart_id', $cartId)->latest()->first();
 
-        if (! $order) {
+        if (!$order) {
             return response()->json([
                 'status' => 'pending',
                 'message' => __('Order is being processed'),
@@ -116,28 +118,29 @@ class CheckoutController extends Controller
         try {
             $user = $this->findOrCreateUser($validated);
 
-            if (! $user->active) {
+            if (!$user->active) {
                 return response()->json(['message' => __('You are banned.')], 403);
             }
 
             $cart = $this->getAndSyncCart($user, $validated['products']);
-            $this->setCartAddresses($cart, $validated);
+            $this->setCartAddresses($cart, $validated, $user);
 
             $availableOptions = ShippingManifest::getOptions($cart);
-            $shippingOption = $availableOptions->first(fn ($o) => $o->identifier === $validated['shipping_method_id']);
+            $shippingOption = $availableOptions->first(fn($o) => $o->identifier === $validated['shipping_method_id']);
 
-            if (! $shippingOption) {
+            if (!$shippingOption) {
                 throw new Exception(__('Shipping method unavailable. Please re-select.'));
             }
 
             $cart->setShippingOption($shippingOption);
 
-            if (! empty($validated['promo_code'])) {
+            if (array_key_exists('promo_code', $validated)) {
                 $cart->update([
-                    'meta' => array_merge($cart->meta ?? [], ['promo_code' => $validated['promo_code']]),
+                    'coupon_code' => $validated['promo_code'] ? strtoupper($validated['promo_code']) : null,
                 ]);
             }
 
+            // 3. Recalculate
             $cart->calculate();
             $session = $this->createStripeSession($cart, $user);
 
@@ -146,7 +149,7 @@ class CheckoutController extends Controller
             return response()->json(['id' => $session->id, 'url' => $session->url]);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Checkout error: '.$e->getMessage());
+            Log::error('Checkout error: ' . $e->getMessage());
 
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -171,7 +174,7 @@ class CheckoutController extends Controller
             'payment_intent.processing',
         ];
 
-        if (! in_array($event->type, $handledEvents)) {
+        if (!in_array($event->type, $handledEvents)) {
             return response()->json(['message' => __('Event ignored')]);
         }
 
@@ -182,7 +185,7 @@ class CheckoutController extends Controller
         // Set app locale for this process (e.g. for the email)
         App::setLocale($locale);
 
-        if (! $cartId || ! ($cart = Cart::find($cartId))) {
+        if (!$cartId || !($cart = Cart::find($cartId))) {
             return response()->json(['message' => __('Cart or Cart ID not found')], 404);
         }
 
@@ -191,13 +194,13 @@ class CheckoutController extends Controller
         $chargeId = $stripeObject->charge ?? ($stripeObject->object === 'charge' ? $stripeObject->id : null);
 
         // If we only have a PI ID, try to get the latest charge ID from Stripe
-        if (! $chargeId && $paymentIntentId) {
+        if (!$chargeId && $paymentIntentId) {
             try {
                 Stripe::setApiKey(config('services.stripe.secret'));
                 $pi = PaymentIntent::retrieve($paymentIntentId);
                 $chargeId = $pi->latest_charge;
             } catch (Exception $e) {
-                Log::warning("Could not retrieve latest charge for PI {$paymentIntentId}: ".$e->getMessage());
+                Log::warning("Could not retrieve latest charge for PI {$paymentIntentId}: " . $e->getMessage());
             }
         }
 
@@ -224,14 +227,17 @@ class CheckoutController extends Controller
         try {
             $order = $cart->draftOrder ?: $cart->createOrder();
 
+            $customer = $order->user?->customers->first();
+
             $order->update([
                 'status' => $lunarStatus,
+                'customer_id' => $customer?->id,
                 'placed_at' => $order->placed_at ?? now(),
-                'customer_reference' => 'USER-'.$order->user_id,
+                'customer_reference' => 'USER-' . $order->user_id,
             ]);
 
             // Only finalize shipping and emails if payment is fully received
-            if ($lunarStatus === 'payment-received' && $referenceId && ! $order->transactions()->where('reference', $referenceId)->exists()) {
+            if ($lunarStatus === 'payment-received' && $referenceId && !$order->transactions()->where('reference', $referenceId)->exists()) {
                 $order->transactions()->create([
                     'success' => true,
                     'type' => 'capture',
@@ -248,7 +254,7 @@ class CheckoutController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Failed to sync order status: '.$e->getMessage());
+            Log::error('Failed to sync order status: ' . $e->getMessage());
         }
     }
 
@@ -264,11 +270,27 @@ class CheckoutController extends Controller
             ]
         );
 
-        if (! $user->wasRecentlyCreated) {
+        if (!$user->wasRecentlyCreated) {
             $user->update([
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'] ?? null,
             ]);
+        }
+
+        // Ensure Lunar Customer exists
+        if ($user->customers->isEmpty()) {
+            $customer = LunarCustomer::create([
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+            ]);
+
+            $user->customers()->attach($customer);
+
+            // Attach to default group
+            $defaultGroup = CustomerGroup::whereDefault(true)->first();
+            if ($defaultGroup) {
+                $customer->customerGroups()->attach($defaultGroup);
+            }
         }
 
         return $user;
@@ -277,16 +299,21 @@ class CheckoutController extends Controller
     private function getAndSyncCart(?User $user, array $products): Cart
     {
         $cart = CartSession::current();
+        $customer = $user?->customers->first();
 
-        if (! $cart) {
+        if (!$cart) {
             $cart = Cart::create([
                 'user_id' => $user?->id,
+                'customer_id' => $customer?->id,
                 'currency_id' => Currency::getDefault()->id,
                 'channel_id' => Channel::getDefault()->id,
             ]);
             CartSession::use($cart);
         } else {
-            $cart->update(['user_id' => $user?->id]);
+            $cart->update([
+                'user_id' => $user?->id,
+                'customer_id' => $customer?->id // Add this
+            ]);
         }
 
         $cart->lines()->delete();
@@ -301,7 +328,7 @@ class CheckoutController extends Controller
         return $cart->fresh();
     }
 
-    private function setCartAddresses(Cart $cart, array $data): void
+    private function setCartAddresses(Cart $cart, array $data, User $user): void
     {
         $country = Country::where('iso2', $data['country_code'])->first();
 
@@ -318,11 +345,33 @@ class CheckoutController extends Controller
 
         $cart->setShippingAddress($shippingData);
 
+        // Save to Customer Address Book
+        $customer = $user->customers()->first();
+        if ($customer) {
+            $customer->addresses()->updateOrCreate(
+                [
+                    'line_one' => $shippingData['line_one'] ?? '',
+                    'postcode' => $shippingData['postcode'] ?? '',
+                ],
+                array_merge($shippingData, ['shipping_default' => true])
+            );
+        }
+
         if ($data['billing_same_as_shipping']) {
             $cart->setBillingAddress($shippingData);
+
+            if ($customer) {
+                $customer->addresses()->updateOrCreate(
+                    [
+                        'line_one' => $shippingData['line_one'] ?? '',
+                        'postcode' => $shippingData['postcode'] ?? '',
+                    ],
+                    array_merge($shippingData, ['billing_default' => true])
+                );
+            }
         } else {
             $billingCountry = Country::where('iso2', $data['billing_country_code'])->first();
-            $cart->setBillingAddress([
+            $billingData = [
                 'first_name' => $data['billing_first_name'],
                 'last_name' => $data['billing_last_name'],
                 'line_one' => $data['billing_street_address'],
@@ -330,7 +379,19 @@ class CheckoutController extends Controller
                 'postcode' => $data['billing_postal_code'],
                 'country_id' => $billingCountry?->id,
                 'contact_email' => $data['email'],
-            ]);
+            ];
+
+            $cart->setBillingAddress($billingData);
+
+            if ($customer) {
+                $customer->addresses()->updateOrCreate(
+                    [
+                        'line_one' => $billingData['line_one'] ?? '',
+                        'postcode' => $billingData['postcode'] ?? '',
+                    ],
+                    array_merge($billingData, ['billing_default' => true])
+                );
+            }
         }
     }
 
@@ -341,12 +402,12 @@ class CheckoutController extends Controller
         if (empty($user->stripe_id)) {
             $customer = Customer::create([
                 'email' => $user->email,
-                'name' => $user->first_name.' '.$user->last_name,
+                'name' => $user->first_name . ' ' . $user->last_name,
             ]);
             $user->update(['stripe_id' => $customer->id]);
         }
 
-        $lineItems = collect($cart->lines)->map(fn ($line) => [
+        $lineItems = collect($cart->lines)->map(fn($line) => [
             'price_data' => [
                 'currency' => strtolower($cart->currency->code),
                 'product_data' => ['name' => $line->purchasable->product->translateAttribute('name')],
@@ -371,8 +432,8 @@ class CheckoutController extends Controller
             'mode' => 'payment',
             'customer' => $user->stripe_id,
             'line_items' => $lineItems,
-            'success_url' => config('services.frontend_url').'/success?cart_id='.$cart->id.'&email='.urlencode($user->email),
-            'cancel_url' => config('services.frontend_url').'/checkout',
+            'success_url' => config('services.frontend_url') . '/success?cart_id=' . $cart->id . '&email=' . urlencode($user->email),
+            'cancel_url' => config('services.frontend_url') . '/checkout',
             'metadata' => [
                 'cart_id' => $cart->id,
                 'locale' => app()->getLocale(),
@@ -397,7 +458,7 @@ class CheckoutController extends Controller
         $order->load(['shippingAddress.country', 'user', 'lines']);
 
         $customerData = [
-            'name' => $order->user->first_name.' '.$order->user->last_name,
+            'name' => $order->user->first_name . ' ' . $order->user->last_name,
             'address' => $order->shippingAddress->line_one,
             'city' => $order->shippingAddress->city,
             'zip' => $order->shippingAddress->postcode,
@@ -408,7 +469,7 @@ class CheckoutController extends Controller
         try {
             $shippingResult = $this->sendcloud->createParcel($customerData, 1.0, 8);
             if ($shippingResult) {
-                $currentMeta = $order->meta ? $order->meta->toArray() : [];
+                $currentMeta = (array) ($order->meta ?? []);
                 $order->update([
                     'meta' => array_merge($currentMeta, [
                         'tracking_number' => $shippingResult['tracking_number'],
@@ -417,7 +478,7 @@ class CheckoutController extends Controller
                 ]);
             }
         } catch (Exception $e) {
-            Log::warning('Shipping label generation failed: '.$e->getMessage());
+            Log::warning('Shipping label generation failed: ' . $e->getMessage());
         }
 
         $this->sendOrderConfirmationEmail($order);
@@ -425,7 +486,7 @@ class CheckoutController extends Controller
 
     private function sendOrderConfirmationEmail(Order $order): void
     {
-        $productLines = $order->lines->filter(fn ($line) => $line->type === 'physical');
+        $productLines = $order->lines->filter(fn($line) => $line->type === 'physical');
 
         $products = $productLines->map(function ($line) {
             $name = $line->description;

@@ -49,16 +49,17 @@
                 </p>
             </div>
 
-            <!-- Discount -->
+            <!-- Dynamic Discounts -->
             <div
-                v-if="cartTotalPrice > 100"
+                v-for="discount in appliedDiscounts"
+                :key="discount.id"
                 class="flex justify-between items-center text-green-600"
             >
                 <p class="text-sm font-medium">
-                    {{ $t("pages.checkout.orderDiscount") }}
+                    {{ discount.name }}
                 </p>
                 <p class="text-sm font-bold">
-                    -{{ (cartTotalPrice * 0.05).toFixed(2) }} {{ $currency }}
+                    -{{ discount.amount.toFixed(2) }} {{ $currency }}
                 </p>
             </div>
 
@@ -137,6 +138,7 @@ import {
     cartTotalPrice,
     cartTotalQuantity,
     checkoutform,
+    fetchDiscounts,
 } from "@lib/store/shop/index.js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -144,61 +146,60 @@ import { Input } from "@/components/ui/input";
 const { t } = useI18n();
 
 const promoCode = ref("");
-const promoDiscount = ref(0);
 const promoApplied = ref(false);
 const promoError = ref(false);
 
 const selectedShippingMethod = computed(() => {
-    // Rely on the API data stored in the state
-    return (
-        checkoutform.value.shippingMethod || {
+    const method = checkoutform.value.shippingMethod || {
+        price: 0,
+        name: t("pages.checkout.selectShipping"),
+    };
+
+    // Auto-apply Free Shipping if cart total is over 100
+    if (cartTotalPrice.value >= 100) {
+        return {
+            ...method,
             price: 0,
-            name: t("pages.checkout.selectShipping"),
-        }
-    );
+            name: `${method.name} (Free)`,
+        };
+    }
+
+    return method;
 });
 
-const calculateFinalPrice = () => {
-    const originalSubtotal = cartTotalPrice.value;
-    let totalDiscount = 0;
-
-    // 1. 5% Discount for > 100 EUR (calculated on original subtotal)
-    if (originalSubtotal > 100) {
-        totalDiscount += originalSubtotal * 0.05;
-    }
-
-    // 2. Promo Discount
-    if (promoApplied.value && promoDiscount.value > 0) {
-        totalDiscount += promoDiscount.value;
-    }
-
-    const finalPrice =
-        Math.max(0, originalSubtotal - totalDiscount) +
-        selectedShippingMethod.value.price;
-
-    return finalPrice.toFixed(2);
-};
-
 const applyPromoCode = () => {
-    promoApplied.value = false;
     promoError.value = false;
-    promoDiscount.value = 0;
+    promoApplied.value = false;
 
-    if (promoCode.value && promoCode.value.trim() !== "") {
-        if (promoCode.value.trim().toLowerCase() === "pickup") {
-            cartState.value.promoCode = "pickup";
-            promoApplied.value = true;
-            promoDiscount.value = 10;
-        } else {
-            promoError.value = true;
-        }
+    if (!promoCode.value.trim()) {
+        cartState.value.promoCode = "";
+        return;
+    }
+
+    const matched = (cartState.value.discounts || []).find(
+        (d) =>
+            d.coupon_code &&
+            d.coupon_code.toLowerCase() ===
+                promoCode.value.trim().toLowerCase(),
+    );
+
+    if (matched) {
+        promoApplied.value = true;
+        cartState.value.promoCode = matched.coupon_code;
     } else {
         promoError.value = true;
+        cartState.value.promoCode = "";
     }
 };
 
-onBeforeMount(() => {
-    cartState.value.promoCode = "";
+onBeforeMount(async () => {
+    await fetchDiscounts();
+    // If there's already a promo code in the store, hydrate it
+    if (cartState.value.promoCode) {
+        promoCode.value = cartState.value.promoCode;
+        applyPromoCode();
+    }
+
     const stripeLoaded = ref(false);
     const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
     const stripePromise = loadStripe(stripePublicKey);
@@ -206,4 +207,72 @@ onBeforeMount(() => {
         stripeLoaded.value = true;
     });
 });
+
+// Watch for manual promo code entry
+import { watch } from "vue";
+watch(promoCode, (newVal) => {
+    if (newVal?.trim().toLowerCase() === "pickup") {
+        applyPromoCode();
+    }
+});
+
+const appliedDiscounts = computed(() => {
+    const discounts = [];
+    const subtotal = cartTotalPrice.value;
+    const availableDiscounts = cartState.value.discounts || [];
+    const currentItems = cartState.value.cartItems || [];
+
+    availableDiscounts.forEach((discount) => {
+        // 1. Check if it's a coupon discount
+        if (discount.coupon_code) {
+            // Only apply if it matches the current applied promo code
+            if (
+                !promoApplied.value ||
+                discount.coupon_code.toLowerCase() !==
+                    cartState.value.promoCode.toLowerCase()
+            ) {
+                return;
+            }
+        }
+
+        // 2. Check Min Basket Value
+        // The min_prices and fixed_amount are now correctly mapped in the resource
+        const minPrice = discount.config.min_prices?.EUR || 0;
+        if (minPrice > 0 && subtotal * 100 < minPrice) {
+            return;
+        }
+
+        // 3. Calculate Discount Amount
+        let amount = 0;
+        if (discount.config.is_fixed && discount.config.fixed_amount) {
+            amount = Number(discount.config.fixed_amount) / 100;
+        } else if (discount.config.percentage) {
+            amount = subtotal * (Number(discount.config.percentage) / 100);
+        }
+
+        if (amount > 0) {
+            discounts.push({
+                id: discount.id,
+                name: discount.name,
+                amount: amount,
+            });
+        }
+    });
+
+    return discounts;
+});
+
+const calculateFinalPrice = () => {
+    const originalSubtotal = cartTotalPrice.value;
+    const totalDiscount = appliedDiscounts.value.reduce(
+        (acc, d) => acc + d.amount,
+        0,
+    );
+
+    const finalPrice =
+        Math.max(0, originalSubtotal - totalDiscount) +
+        selectedShippingMethod.value.price;
+
+    return finalPrice.toFixed(2);
+};
 </script>

@@ -19,6 +19,8 @@ class ProductReviewResource extends Resource
 
     protected static ?string $modelLabel = 'Bewertung';
 
+    protected static ?string $navigationGroup = 'Katalog';
+
     protected static ?string $pluralModelLabel = 'Bewertungen';
 
     // 2. Name it in German to match the rest of your menu
@@ -40,8 +42,9 @@ class ProductReviewResource extends Resource
                                     ->required(),
 
                                 Forms\Components\Select::make('product_id')
-                                    ->label('Produkt-ID')
+                                    ->label('Produkt')
                                     ->relationship('product', 'id')
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->translateAttribute('name'))
                                     ->searchable()
                                     ->preload()
                                     ->required(),
@@ -94,8 +97,14 @@ class ProductReviewResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('product_id')
-                    ->label('Produkt-ID')
+                Tables\Columns\TextColumn::make('product.id')
+                    ->label('Produkt')
+                    ->formatStateUsing(fn ($record) => $record->product?->translateAttribute('name') ?? "Produkt #{$record->product_id}")
+                    ->url(fn ($record) => route('filament.lunar.resources.products.edit', ['record' => $record->product_id]))
+                    ->openUrlInNewTab()
+                    ->extraAttributes([
+                        'onclick' => 'event.stopPropagation()',
+                    ])
                     ->searchable()
                     ->sortable(),
 

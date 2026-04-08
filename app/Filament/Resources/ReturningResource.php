@@ -58,7 +58,29 @@ class ReturningResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('order.reference')
                     ->label('Bestell-Ref')
-                    ->sortable(),
+                    ->sortable()
+                    ->url(fn ($record) => route('filament.lunar.resources.orders.order', ['record' => $record->order_id]))
+                    ->openUrlInNewTab()
+                    ->extraAttributes([
+                        'onclick' => 'event.stopPropagation()',
+                    ]),
+                Tables\Columns\TextColumn::make('items')
+                    ->label('Produkte')
+                    ->formatStateUsing(function ($record) {
+                        return $record->items->map(function ($item) {
+                            $product = $item->productItem?->product;
+                            if (! $product) {
+                                return "{$item->quantity}x Produkt #{$item->product_item_id}";
+                            }
+
+                            $name = $product->translateAttribute('name');
+                            $url = route('filament.lunar.resources.products.edit', ['record' => $product->id]);
+
+                            return "<a href='{$url}' target='_blank' onclick='event.stopPropagation()' style='text-decoration: underline;'>{$item->quantity}x {$name}</a>";
+                        })->join('<br>');
+                    })
+                    ->html()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()

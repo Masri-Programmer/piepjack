@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\V1;
 
+use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\SendcloudService;
 use Illuminate\Http\Request;
@@ -61,7 +62,7 @@ class ShippingController extends Controller
                 'label_url' => $shippingResult['label_url'],
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => __('Failed to generate shipping label: ') . $e->getMessage()], 500);
+            return response()->json(['error' => __('Failed to generate shipping label: ').$e->getMessage()], 500);
         }
     }
 }

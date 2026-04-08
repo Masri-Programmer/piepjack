@@ -74,6 +74,7 @@ class PublicReturningController extends Controller
 
         // 🔹 FIX 2: Generate Sendcloud Label & Send Email Immediately
         try {
+            $order->load('shippingAddress.country');
             $this->generateSendcloudReturnLabel($order, $return);
             $this->sendReturnConfirmationEmail($order->fresh(), $return->fresh());
         } catch (Exception $e) {
@@ -234,55 +235,66 @@ class PublicReturningController extends Controller
     {
         $return->load([
             'items.productItem.product',
-            'items.productItem.options.variation',
+            'items.productItem.values.option',
         ]);
 
-        $order->load('user', 'shippingAddress');
+        $order->load('user', 'shippingAddress.country', 'billingAddress');
         $user = $order->user;
         $address = $order->shippingAddress;
 
-        if (! $user || ! $address) {
-            Log::error("User or Shipping Address not found for Order ID: {$order->id}");
+        // Use user email or fallback to billing address email
+        $recipientEmail = $user?->email ?? $order->billingAddress?->contact_email;
+
+        if (! $recipientEmail) {
+            Log::error("No recipient email found for Order ID: {$order->id}");
+
+            return;
+        }
+
+        if (! $address) {
+            Log::error("Shipping Address not found for Order ID: {$order->id}");
 
             return;
         }
 
         $productItemIds = $return->items->pluck('product_item_id');
 
-        $orderProducts = Product::where('order_id', $order->id)
-            ->whereIn('product_item_id', $productItemIds)
-            ->get()
-            ->keyBy('product_item_id');
+        // Lunar orders have OrderLines, not a direct Product link with order_id
+        $orderLines = $order->lines->whereIn('purchasable_id', $productItemIds)->keyBy('purchasable_id');
 
-        $items = $return->items->map(function ($returnItem) use ($orderProducts) {
-            $productItem = $returnItem->productItem;
-            $orderProduct = $orderProducts->get($returnItem->product_item_id);
+        $items = $return->items->map(function ($returnItem) use ($orderLines) {
+            $productVariant = $returnItem->productItem; // This is a ProductVariant
+            $line = $orderLines->get($returnItem->product_item_id);
 
             return [
-                'product_name' => $productItem->product->name,
+                'name' => (string) $productVariant->product->translateAttribute('name'),
                 'quantity' => $returnItem->quantity,
-                'price_per_item' => $orderProduct->price_per_item ?? null,
-                'image' => $productItem->image ?? config('services.branding.logo_url'),
-                'options' => $productItem->options->map(fn ($option) => [
-                    'name' => optional($option->variation)->name,
-                    'value' => $option->value,
+                'price_per_item' => $line?->unit_price?->decimal ?? 0,
+                'image' => $productVariant->product->thumbnail?->getUrl() ?? config('services.branding.logo_url'),
+                'options' => $productVariant->values->map(fn ($value) => [
+                    'name' => (string) ($value->option?->translate('name') ?? ''),
+                    'value' => (string) ($value->translate('name') ?? ''),
                 ])->toArray(),
             ];
         });
 
         $returnData = [
             'return' => $return,
-            'user' => $user,
+            'user' => $user ?? (object) ['first_name' => $order->billingAddress->first_name ?? __('Customer')],
             'address' => $address,
             'items' => $items,
         ];
 
-        // Send to User
-        Mail::to($user->email)->send(new ReturnConfirmation($returnData));
+        try {
+            // Send to User
+            Mail::to($recipientEmail)->send(new ReturnConfirmation($returnData));
 
-        // Send to Admin
-        if (config('app.admin_email')) {
-            Mail::to(config('app.admin_email'))->send(new AdminReturnNotification($returnData));
+            // Send to Admin
+            if (config('app.admin_email')) {
+                Mail::to(config('app.admin_email'))->send(new AdminReturnNotification($returnData));
+            }
+        } catch (Exception $e) {
+            Log::error("Failed to send return confirmation email for return ID {$return->id}: ".$e->getMessage());
         }
     }
 
@@ -360,22 +372,22 @@ class PublicReturningController extends Controller
         $address = $order->shippingAddress;
 
         try {
-            // Sendcloud API expects a "parcel" for the return
+            // Sendcloud API requires "from_" fields when is_return is true
             $response = Http::withBasicAuth($publicKey, $secretKey)
                 ->post('https://panel.sendcloud.sc/api/v2/parcels', [
                     'parcel' => [
-                        'name' => "{$address->first_name} {$address->last_name}",
-                        'address' => $address->line_one,
-                        'house_number' => $address->house_number ?? '',
-                        'city' => $address->city,
-                        'postal_code' => $address->postcode,
-                        'country' => $address->country->iso2,
-                        'email' => $address->contact_email,
+                        'from_name' => "{$address->first_name} {$address->last_name}",
+                        'from_address_1' => $address->line_one,
+                        'from_house_number' => $address->house_number ?? '',
+                        'from_city' => $address->city,
+                        'from_postal_code' => $address->postcode,
+                        'from_country' => $address->country->iso2,
+                        'from_email' => $address->contact_email,
                         'is_return' => true,
                         'request_label' => true,
-                        // If you have a specific return portal / method
                         'return_method' => (int) $returnMethodId,
                         'external_order_id' => $order->reference,
+                        'weight' => '1.000',
                     ],
                 ]);
 

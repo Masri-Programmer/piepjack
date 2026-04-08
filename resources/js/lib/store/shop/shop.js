@@ -1,12 +1,13 @@
 import { createGlobalState, useStorage, useSessionStorage } from "@vueuse/core";
 import { computed } from "vue";
 import axios from "axios";
-import { apiRequest } from "../../helpers";
+import { apiRequest } from "@lib/helpers.js";
 export const useShopGlobalState = createGlobalState(() => {
     const cartState = useStorage("cart-state", {
         open: false,
         cartItems: [],
         promoCode: "",
+        discounts: [],
     });
     const productParams = useSessionStorage("product-params-state", {
         active: null,
@@ -247,6 +248,15 @@ export const useShopGlobalState = createGlobalState(() => {
         }
     };
 
+    const fetchDiscounts = async () => {
+        try {
+            const { data } = await apiRequest("get", "discounts");
+            cartState.value.discounts = data;
+        } catch (error) {
+            console.error("Error fetching discounts:", error.message);
+        }
+    };
+
     return {
         cartState,
         checkoutform,
@@ -260,5 +270,6 @@ export const useShopGlobalState = createGlobalState(() => {
         updateItemKey,
         validateCart,
         addToCart,
+        fetchDiscounts,
     };
 });
