@@ -54,6 +54,7 @@ return [
     'sendcloud' => [
         'public_key' => env('SENDCLOUD_PUBLIC_KEY'),
         'secret_key' => env('SENDCLOUD_SECRET_KEY'),
+        'default_return_method_id' => env('SENDCLOUD_DEFAULT_RETURN_METHOD_ID', '0'),
     ],
 
 ];

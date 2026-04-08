@@ -10,6 +10,7 @@ use App\Models\ReturnItem;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
@@ -65,11 +66,18 @@ class PublicReturningController extends Controller
             if (! $this->canAddReturnItem($return, $item)) {
                 continue;
             }
-            ReturnItem::create([
-                'return_id' => $return->id,
-                'product_item_id' => $item['id'],
-                'quantity' => $item['cartQuantity'],
-            ]);
+            ReturnItem::updateOrCreate(
+                ['return_id' => $return->id, 'product_item_id' => $item['id']],
+                ['quantity' => $item['cartQuantity']]
+            );
+        }
+
+        // 🔹 FIX 2: Generate Sendcloud Label & Send Email Immediately
+        try {
+            $this->generateSendcloudReturnLabel($order, $return);
+            $this->sendReturnConfirmationEmail($order->fresh(), $return->fresh());
+        } catch (Exception $e) {
+            Log::error("Failed to finalize return #{$return->id}: ".$e->getMessage());
         }
 
         return $this->successResponse(__('Return request submitted successfully.'), [
@@ -332,5 +340,57 @@ class PublicReturningController extends Controller
         $this->sendReturnConfirmationEmail($order, $return);
 
         return response()->json(['message' => 'Test return email sent successfully']);
+    }
+
+    /**
+     * Generate a return label via Sendcloud API.
+     */
+    private function generateSendcloudReturnLabel(Order $order, Returning $return): void
+    {
+        $publicKey = config('services.sendcloud.public_key');
+        $secretKey = config('services.sendcloud.secret_key');
+        $returnMethodId = config('services.sendcloud.default_return_method_id');
+
+        if (! $publicKey || ! $secretKey) {
+            Log::warning('Sendcloud credentials not configured.');
+
+            return;
+        }
+
+        $address = $order->shippingAddress;
+
+        try {
+            // Sendcloud API expects a "parcel" for the return
+            $response = Http::withBasicAuth($publicKey, $secretKey)
+                ->post('https://panel.sendcloud.sc/api/v2/parcels', [
+                    'parcel' => [
+                        'name' => "{$address->first_name} {$address->last_name}",
+                        'address' => $address->line_one,
+                        'house_number' => $address->house_number ?? '',
+                        'city' => $address->city,
+                        'postal_code' => $address->postcode,
+                        'country' => $address->country->iso2,
+                        'email' => $address->contact_email,
+                        'is_return' => true,
+                        'request_label' => true,
+                        // If you have a specific return portal / method
+                        'return_method' => (int) $returnMethodId,
+                        'external_order_id' => $order->reference,
+                    ],
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json()['parcel'];
+                $return->update([
+                    'sendcloud_return_id' => $data['id'],
+                    'label_url' => $data['label']['label_printer'] ?? null,
+                    'qr_code_url' => $data['label']['qr_code'] ?? null,
+                ]);
+            } else {
+                Log::error('Sendcloud Return Label Error: '.$response->body());
+            }
+        } catch (Exception $e) {
+            Log::error('Sendcloud Return Label Exception: '.$e->getMessage());
+        }
     }
 }

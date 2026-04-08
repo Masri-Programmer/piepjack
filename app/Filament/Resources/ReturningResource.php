@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Lunar\Facades\Payments;
+use Lunar\Models\OrderLine;
 use Lunar\Models\Transaction;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
@@ -125,13 +126,29 @@ class ReturningResource extends Resource
                             }
                         }
 
-                        // 2. Calculate the refund amount in cents
-                        $refundAmountCents = (int) ($capture->amount->value - ($record->return_fee * 100));
+                        // 2. Calculate the refund amount in cents based on items
+                        $orderLines = OrderLine::where('order_id', $record->order_id)->get();
+                        $totalToRefundInCents = 0;
+
+                        if ($record->items->isEmpty()) {
+                            // Fallback if no specific items are found (safety first)
+                            $totalToRefundInCents = $capture->amount->value;
+                        } else {
+                            foreach ($record->items as $item) {
+                                $line = $orderLines->firstWhere('purchasable_id', $item->product_item_id);
+                                if ($line) {
+                                    $totalToRefundInCents += ($line->unit_price->value * $item->quantity);
+                                }
+                            }
+                        }
+
+                        // Deduct return fee (unit is EUR, so * 100)
+                        $refundAmountCents = $totalToRefundInCents - (int) ($record->return_fee * 100);
 
                         if ($refundAmountCents <= 0) {
                             Notification::make()
                                 ->title('Ungültiger Rückerstattungsbetrag')
-                                ->body('Die Rückgebühr übersteigt den Gesamtbestellwert.')
+                                ->body('Die Rückgebühr übersteigt den Erstattungsbetrag der Artikel.')
                                 ->danger()
                                 ->send();
 

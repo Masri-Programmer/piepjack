@@ -80,5 +80,16 @@
     "Tracking Number (DHL)": "Tracking Number (DHL)",
     "Open Tracking Link": "Open Tracking Link",
     "Cancellation Policy": "Cancellation Policy",
-    "cancellation_policy_text": "You have the right to withdraw from this contract within fourteen days without giving any reason. The withdrawal period is fourteen days from the day on which you or a third party named by you who is not the carrier took possession of the goods. To exercise your right of withdrawal, you must inform us of your decision by means of a clear statement."
+    "cancellation_policy_text": "You have the right to withdraw from this contract within fourteen days without giving any reason. The withdrawal period is fourteen days from the day on which you or a third party named by you who is not the carrier took possession of the goods. To exercise your right of withdrawal, you must inform us of your decision by means of a clear statement.",
+    "Return received": "Return received",
+    "Return No.": "Return No.",
+    "Hello :name,": "Hello :name,",
+    "we have received your return. Below you will find an overview of the items received.": "we have received your return. Below you will find an overview of the items received.",
+    "Status update for your return #": "Status update for your return #",
+    "Summary": "Summary",
+    "Your return label": "Your return label",
+    "Simply show this QR code at the parcel shop.": "Simply show this QR code at the parcel shop.",
+    "DOWNLOAD LABEL": "DOWNLOAD LABEL",
+    "What happens next?": "What happens next?",
+    "Our logistics team is now checking the goods. The refund is usually made within 3-5 working days to your original payment method.": "Our logistics team is now checking the goods. The refund is usually made within 3-5 working days to your original payment method."
 }

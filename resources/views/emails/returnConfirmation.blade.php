@@ -1,13 +1,13 @@
 @extends('emails.layout')
 
-@section('title', 'Rücksendung erhalten')
-@section('subtitle') Rücksende-Nr. #{{ $return->id ?? '' }} @endsection
+@section('title', __('Return received'))
+@section('subtitle') {{ __('Return No.') }} #{{ $return->id ?? '' }} @endsection
 @section('subtitle_2')
-    Hallo {{ $user->first_name ?? 'Kunde' }},<br>
-    wir haben deine Rücksendung erhalten. Unten findest du eine Übersicht der eingegangenen Artikel.
+    {{ __('Hello :name,', ['name' => $user->first_name ?? __('Customer')]) }}<br>
+    {{ __('we have received your return. Below you will find an overview of the items received.') }}
 @endsection
 
-@section('preheader', 'Status-Update zu deiner Rücksendung #' . ($return->id ?? ''))
+@section('preheader', __('Status update for your return #') . ($return->id ?? ''))
 
 @section('content')
     <tr>
@@ -19,7 +19,7 @@
                     <td style="padding: 30px 30px 15px 30px; border-bottom: 2px solid #f0f0f0;">
                         <h2
                             style="margin: 0; color: #333333; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                            Zusammenfassung
+                            {{ __('Summary') }}
                         </h2>
                     </td>
                 </tr>
@@ -41,6 +41,35 @@
                     </td>
                 </tr>
 
+                @if($return->label_url || $return->qr_code_url)
+                <tr>
+                    <td style="padding: 20px 30px 0 30px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                            style="background-color: #f9f9f9; border-radius: 6px; border: 1px solid #e5e5e5;">
+                            <tr>
+                                <td style="padding: 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: center;">
+                                    <h3 style="margin: 0 0 15px 0; color: #333333; font-size: 16px; text-transform: uppercase; font-weight: 700;">{{ __('Your return label') }}</h3>
+                                    
+                                    @if($return->qr_code_url)
+                                        <div style="margin-bottom: 20px;">
+                                            <img src="{{ $return->qr_code_url }}" alt="QR Code" style="max-width: 150px; height: auto;">
+                                            <p style="margin: 10px 0 0 0; font-size: 13px; color: #666666;">{{ __('Simply show this QR code at the parcel shop.') }}</p>
+                                        </div>
+                                    @endif
+
+                                    @if($return->label_url)
+                                        <a href="{{ $return->label_url }}" 
+                                           style="display: inline-block; background-color: #000000; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">
+                                            {{ __('DOWNLOAD LABEL') }}
+                                        </a>
+                                    @endif
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                @endif
+
                 <tr>
                     <td style="padding: 30px;">
                         <table border="0" cellpadding="0" cellspacing="0" width="100%"
@@ -48,9 +77,8 @@
                             <tr>
                                 <td
                                     style="padding: 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; color: #555555; line-height: 1.5;">
-                                    <strong>Wie geht es weiter?</strong><br>
-                                    Unsere Logistik prüft nun die Ware. Die Erstattung erfolgt in der Regel innerhalb von
-                                    3-5 Werktagen auf dein ursprüngliches Zahlungsmittel.
+                                    <strong>{{ __('What happens next?') }}</strong><br>
+                                    {{ __('Our logistics team is now checking the goods. The refund is usually made within 3-5 working days to your original payment method.') }}
                                 </td>
                             </tr>
                         </table>

@@ -27,8 +27,13 @@ class Returning extends Model
 
     protected $fillable = [
         'order_id',
+        'return_number',
         'status',
         'reason',
+        'return_fee',
+        'sendcloud_return_id',
+        'label_url',
+        'qr_code_url',
     ];
 
     public static function getStatusOptions()

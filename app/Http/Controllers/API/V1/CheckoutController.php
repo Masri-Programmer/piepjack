@@ -11,6 +11,7 @@ use App\Services\SendcloudService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -176,6 +177,10 @@ class CheckoutController extends Controller
 
         $stripeObject = $event->data->object;
         $cartId = $stripeObject->metadata->cart_id ?? null;
+        $locale = $stripeObject->metadata->locale ?? 'de';
+
+        // Set app locale for this process (e.g. for the email)
+        App::setLocale($locale);
 
         if (! $cartId || ! ($cart = Cart::find($cartId))) {
             return response()->json(['message' => __('Cart or Cart ID not found')], 404);
@@ -368,7 +373,10 @@ class CheckoutController extends Controller
             'line_items' => $lineItems,
             'success_url' => config('services.frontend_url').'/success?cart_id='.$cart->id.'&email='.urlencode($user->email),
             'cancel_url' => config('services.frontend_url').'/checkout',
-            'metadata' => ['cart_id' => $cart->id],
+            'metadata' => [
+                'cart_id' => $cart->id,
+                'locale' => app()->getLocale(),
+            ],
         ];
 
         if (($discount = $cart->discountTotal->value) > 0) {
