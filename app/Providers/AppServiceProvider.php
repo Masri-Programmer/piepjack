@@ -2,14 +2,16 @@
 
 namespace App\Providers;
 
+use App\Filament\Pages\SystemLogsPage;
 use App\Filament\Resources\ProductReviewResource;
 use App\Filament\Resources\ReturningResource;
 use App\Models\ProductReview;
-use App\Models\User;
 use App\Modifiers\StoreShippingModifier;
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Lunar\Admin\Models\Staff;
 use Lunar\Admin\Support\Facades\LunarPanel;
 use Lunar\Base\ShippingModifiers;
 use Lunar\Models\Product;
@@ -31,6 +33,16 @@ class AppServiceProvider extends ServiceProvider
                 ->resources([
                     ReturningResource::class,
                     ProductReviewResource::class,
+                ])
+                ->pages([
+                    SystemLogsPage::class,
+                ])
+                ->navigationItems([
+                    NavigationItem::make('System Logs')
+                        ->url('/lunar/system-logs', shouldOpenInNewTab: false)
+                        ->icon('heroicon-o-document-text')
+                        ->group('Einstellungen')
+                        ->sort(100),
                 ]);
 
         })->register();
@@ -41,8 +53,12 @@ class AppServiceProvider extends ServiceProvider
         $shippingModifiers->add(StoreShippingModifier::class);
         Stripe::setApiKey(config('services.stripe.secret'));
 
-        Gate::define('viewLogViewer', function (User $user) {
-            return $user->hasRole('admin');
+        Gate::define('viewLogViewer', function ($user) {
+            if ($user instanceof Staff) {
+                return (bool) $user->admin;
+            }
+
+            return method_exists($user, 'hasRole') && $user->hasRole(['developer', 'admin']);
         });
 
         // Add reviews relationship to Lunar Product model

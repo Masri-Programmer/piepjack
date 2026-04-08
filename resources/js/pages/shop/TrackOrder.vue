@@ -143,9 +143,25 @@
                                     >
                                         {{ $t("pages.tracking.reference") }}
                                     </p>
-                                    <p class="font-black">
-                                        {{ order.data.order_number }}
-                                    </p>
+                                    <div class="flex items-center space-x-2 group">
+                                        <p class="font-black">
+                                            {{ order.data.order_number }}
+                                        </p>
+                                        <button
+                                            @click="copy(order.data.order_number)"
+                                            class="hover:text-accent_light transition-colors focus:outline-none p-1 -m-1"
+                                            :title="$t('common.copy')"
+                                        >
+                                            <Copy
+                                                v-if="!copied"
+                                                class="w-3.5 h-3.5 opacity-40 group-hover:opacity-100 transition-opacity"
+                                            />
+                                            <Check
+                                                v-else
+                                                class="w-3.5 h-3.5 text-green-400"
+                                            />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="text-right">
                                     <p
@@ -302,7 +318,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useSessionStorage } from "@vueuse/core";
+import { useSessionStorage, useClipboard } from "@vueuse/core";
 import {
     ChevronRight,
     ArrowLeft,
@@ -310,6 +326,8 @@ import {
     Truck,
     AlertCircle,
     Box,
+    Copy,
+    Check,
 } from "lucide-vue-next";
 
 // components
@@ -338,6 +356,8 @@ const { t } = useI18n();
 const toast = useToast();
 const route = useRoute();
 const slug = route.params.slug;
+
+const { copy, copied } = useClipboard();
 
 const activeStep = ref(1);
 const errorMessage = ref("");

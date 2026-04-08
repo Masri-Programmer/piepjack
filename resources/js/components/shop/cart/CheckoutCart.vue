@@ -150,26 +150,12 @@ const promoApplied = ref(false);
 const promoError = ref(false);
 
 const selectedShippingMethod = computed(() => {
-    const method = checkoutform.value.shippingMethod || {
-        price: 0,
-        name: t("pages.checkout.selectShipping"),
-    };
-
-    // Target specifically the standard method
-    const isStandard =
-        method.id === "DE_STD" ||
-        method.name?.toLowerCase().includes("standard");
-
-    // Auto-apply Free Shipping only for standard shipping
-    if (cartTotalPrice.value >= 100 && isStandard) {
-        return {
-            ...method,
+    return (
+        checkoutform.value.shippingMethod || {
             price: 0,
-            name: `${method.name} (Free)`,
-        };
-    }
-
-    return method;
+            name: t("pages.checkout.selectShipping"),
+        }
+    );
 });
 const applyPromoCode = () => {
     promoError.value = false;

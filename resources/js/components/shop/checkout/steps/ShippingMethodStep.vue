@@ -100,23 +100,7 @@ const isLoading = ref(false);
 // Dynamically apply free shipping over 100 for the UI
 // ShippingMethodStep.vue
 
-const displayShippingMethods = computed(() => {
-    return shippingMethods.value.map((method) => {
-        const isStandard =
-            method.id === "DE_STD" ||
-            method.name.toLowerCase().includes("standard");
-
-        if (cartTotalPrice.value >= 100 && isStandard) {
-            return {
-                ...method,
-                price: 0,
-            };
-        }
-
-        // Premium/Express methods pass through with their normal price
-        return method;
-    });
-});
+const displayShippingMethods = computed(() => shippingMethods.value);
 
 const loadMethods = async () => {
     const countryCode =
@@ -137,21 +121,21 @@ const loadMethods = async () => {
         if (response?.data) {
             shippingMethods.value = response.data;
 
-            // Sync the default selection with the computed "display" methods
-            if (displayShippingMethods.value.length) {
-                if (!checkoutform.value.shippingMethodId) {
-                    checkoutform.value.shippingMethodId =
-                        displayShippingMethods.value[0].id;
-                    checkoutform.value.shippingMethod =
-                        displayShippingMethods.value[0];
-                } else {
-                    // Update the currently selected method so the cart sees the potential 0 price immediately
-                    const currentMethod = displayShippingMethods.value.find(
-                        (m) => m.id === checkoutform.value.shippingMethodId,
-                    );
-                    if (currentMethod) {
-                        checkoutform.value.shippingMethod = currentMethod;
-                    }
+            // Default to first if not set
+            if (
+                !checkoutform.value.shippingMethodId &&
+                shippingMethods.value.length
+            ) {
+                checkoutform.value.shippingMethodId =
+                    shippingMethods.value[0].id;
+                checkoutform.value.shippingMethod = shippingMethods.value[0];
+            } else if (checkoutform.value.shippingMethodId) {
+                // Sync current selection
+                const current = shippingMethods.value.find(
+                    (m) => m.id === checkoutform.value.shippingMethodId,
+                );
+                if (current) {
+                    checkoutform.value.shippingMethod = current;
                 }
             }
         }

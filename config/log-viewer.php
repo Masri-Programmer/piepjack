@@ -40,7 +40,7 @@ return [
     |
     */
 
-    'route_path' => 'admin/logs',
+    'route_path' => 'lunar/internal-logs',
 
     /*
     |--------------------------------------------------------------------------
@@ -103,7 +103,7 @@ return [
 
     'middleware' => [
         'web',
-        'admin',
+        'auth:staff',
         AuthorizeLogViewer::class,
     ],
 
@@ -118,7 +118,7 @@ return [
 
     'api_middleware' => [
         'web',
-        'admin',
+        'auth:staff',
         AuthorizeLogViewer::class,
     ],
 

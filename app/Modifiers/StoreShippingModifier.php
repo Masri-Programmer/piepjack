@@ -17,12 +17,12 @@ class StoreShippingModifier extends ShippingModifier
     {
         $taxClass = TaxClass::getDefault();
 
-        // Safely get the subtotal (in cents) 
+        // Safely get the subtotal (in cents)
         // We removed $cart->calculate() from here to prevent infinite loops!
         $subTotal = $cart->subTotal?->value ?? 0;
 
-        // Rule 1: DHL Standard (Free if > 100 EUR, else 5.90 EUR)
-        $standardPrice = $subTotal > 10000 ? 0 : 590;
+        // DHL Standard (Constant 5.90 EUR)
+        $standardPrice = 590;
 
         ShippingManifest::addOption(
             new ShippingOption(

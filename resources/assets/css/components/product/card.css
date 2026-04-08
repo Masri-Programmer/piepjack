@@ -9,7 +9,7 @@
 }
 
 .product-details {
-    @apply grow flex flex-col items-start gap-2 text-xs max-w-[70%];
+    @apply grow flex flex-col items-start gap-2 text-xs max-w-[70%] mt-3;
 }
 
 .product-id,
