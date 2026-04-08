@@ -11,6 +11,8 @@ export default {
         title: "FUSSBALL MESH SHORTS PINK",
         notFound: "Keine Produkte gefunden",
         productOutofStock: "Produkt aus dem Vorrat",
+        review_success_title: "Bewertung eingereicht!",
+        review_submitted_message: "Vielen Dank für Ihre Bewertung! Sie wurde erfolgreich eingereicht.",
         ab: "ab",
         reviews: "Bewertungen",
         comment: "Kommentar",

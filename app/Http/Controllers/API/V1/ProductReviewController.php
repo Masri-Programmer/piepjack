@@ -73,11 +73,11 @@ class ProductReviewController extends Controller
             'rating' => $validated['rating'],
             'title' => $validated['title'] ?? null,
             'comment' => $validated['comment'],
-            'is_approved' => false, // Set to false for moderation
+            'is_approved' => true, // Auto-approve for now so they show up immediately
         ]);
 
         return response()->json([
-            'message' => __('Thank you for your review! It is pending approval.'),
+            'message' => __('Thank you for your review!'),
             'review' => $review->load('user:id,first_name,last_name'),
         ], 201);
     }

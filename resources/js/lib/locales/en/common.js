@@ -17,6 +17,8 @@ export default {
         maximum_quantity: "The product has reached it's maximum quantity",
         notFound: "NO PRODUCTS FOUND",
         productOutofStock: "product Out of Stock",
+        review_success_title: "Review Submitted!",
+        review_submitted_message: "Thank you for your review! It has been submitted successfully.",
         otherProductTitle: "MORE LOVE MESH JERSEY GREEN",
         creditAndMobile: "All credit cards & mobile payments",
         no_reviews: "No Reviews",

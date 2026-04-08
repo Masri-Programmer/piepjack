@@ -169,7 +169,7 @@
             <h3
                 class="text-2xl sm:text-3xl font-bold uppercase tracking-tighter italic text-foreground mb-4"
             >
-                {{ $t("validation.success.title") }}
+                {{ $t("common.product.review_success_title") }}
             </h3>
             <p
                 class="text-sm font-bold uppercase tracking-widest text-muted-foreground leading-relaxed"
