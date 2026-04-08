@@ -58,5 +58,9 @@
     "Your cart is empty": "Ihr Warenkorb ist leer",
     "Please select a shipping method": "Bitte wählen Sie eine Versandart aus",
     "The selected variant is invalid.": "Die ausgewählte Variante ist ungültig.",
-    "The requested quantity exceeds the available stock of :stock.": "Die angeforderte Menge überschreitet den verfügbaren Bestand von :stock."
+    "The requested quantity exceeds the available stock of :stock.": "Die angeforderte Menge überschreitet den verfügbaren Bestand von :stock.",
+    "Awaiting Payment": "Zahlung ausstehend",
+    "Payment Offline": "Zahlung Offline",
+    "Payment Received": "Zahlung erhalten",
+    "Dispatched": "Versandt"
 }

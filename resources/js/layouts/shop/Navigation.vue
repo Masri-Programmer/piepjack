@@ -175,8 +175,18 @@ import { cartState, cartTotalQuantity } from "@lib/store/shop/index.js";
 import LanguageDropdown from "@components/LanguageDropdown.vue";
 import { ShieldUser, Sun, Moon, Search, ShoppingBag } from "lucide-vue-next";
 
-const isDark = useDark();
-const toggleTheme = useToggle(isDark);
+const isDark = useDark({
+    selector: "html",
+    attribute: "class",
+    valueDark: "dark",
+    valueLight: "",
+});
+
+const toggleTheme = () => {
+    console.log("[Navigation] Toggling theme. Current isDark:", isDark.value);
+    isDark.value = !isDark.value;
+    console.log("[Navigation] New isDark:", isDark.value);
+};
 
 const { data, error, isLoading } = apiQuery("categories").useGet({});
 

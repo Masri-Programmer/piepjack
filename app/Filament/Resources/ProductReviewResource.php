@@ -17,14 +17,12 @@ class ProductReviewResource extends Resource
     // 1. A star icon makes sense for reviews
     protected static ?string $navigationIcon = 'heroicon-o-star';
 
+    protected static ?string $modelLabel = 'Bewertung';
+
+    protected static ?string $pluralModelLabel = 'Bewertungen';
+
     // 2. Name it in German to match the rest of your menu
     protected static ?string $navigationLabel = 'Bewertungen';
-
-    // 3. MATCH THIS EXACTLY to the heading in your screenshot
-    protected static ?string $navigationGroup = 'Katalog';
-
-    // 4. Sets the order (higher number = lower in the list)
-    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
@@ -32,36 +30,41 @@ class ProductReviewResource extends Resource
             ->schema([
                 Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\Section::make('Review Details')
+                        Forms\Components\Section::make('Bewertungsdetails')
                             ->schema([
                                 Forms\Components\Select::make('user_id')
+                                    ->label('Benutzer')
                                     ->relationship('user', 'email')
                                     ->searchable()
                                     ->preload()
                                     ->required(),
 
                                 Forms\Components\Select::make('product_id')
+                                    ->label('Produkt-ID')
                                     ->relationship('product', 'id')
                                     ->searchable()
                                     ->preload()
                                     ->required(),
 
                                 Forms\Components\Select::make('rating')
+                                    ->label('Bewertung')
                                     ->options([
-                                        1 => '1 - Poor',
-                                        2 => '2 - Fair',
-                                        3 => '3 - Good',
-                                        4 => '4 - Very Good',
-                                        5 => '5 - Excellent',
+                                        1 => '1 - Schlecht',
+                                        2 => '2 - Ausreichend',
+                                        3 => '3 - Gut',
+                                        4 => '4 - Sehr Gut',
+                                        5 => '5 - Hervorragend',
                                     ])
                                     ->required()
                                     ->native(false),
 
                                 Forms\Components\TextInput::make('title')
+                                    ->label('Titel')
                                     ->maxLength(255)
                                     ->columnSpanFull(),
 
                                 Forms\Components\Textarea::make('comment')
+                                    ->label('Kommentar')
                                     ->required()
                                     ->rows(4)
                                     ->columnSpanFull(),
@@ -73,9 +76,9 @@ class ProductReviewResource extends Resource
                         Forms\Components\Section::make('Moderation')
                             ->schema([
                                 Forms\Components\Toggle::make('is_approved')
-                                    ->label('Approved for display')
+                                    ->label('Freigegeben')
                                     ->default(false)
-                                    ->helperText('Turn this on to show the review on the storefront.'),
+                                    ->helperText('Aktivieren, um die Bewertung im Shop anzuzeigen.'),
                             ]),
                     ])->columnSpan(['lg' => 1]),
             ])
@@ -87,16 +90,17 @@ class ProductReviewResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.email')
-                    ->label('User Email')
+                    ->label('Benutzer-Email')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('product_id') // Adjust to product.name if you set up a custom accessor in Lunar
-                    ->label('Product ID')
+                Tables\Columns\TextColumn::make('product_id')
+                    ->label('Produkt-ID')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('rating')
+                    ->label('Bewertung')
                     ->badge()
                     ->color(fn (int $state): string => match ($state) {
                         1, 2 => 'danger',
@@ -107,29 +111,32 @@ class ProductReviewResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Titel')
                     ->searchable()
                     ->limit(30),
 
                 Tables\Columns\ToggleColumn::make('is_approved')
-                    ->label('Approved')
+                    ->label('Freigegeben')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Erstellt am')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_approved')
-                    ->label('Approval Status'),
+                    ->label('Freigabestatus'),
 
                 Tables\Filters\SelectFilter::make('rating')
+                    ->label('Bewertung')
                     ->options([
-                        1 => '1 Star',
-                        2 => '2 Stars',
-                        3 => '3 Stars',
-                        4 => '4 Stars',
-                        5 => '5 Stars',
+                        1 => '1 Stern',
+                        2 => '2 Sterne',
+                        3 => '3 Sterne',
+                        4 => '4 Sterne',
+                        5 => '5 Sterne',
                     ]),
             ])
             ->actions([

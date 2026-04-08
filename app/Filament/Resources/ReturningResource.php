@@ -25,16 +25,24 @@ class ReturningResource extends Resource
 
     protected static ?string $navigationGroup = 'Verkauf';
 
-    protected static ?string $modelLabel = 'Return Request';
+    protected static ?string $modelLabel = 'Rückgabe';
+
+    protected static ?string $pluralModelLabel = 'Rückgaben';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('order_id')->disabled(),
-                Forms\Components\TextInput::make('status'),
-                Forms\Components\Textarea::make('reason')->disabled(),
+                Forms\Components\TextInput::make('order_id')
+                    ->label('Bestell-ID')
+                    ->disabled(),
+                Forms\Components\TextInput::make('status')
+                    ->label('Status'),
+                Forms\Components\Textarea::make('reason')
+                    ->label('Grund')
+                    ->disabled(),
                 Forms\Components\TextInput::make('return_fee')
+                    ->label('Rückgebühr')
                     ->numeric()
                     ->prefix('€'),
             ]);
@@ -44,30 +52,45 @@ class ReturningResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->sortable(),
-                Tables\Columns\TextColumn::make('order.reference')->label('Order Ref'),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('order.reference')
+                    ->label('Bestell-Ref')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'requested' => 'warning',
                         'refunded' => 'success',
                         'rejected' => 'danger',
                         default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'requested' => 'Angefragt',
+                        'refunded' => 'Erstattet',
+                        'rejected' => 'Abgelehnt',
+                        default => $state,
                     }),
-                Tables\Columns\TextColumn::make('return_fee')->money('eur'),
-                Tables\Columns\TextColumn::make('created_at')->dateTime(),
+                Tables\Columns\TextColumn::make('return_fee')
+                    ->label('Rückgebühr')
+                    ->money('eur'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Erstellt am')
+                    ->dateTime(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
 
                 // Here is the custom action that connects to Lunar Payments
                 Tables\Actions\Action::make('processRefund')
-                    ->label('Process & Refund')
+                    ->label('Erstatten')
                     ->icon('heroicon-o-banknotes')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->modalHeading('Process Return & Issue Refund')
-                    ->modalDescription('This will deduct the return fee and refund the remainder to the original payment method.')
+                    ->modalHeading('Rückgabe bearbeiten & Rückerstattung veranlassen')
+                    ->modalDescription('Dadurch wird die Rückgebühr abgezogen und der Restbetrag auf die ursprüngliche Zahlungsmethode zurückerstattet.')
                     ->visible(fn (Returning $record) => $record->status === 'requested')
                     ->action(function (Returning $record) {
                         // 1. Find the Lunar Capture Transaction
@@ -78,8 +101,8 @@ class ReturningResource extends Resource
 
                         if (! $capture || ! Str::startsWith($capture->reference, ['pi_', 'ch_', 'py_'])) {
                             Notification::make()
-                                ->title('No valid Stripe charge found')
-                                ->body('The transaction reference is missing or invalid.')
+                                ->title('Keine gültige Stripe-Zahlung gefunden')
+                                ->body('Die Transaktionsreferenz fehlt oder ist ungültig.')
                                 ->danger()
                                 ->send();
 
@@ -107,8 +130,8 @@ class ReturningResource extends Resource
 
                         if ($refundAmountCents <= 0) {
                             Notification::make()
-                                ->title('Invalid refund amount')
-                                ->body('The return fee exceeds the total order amount.')
+                                ->title('Ungültiger Rückerstattungsbetrag')
+                                ->body('Die Rückgebühr übersteigt den Gesamtbestellwert.')
                                 ->danger()
                                 ->send();
 
@@ -120,20 +143,20 @@ class ReturningResource extends Resource
                             $response = Payments::driver('stripe')->refund(
                                 $capture,
                                 $refundAmountCents,
-                                "RMA #{$record->id} processed"
+                                "RMA #{$record->id} bearbeitet"
                             );
 
                             // 4. Handle Response
                             if ($response->success) {
                                 $record->update(['status' => 'refunded']);
-                                Notification::make()->title('Refund successful')->success()->send();
+                                Notification::make()->title('Rückerstattung erfolgreich')->success()->send();
                             } else {
-                                Notification::make()->title('Refund failed')->body($response->message ?? 'Unknown error')->danger()->send();
+                                Notification::make()->title('Rückerstattung fehlgeschlagen')->body($response->message ?? 'Unbekannter Fehler')->danger()->send();
                             }
                         } catch (\Exception $e) {
                             Log::error("Refund error for Returning ID {$record->id}: ".$e->getMessage());
                             Notification::make()
-                                ->title('Stripe Refund Error')
+                                ->title('Stripe Rückerstattungsfehler')
                                 ->body($e->getMessage())
                                 ->danger()
                                 ->send();
