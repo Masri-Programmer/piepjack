@@ -68,21 +68,28 @@ export default {
     },
     cancellation: {
         title: "CANCELLATION POLICY",
-        description: "Cancellation policy and return rights for Piepjack Clothing.",
+        description:
+            "Cancellation policy and return rights for Piepjack Clothing.",
         last_updated: "Cancellation Policy // As of: 08.04.2026",
         intro: "Consumers have a fourteen-day right of withdrawal.",
         policy_title: "Right of Withdrawal",
-        policy_content: "You have the right to withdraw from this contract within fourteen days without giving any reason.\n\nThe withdrawal period is fourteen days from the day on which you or a third party named by you, who is not the carrier, has taken possession of the last goods.\n\nTo exercise your right of withdrawal, you must inform us (Marvin Pieprzyk, Schollendamm 122a, 27751 Delmenhorst, E-Mail: info@piepjack-clothing.de) by means of a clear statement of your decision to withdraw from this contract.",
+        // Note the {'@'} used to escape the at-symbol in the email below
+        policy_content:
+            "You have the right to withdraw from this contract within fourteen days without giving any reason.\n\nThe withdrawal period is fourteen days from the day on which you or a third party named by you, who is not the carrier, has taken possession of the last goods.\n\nTo exercise your right of withdrawal, you must inform us (Marvin Pieprzyk, Schollendamm 122a, 27751 Delmenhorst, E-Mail: info{'@'}piepjack-clothing.de) by means of a clear statement of your decision to withdraw from this contract.",
         consequences_title: "Consequences of Withdrawal",
-        consequences_content: "If you withdraw from this contract, we shall reimburse to you all payments received from you, including delivery costs, without undue delay and at the latest within fourteen days from the day on which we received the notification of your withdrawal from this contract.\n\nWe can refuse the reimbursement until we have received the goods back or until you have provided proof that you have returned the goods.",
+        consequences_content:
+            "If you withdraw from this contract, we shall reimburse to you all payments received from you, including delivery costs, without undue delay and at the latest within fourteen days from the day on which we received the notification of your withdrawal from this contract.\n\nWe can refuse the reimbursement until we have received the goods back or until you have provided proof that you have returned the goods.",
         exclusion_title: "Exclusion of the Right of Withdrawal",
-        exclusion_content: "The right of withdrawal does not exist for contracts for the delivery of goods that are not prefabricated and for the manufacture of which an individual selection or determination by the consumer is decisive or which are clearly tailored to the personal needs of the consumer.",
+        exclusion_content:
+            "The right of withdrawal does not exist for contracts for the delivery of goods that are not prefabricated and for the manufacture of which an individual selection or determination by the consumer is decisive or which are clearly tailored to the personal needs of the consumer.",
         form_title: "Model Withdrawal Form",
-        form_content: "(If you want to withdraw from the contract, please fill out this form and send it back.)\n\n- To Marvin Pieprzyk, Schollendamm 122a, 27751 Delmenhorst\n- I/we hereby withdraw from the contract concluded by me/us for the purchase of the following goods\n- Ordered on / received on\n- Name of the consumer(s)\n- Address of the consumer(s)\n- Signature of the consumer(s) (only for notification on paper)\n- Date",
+        form_content:
+            "(If you want to withdraw from the contract, please fill out this form and send it back.)\n\n- To Marvin Pieprzyk, Schollendamm 122a, 27751 Delmenhorst\n- I/we hereby withdraw from the contract concluded by me/us for the purchase of the following goods\n- Ordered on / received on\n- Name of the consumer(s)\n- Address of the consumer(s)\n- Signature of the consumer(s) (only for notification on paper)\n- Date",
     },
     impressum: {
         title: "LEGAL NOTICE",
-        description: "Legal notice and contact information for Piepjack Clothing.",
+        description:
+            "Legal notice and contact information for Piepjack Clothing.",
         last_updated: "Legal Notice // As of: 08.04.2026",
         responsible: {
             label: "Information according to § 5 TMG",
@@ -92,11 +99,13 @@ export default {
         },
         legal: {
             title: "Trademark Notice",
-            content: "PIEPJACK is a registered trademark (No. 30 2025 105 590) with the German Patent and Trade Mark Office.",
+            content:
+                "PIEPJACK is a registered trademark (No. 30 2025 105 590) with the German Patent and Trade Mark Office.",
         },
         dispute: {
             title: "Alternative Dispute Resolution",
-            content: "The EU Commission provides a platform for online dispute resolution, which you can find here:",
+            content:
+                "The EU Commission provides a platform for online dispute resolution, which you can find here:",
         },
     },
     privacy: {
@@ -107,17 +116,20 @@ export default {
         intro: "We at Piepjack Clothing take the protection of your personal data very seriously. This privacy policy informs you about the collection, processing, and protection of your personal data.",
         responsible: {
             title: "1. Responsible Entity",
-            description: "The entity responsible for processing your personal data is:",
+            description:
+                "The entity responsible for processing your personal data is:",
         },
         dataCollection: {
             title: "2. Collection and Processing",
             visit: {
                 title: "When visiting the website",
-                description: "IP address, browser type, operating system, access time, visited pages.",
+                description:
+                    "IP address, browser type, operating system, access time, visited pages.",
             },
             purchase: {
                 title: "When shopping",
-                description: "Name, address, email, phone number, payment details.",
+                description:
+                    "Name, address, email, phone number, payment details.",
             },
             contact: {
                 title: "When contacting us",
@@ -134,7 +146,8 @@ export default {
         },
         retention: {
             title: "4. Data Retention",
-            description: "Your data will only be stored as long as necessary or as required by law.",
+            description:
+                "Your data will only be stored as long as necessary or as required by law.",
         },
         rights: {
             title: "5. Your Rights",
@@ -146,13 +159,15 @@ export default {
         },
         cookies: {
             title: "6. Cookies and Tracking",
-            description: "Our website uses cookies to optimize the user experience.",
+            description:
+                "Our website uses cookies to optimize the user experience.",
             necessary: "Necessary Cookies",
             analytics: "Analytics Cookies",
         },
         security: {
             title: "7. Data Security",
-            description: "We use technical and organizational measures to protect your data (e.g., SSL encryption).",
+            description:
+                "We use technical and organizational measures to protect your data (e.g., SSL encryption).",
         },
     },
 
@@ -164,7 +179,8 @@ export default {
         date: "Order Date",
         verification: "Verification",
         logistics: "Logistics",
-        credentialsDesc: "Enter your credentials to retrieve real-time data regarding your shipment and delivery estimates.",
+        credentialsDesc:
+            "Enter your credentials to retrieve real-time data regarding your shipment and delivery estimates.",
         reference: "Reference",
         items: "Items",
         liveTracking: "Live Tracking",
@@ -195,29 +211,38 @@ export default {
         title: "FREQUENTLY ASKED QUESTIONS",
         order_process: "Order Process",
         how_to_order: "How can I place an order?",
-        how_to_order_answer: "To complete your order, please follow the payment steps. After confirming your cart, select a payment method and proceed.",
+        how_to_order_answer:
+            "To complete your order, please follow the payment steps. After confirming your cart, select a payment method and proceed.",
         modify_cancel_order: "Can I modify or cancel an order?",
-        modify_cancel_order_answer: "Once an order is confirmed, we cannot make changes. However, you can cancel the order if it has not been processed yet.",
+        modify_cancel_order_answer:
+            "Once an order is confirmed, we cannot make changes. However, you can cancel the order if it has not been processed yet.",
 
         payment_info: "Payment Information",
         payment_secure: "Is your payment secure?",
-        payment_secure_answer: "Your transaction and payment information are processed securely by our payment providers with bank-standard encryption.",
+        payment_secure_answer:
+            "Your transaction and payment information are processed securely by our payment providers with bank-standard encryption.",
 
         shipping_delivery: "Shipping and Delivery",
         when_shipped: "When will my order be shipped?",
-        when_shipped_answer: "Your order will be processed and shipped within 2 business days after confirmation.",
+        when_shipped_answer:
+            "Your order will be processed and shipped within 2 business days after confirmation.",
         shipping_cost: "How much are the shipping costs?",
-        shipping_cost_answer: "You can find detailed shipping cost information here.",
+        shipping_cost_answer:
+            "You can find detailed shipping cost information here.",
         change_address: "Can I change my delivery address?",
-        change_address_answer: "Once your order has been processed in our warehouse, you can no longer change the delivery address.",
+        change_address_answer:
+            "Once your order has been processed in our warehouse, you can no longer change the delivery address.",
 
         returns_refunds: "Returns and Refunds",
         return_item: "How can I return an item?",
-        return_item_answer: "You can return your order within 14 days using our return portal.",
+        return_item_answer:
+            "You can return your order within 14 days using our return portal.",
         return_conditions: "What are the return conditions?",
-        return_conditions_answer: "The item must be in a new, unworn, and undamaged condition.",
+        return_conditions_answer:
+            "The item must be in a new, unworn, and undamaged condition.",
         refund_time: "When will I receive my refund?",
-        refund_time_answer: "Refund processing takes 7-14 business days and will be returned to your original payment method.",
+        refund_time_answer:
+            "Refund processing takes 7-14 business days and will be returned to your original payment method.",
 
         tracking_orders: "Order Tracking",
         track_order: "Can I track my order status?",
@@ -225,18 +250,20 @@ export default {
 
         support_contact: "Contact and Support",
         need_help: "My question was not answered. Where can I get help?",
-        need_help_answer: "Still have questions? Contact our support team:{email}",
+        need_help_answer:
+            "Still have questions? Contact our support team:{email}",
     },
     login: {
         title: "Sign in to your account",
         password: "Password",
         rememberMe: "Remember me",
-        forgotPassword: "Forgot password?"
+        forgotPassword: "Forgot password?",
     },
     shipping: {
         logistics: "LOGISTICS",
         title: "SHIPPING",
-        description: "Shipping information and delivery times for Piepjack Clothing.",
+        description:
+            "Shipping information and delivery times for Piepjack Clothing.",
         tracking_info_header:
             "Track your order effortlessly from our warehouse to your doorstep.",
         tracking_info_description:

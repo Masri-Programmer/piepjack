@@ -69,21 +69,27 @@ export default {
     },
     cancellation: {
         title: "WIDERRUFS-BELEHRUNG",
-        description: "Widerrufsbelehrung und Rückgaberechte für Piepjack Clothing.",
+        description:
+            "Widerrufsbelehrung und Rückgaberechte für Piepjack Clothing.",
         last_updated: "Widerrufsbelehrung // Stand: 08.04.2026",
         intro: "Verbraucher haben ein vierzehntägiges Widerrufsrecht.",
         policy_title: "Widerrufsrecht",
-        policy_content: "Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.\n\nDie Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die letzte Ware in Besitz genommen haben bzw. hat.\n\nUm Ihr Widerrufsrecht auszuüben, müssen Sie uns (Marvin Pieprzyk, Schollendamm 122a, 27751 Delmenhorst, E-Mail: info@piepjack-clothing.de) mittels einer eindeutigen Erklärung über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.",
+        policy_content:
+            "Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.\n\nDie Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die letzte Ware in Besitz genommen haben bzw. hat.\n\nUm Ihr Widerrufsrecht auszuüben, müssen Sie uns (Marvin Pieprzyk, Schollendamm 122a, 27751 Delmenhorst, E-Mail: info{'@'}piepjack-clothing.de) mittels einer eindeutigen Erklärung über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.",
         consequences_title: "Folgen des Widerrufs",
-        consequences_content: "Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, einschließlich der Lieferkosten, unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist.\n\nWir können die Rückzahlung verweigern, bis wir die Waren wieder zurückerhalten haben oder bis Sie den Nachweis erbracht haben, dass Sie die Waren zurückgesandt haben.",
+        consequences_content:
+            "Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, einschließlich der Lieferkosten, unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist.\n\nWir können die Rückzahlung verweigern, bis wir die Waren wieder zurückerhalten haben oder bis Sie den Nachweis erbracht haben, dass Sie die Waren zurückgesandt haben.",
         exclusion_title: "Ausschluss des Widerrufsrechts",
-        exclusion_content: "Das Widerrufsrecht besteht nicht bei Verträgen zur Lieferung von Waren, die nicht vorgefertigt sind und für deren Herstellung eine individuelle Auswahl oder Bestimmung durch den Verbraucher maßgeblich ist oder die eindeutig auf die persönlichen Bedürfnisse des Verbrauchers zugeschnitten sind.",
+        exclusion_content:
+            "Das Widerrufsrecht besteht nicht bei Verträgen zur Lieferung von Waren, die nicht vorgefertigt sind und für deren Herstellung eine individuelle Auswahl oder Bestimmung durch den Verbraucher maßgeblich ist oder die eindeutig auf die persönlichen Bedürfnisse des Verbrauchers zugeschnitten sind.",
         form_title: "Muster-Widerrufsformular",
-        form_content: "(Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden Sie es zurück.)\n\n- An Marvin Pieprzyk, Schollendamm 122a, 27751 Delmenhorst\n- Hiermit widerrufe(n) ich/wir den von mir/uns abgeschlossenen Vertrag über den Kauf der folgenden Waren\n- Bestellt am / erhalten am\n- Name des/der Verbraucher(s)\n- Anschrift des/der Verbraucher(s)\n- Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier)\n- Datum",
+        form_content:
+            "(Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden Sie es zurück.)\n\n- An Marvin Pieprzyk, Schollendamm 122a, 27751 Delmenhorst\n- Hiermit widerrufe(n) ich/wir den von mir/uns abgeschlossenen Vertrag über den Kauf der folgenden Waren\n- Bestellt am / erhalten am\n- Name des/der Verbraucher(s)\n- Anschrift des/der Verbraucher(s)\n- Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier)\n- Datum",
     },
     impressum: {
         title: "IMPRESSUM",
-        description: "Impressum und Kontaktinformationen für Piepjack Clothing.",
+        description:
+            "Impressum und Kontaktinformationen für Piepjack Clothing.",
         last_updated: "Impressum // Stand: 08.04.2026",
         responsible: {
             label: "Angaben gemäß § 5 TMG",
@@ -93,11 +99,13 @@ export default {
         },
         legal: {
             title: "Markenrechtlicher Hinweis",
-            content: "PIEPJACK ist eine eingetragene Marke (Nr. 30 2025 105 590) beim Deutschen Patent- und Markenamt.",
+            content:
+                "PIEPJACK ist eine eingetragene Marke (Nr. 30 2025 105 590) beim Deutschen Patent- und Markenamt.",
         },
         dispute: {
             title: "Alternative Streitbeilegung",
-            content: "Die EU-Kommission bietet eine Plattform zur Online-Streitbeilegung an, die Sie hier finden:",
+            content:
+                "Die EU-Kommission bietet eine Plattform zur Online-Streitbeilegung an, die Sie hier finden:",
         },
     },
     privacy: {
@@ -108,17 +116,20 @@ export default {
         intro: "Wir von Piepjack Clothing nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung informiert Sie über die Erhebung, Verarbeitung und den Schutz Ihrer personenbezogenen Daten.",
         responsible: {
             title: "1. Verantwortliche Stelle",
-            description: "Die verantwortliche Stelle für die Verarbeitung Ihrer personenbezogenen Daten ist:",
+            description:
+                "Die verantwortliche Stelle für die Verarbeitung Ihrer personenbezogenen Daten ist:",
         },
         dataCollection: {
             title: "2. Erhebung und Verarbeitung",
             visit: {
                 title: "Beim Besuch der Website",
-                description: "IP-Adresse, Browsertyp, Betriebssystem, Zugriffszeit, besuchte Seiten.",
+                description:
+                    "IP-Adresse, Browsertyp, Betriebssystem, Zugriffszeit, besuchte Seiten.",
             },
             purchase: {
                 title: "Beim Einkauf",
-                description: "Name, Adresse, E-Mail, Telefonnummer, Zahlungsdaten.",
+                description:
+                    "Name, Adresse, E-Mail, Telefonnummer, Zahlungsdaten.",
             },
             contact: {
                 title: "Bei Kontaktaufnahme",
@@ -135,7 +146,8 @@ export default {
         },
         retention: {
             title: "4. Speicherdauer",
-            description: "Ihre Daten werden nur so lange gespeichert, wie es erforderlich oder gesetzlich vorgeschrieben ist.",
+            description:
+                "Ihre Daten werden nur so lange gespeichert, wie es erforderlich oder gesetzlich vorgeschrieben ist.",
         },
         rights: {
             title: "5. Ihre Rechte",
@@ -147,13 +159,15 @@ export default {
         },
         cookies: {
             title: "6. Cookies und Tracking",
-            description: "Unsere Website verwendet Cookies zur Optimierung der Nutzererfahrung.",
+            description:
+                "Unsere Website verwendet Cookies zur Optimierung der Nutzererfahrung.",
             necessary: "Notwendige Cookies",
             analytics: "Analyse-Cookies",
         },
         security: {
             title: "7. Datensicherheit",
-            description: "Wir setzen technische und organisatorische Maßnahmen ein, um Ihre Daten zu schützen (z. B. SSL-Verschlüsselung).",
+            description:
+                "Wir setzen technische und organisatorische Maßnahmen ein, um Ihre Daten zu schützen (z. B. SSL-Verschlüsselung).",
         },
     },
 
@@ -165,7 +179,8 @@ export default {
         date: "Bestelldatum",
         verification: "Verifizierung",
         logistics: "Logistik",
-        credentialsDesc: "Geben Sie Ihre Daten ein, um Echtzeit-Informationen zu Ihrer Sendung und den voraussichtlichen Liefertermin abzurufen.",
+        credentialsDesc:
+            "Geben Sie Ihre Daten ein, um Echtzeit-Informationen zu Ihrer Sendung und den voraussichtlichen Liefertermin abzurufen.",
         reference: "Referenz",
         items: "Artikel",
         liveTracking: "Live-Verfolgung",
@@ -249,7 +264,8 @@ export default {
     shipping: {
         logistics: "LOGISTIK",
         title: "VERSAND",
-        description: "Versandinformationen und Lieferzeiten für Piepjack Clothing.",
+        description:
+            "Versandinformationen und Lieferzeiten für Piepjack Clothing.",
         tracking_info_header:
             "Verfolgen Sie Ihre Bestellung mühelos von unserem Lager bis zu Ihrer Haustür.",
         tracking_info_description:

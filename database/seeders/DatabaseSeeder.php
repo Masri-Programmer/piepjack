@@ -17,9 +17,9 @@ class DatabaseSeeder extends Seeder
             AttributeSeeder::class,
             TaxSeeder::class,
             ProductSeeder::class,
-            CustomerSeeder::class,
+                // CustomerSeeder::class,
             ShippingSeeder::class,
-            OrderSeeder::class,
+            // OrderSeeder::class,
         ]);
     }
 }
