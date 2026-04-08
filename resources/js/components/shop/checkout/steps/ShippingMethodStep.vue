@@ -9,7 +9,7 @@
         </div>
 
         <div
-            v-else-if="!shippingMethods.length"
+            v-else-if="!displayShippingMethods.length"
             class="text-center py-12 text-muted-foreground"
         >
             {{ $t("common.forms.noShippingMethods") }}
@@ -17,7 +17,7 @@
 
         <div v-else class="space-y-3">
             <div
-                v-for="method in shippingMethods"
+                v-for="method in displayShippingMethods"
                 :key="method.id"
                 @click="
                     checkoutform.shippingMethodId = method.id;
@@ -82,7 +82,11 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { ChevronLeft } from "lucide-vue-next";
-import { checkoutform, cartState } from "@lib/store/shop/index.js";
+import {
+    checkoutform,
+    cartState,
+    cartTotalPrice,
+} from "@lib/store/shop/index.js";
 import { apiRequest } from "@lib/helpers";
 import Spinner from "@components/ui/Spinner.vue";
 import { Button } from "@/components/ui/button";
@@ -92,6 +96,27 @@ defineEmits(["next", "prev"]);
 
 const shippingMethods = ref([]);
 const isLoading = ref(false);
+
+// Dynamically apply free shipping over 100 for the UI
+// ShippingMethodStep.vue
+
+const displayShippingMethods = computed(() => {
+    return shippingMethods.value.map((method) => {
+        const isStandard =
+            method.id === "DE_STD" ||
+            method.name.toLowerCase().includes("standard");
+
+        if (cartTotalPrice.value >= 100 && isStandard) {
+            return {
+                ...method,
+                price: 0,
+            };
+        }
+
+        // Premium/Express methods pass through with their normal price
+        return method;
+    });
+});
 
 const loadMethods = async () => {
     const countryCode =
@@ -111,13 +136,23 @@ const loadMethods = async () => {
         const response = await apiRequest("post", "/shipping-methods", payload);
         if (response?.data) {
             shippingMethods.value = response.data;
-            // Default to first if not set
-            if (
-                !checkoutform.value.shippingMethodId &&
-                shippingMethods.value.length
-            ) {
-                checkoutform.value.shippingMethodId =
-                    shippingMethods.value[0].id;
+
+            // Sync the default selection with the computed "display" methods
+            if (displayShippingMethods.value.length) {
+                if (!checkoutform.value.shippingMethodId) {
+                    checkoutform.value.shippingMethodId =
+                        displayShippingMethods.value[0].id;
+                    checkoutform.value.shippingMethod =
+                        displayShippingMethods.value[0];
+                } else {
+                    // Update the currently selected method so the cart sees the potential 0 price immediately
+                    const currentMethod = displayShippingMethods.value.find(
+                        (m) => m.id === checkoutform.value.shippingMethodId,
+                    );
+                    if (currentMethod) {
+                        checkoutform.value.shippingMethod = currentMethod;
+                    }
+                }
             }
         }
     } catch (error) {

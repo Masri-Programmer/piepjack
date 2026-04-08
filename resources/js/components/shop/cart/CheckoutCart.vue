@@ -155,8 +155,13 @@ const selectedShippingMethod = computed(() => {
         name: t("pages.checkout.selectShipping"),
     };
 
-    // Auto-apply Free Shipping if cart total is over 100
-    if (cartTotalPrice.value >= 100) {
+    // Target specifically the standard method
+    const isStandard =
+        method.id === "DE_STD" ||
+        method.name?.toLowerCase().includes("standard");
+
+    // Auto-apply Free Shipping only for standard shipping
+    if (cartTotalPrice.value >= 100 && isStandard) {
         return {
             ...method,
             price: 0,
@@ -166,7 +171,6 @@ const selectedShippingMethod = computed(() => {
 
     return method;
 });
-
 const applyPromoCode = () => {
     promoError.value = false;
     promoApplied.value = false;
