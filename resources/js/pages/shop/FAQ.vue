@@ -1,21 +1,24 @@
 <template>
-    <div
-        class="max-w-4xl mx-auto px-6 py-16 sm:py-24 selection:bg-main selection:text-accent"
+    <PageLayout
+        title="FAQ"
+        description="Frequently asked questions about ordering, shipping, and returns at Piepjack Clothing."
     >
-        <header
-            class="mb-20 border-b-[12px] border-border pb-10 text-center md:text-left"
-        >
-            <p
-                class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
+        <template #header>
+            <div
+                class="border-b-[12px] border-border pb-10 text-center md:text-left"
             >
-                {{ $t("pages.faq.help") }}
-            </p>
-            <h1
-                class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic break-words text-foreground"
-            >
-                {{ $t("pages.faq.title") }}
-            </h1>
-        </header>
+                <p
+                    class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
+                >
+                    {{ $t("pages.faq.help") }}
+                </p>
+                <h1
+                    class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic break-words text-foreground"
+                >
+                    {{ $t("pages.faq.title") }}
+                </h1>
+            </div>
+        </template>
 
         <div class="w-full space-y-24">
             <section
@@ -61,11 +64,12 @@
                 </Accordion>
             </section>
         </div>
-    </div>
+    </PageLayout>
 </template>
 
 <script setup>
 import { ref } from "vue";
+import PageLayout from "@components/shop/general/PageLayout.vue";
 import {
     Accordion,
     AccordionContent,
@@ -73,7 +77,6 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 
-// Data remains the same, assuming i18n keys are handled
 const faqData = ref([
     {
         title: "pages.faq.order_process",

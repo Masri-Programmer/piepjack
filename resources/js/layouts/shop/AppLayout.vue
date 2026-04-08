@@ -1,9 +1,7 @@
 <template>
     <div class="w-full min-h-full bg-background">
         <Navigation />
-        <main
-            class="grid min-h-screen gap-8 p-4 pt-16 overflow-x-hidden tracking-normal md:p-8 2xl:p-16 md:gap-8 2xl:gap-16 bg-background"
-        >
+        <main class="min-h-screen bg-background">
             <router-view />
         </main>
     </div>

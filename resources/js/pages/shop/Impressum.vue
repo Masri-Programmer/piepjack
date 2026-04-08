@@ -1,14 +1,17 @@
 <template>
-    <div
-        class="max-w-3xl mx-auto px-6 py-16 sm:py-24 selection:bg-accent_dark selection:text-primary-foreground"
+    <PageLayout
+        title="Impressum"
+        description="Legal notice and contact information for Piepjack Clothing."
     >
-        <header class="mb-12 border-b-4 border-accent_dark pb-6">
-            <h1
-                class="text-4xl sm:text-6xl font-accent_dark uppercase tracking-tighter italic"
-            >
-                IMPRESSUM
-            </h1>
-        </header>
+        <template #header>
+            <div class="border-b-4 border-accent_dark pb-6">
+                <h1
+                    class="text-4xl sm:text-6xl font-accent_dark uppercase tracking-tighter italic"
+                >
+                    IMPRESSUM
+                </h1>
+            </div>
+        </template>
 
         <div class="space-y-12">
             <section class="space-y-4">
@@ -103,10 +106,11 @@
                 </router-link>
             </Button>
         </div>
-    </div>
+    </PageLayout>
 </template>
 
 <script setup>
+import PageLayout from "@components/shop/general/PageLayout.vue";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 </script>

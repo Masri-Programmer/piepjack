@@ -1,20 +1,19 @@
 <template>
-    <div
-        class="max-w-6xl mx-auto px-6 py-16 sm:py-24 selection:bg-accent_dark selection:text-primary-foreground"
+    <PageLayout
+        title="Terms of Service"
+        description="General terms and conditions and customer information for Piepjack Clothing."
     >
-        <header class="mb-16 border-b-[12px] border-accent_dark pb-8">
-            <h1
-                class="text-5xl sm:text-7xl md:text-8xl font-accent_dark uppercase tracking-tighter leading-none italic"
-            >
-                TERMS OF <br />
-                SERVICE
-            </h1>
-            <p
-                class="mt-4 text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground"
-            >
-                Allgemeine Geschäftsbedingungen & Kundeninformationen
-            </p>
-        </header>
+        <template #header>
+            <div class="border-b-[12px] border-accent_dark pb-8">
+                <h1 class="text-5xl sm:text-7xl md:text-8xl font-accent_dark uppercase tracking-tighter leading-none italic">
+                    TERMS OF <br />
+                    SERVICE
+                </h1>
+                <p class="mt-4 text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                    Allgemeine Geschäftsbedingungen & Kundeninformationen
+                </p>
+            </div>
+        </template>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-16">
             <aside
@@ -236,10 +235,11 @@
                 </router-link>
             </Button>
         </div>
-    </div>
+    </PageLayout>
 </template>
 
 <script setup>
+import PageLayout from "@components/shop/general/PageLayout.vue";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 </script>

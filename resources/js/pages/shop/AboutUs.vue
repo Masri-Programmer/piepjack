@@ -1,21 +1,18 @@
 <template>
-    <div
-        class="max-w-5xl mx-auto px-6 py-16 sm:py-24 selection:bg-main selection:text-accent"
+    <PageLayout
+        title="About Us"
+        description="Piepjack Clothing - Our vision, our story, and our journey to help you reach new heights."
     >
-        <header
-            class="mb-20 border-b-[12px] border-border pb-10 text-center md:text-left"
-        >
-            <p
-                class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
-            >
-                The Vision // The Story
-            </p>
-            <h1
-                class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground"
-            >
-                ABOUT US
-            </h1>
-        </header>
+        <template #header>
+            <div class="border-b-[12px] border-border pb-10 text-center md:text-left">
+                <p class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">
+                    The Vision // The Story
+                </p>
+                <h1 class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground">
+                    ABOUT US
+                </h1>
+            </div>
+        </template>
 
         <div class="space-y-24">
             <section
@@ -150,10 +147,11 @@
                 </Button>
             </section>
         </div>
-    </div>
+    </PageLayout>
 </template>
 
 <script setup>
+import PageLayout from "@components/shop/general/PageLayout.vue";
 import { Button } from "@/components/ui/button";
 import { Zap, ArrowRight } from "lucide-vue-next";
 </script>

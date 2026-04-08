@@ -1,21 +1,18 @@
 <template>
-    <div
-        class="max-w-5xl mx-auto px-6 py-16 sm:py-24 selection:bg-main selection:text-accent"
+    <PageLayout
+        title="Shipping"
+        description="Shipping information and delivery times for Piepjack Clothing."
     >
-        <header
-            class="mb-16 border-b-[12px] border-border pb-10 text-center md:text-left"
-        >
-            <p
-                class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
-            >
-                {{ $t("pages.shipping.logistics") }}
-            </p>
-            <h1
-                class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground"
-            >
-                {{ $t("pages.shipping.title") }}
-            </h1>
-        </header>
+        <template #header>
+            <div class="border-b-[12px] border-border pb-10 text-center md:text-left">
+                <p class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">
+                    {{ $t("pages.shipping.logistics") }}
+                </p>
+                <h1 class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground">
+                    {{ $t("pages.shipping.title") }}
+                </h1>
+            </div>
+        </template>
 
         <div class="grid md:grid-cols-2 gap-12 mb-20">
             <div class="border-l-4 border-main pl-6">
@@ -132,5 +129,9 @@
                 {{ $t("pages.shipping.warning") }}
             </h6>
         </div>
-    </div>
+    </PageLayout>
 </template>
+
+<script setup>
+import PageLayout from "@components/shop/general/PageLayout.vue";
+</script>
