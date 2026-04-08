@@ -1,17 +1,22 @@
 <template>
     <PageLayout
-        title="Terms of Service"
-        description="General terms and conditions and customer information for Piepjack Clothing."
+        :title="$t('pages.tos.title')"
+        :description="$t('pages.tos.description')"
     >
         <template #header>
-            <div class="border-b-[12px] border-accent_dark pb-8">
-                <h1 class="text-5xl sm:text-7xl md:text-8xl font-accent_dark uppercase tracking-tighter leading-none italic">
-                    TERMS OF <br />
-                    SERVICE
-                </h1>
-                <p class="mt-4 text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                    Allgemeine Geschäftsbedingungen & Kundeninformationen
+            <div
+                class="border-b-[12px] border-border pb-10 text-center md:text-left"
+            >
+                <p
+                    class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
+                >
+                    {{ $t("pages.tos.last_updated") }}
                 </p>
+                <h1
+                    class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic text-foreground"
+                >
+                    {{ $t("pages.tos.title") }}
+                </h1>
             </div>
         </template>
 
