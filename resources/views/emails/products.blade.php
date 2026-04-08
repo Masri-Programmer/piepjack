@@ -3,7 +3,7 @@
     {{-- Name & Options --}}
     <td style="padding: 12px 10px; border-bottom: 1px solid #f3f4f6; vertical-align: top;">
         <span style="font-size: 13px; color: #111111; font-weight: bold; display: block;">
-            {{ $product['name'] ?? 'Produkt' }}
+            {{ $product['name'] ?? __('Product') }}
         </span>
         @if (!empty($product['options']))
             <div style="font-size: 11px; color: #888888; margin-top: 4px;">
