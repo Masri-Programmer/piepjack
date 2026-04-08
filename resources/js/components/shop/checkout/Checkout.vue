@@ -126,11 +126,8 @@ const currentBreadcrumbs = computed(() => {
             title: s.title,
             current: s.id === currentStep.value,
             disabled: s.id > maxReachedStep.value,
-            // Allow jumping to any step already reached
-            action:
-                s.id <= maxReachedStep.value && s.id !== currentStep.value
-                    ? () => goToStep(s.id)
-                    : null,
+            // Action removed to make breadcrumbs non-clickable
+            action: null,
         })),
     ];
 });

@@ -86,12 +86,12 @@ class CheckoutController extends Controller
         if (! $order) {
             return response()->json([
                 'status' => 'pending',
-                'message' => 'Order is being processed',
+                'message' => __('Order is being processed'),
             ]);
         }
 
         if ($order->user && $order->user->email !== $request->query('email')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => __('Unauthorized')], 403);
         }
 
         return response()->json([
@@ -109,7 +109,7 @@ class CheckoutController extends Controller
         try {
             $user = $this->findOrCreateUser($validated);
             if (! $user->active) {
-                return response()->json(['message' => 'You are banned from using this website.'], 403);
+                return response()->json(['message' => __('You are banned from using this website.')], 403);
             }
 
             $cart = $this->getAndSyncCart($user, $validated['products']);
@@ -127,7 +127,7 @@ class CheckoutController extends Controller
                     'address' => $validated['postal_code'],
                 ]);
 
-                throw new Exception('Selected shipping method is no longer available for this address or order total. Please re-select your shipping method.');
+                throw new Exception(__('Selected shipping method is no longer available for this address or order total. Please re-select your shipping method.'));
             }
 
             $cart->setShippingOption($shippingOption);
@@ -248,7 +248,7 @@ class CheckoutController extends Controller
             $lineItems[] = [
                 'price_data' => [
                     'currency' => strtolower($cart->currency->code),
-                    'product_data' => ['name' => 'Shipping'],
+                    'product_data' => ['name' => __('Shipping')],
                     'unit_amount' => (int) $shippingTotal,
                 ],
                 'quantity' => 1,
@@ -265,6 +265,12 @@ class CheckoutController extends Controller
             'metadata' => [
                 'cart_id' => $cart->id,
                 'user_id' => $user->id,
+            ],
+            'payment_intent_data' => [
+                'metadata' => [
+                    'cart_id' => $cart->id,
+                    'user_id' => $user->id,
+                ],
             ],
         ];
 
@@ -287,7 +293,7 @@ class CheckoutController extends Controller
                 'amount_off' => (int) $discountTotal,
                 'currency' => strtolower($cart->currency->code),
                 'duration' => 'once',
-                'name' => 'Cart Discount',
+                'name' => __('Cart Discount'),
             ]);
             $sessionData['discounts'] = [['coupon' => $coupon->id]];
         }
@@ -300,59 +306,123 @@ class CheckoutController extends Controller
         $user = User::firstOrCreate(
             ['email' => $data['email']],
             [
+                'first_name' => $data['first_name'], // Added this!
+                'last_name' => $data['last_name'] ?? null, // Added this!
                 'password' => Hash::make(Str::random(24)),
                 'active' => true,
             ]
         );
 
-        // FIX 4: Always update name to match checkout
-        $user->update([
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-        ]);
+        if (! $user->wasRecentlyCreated) {
+            $user->update([
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'] ?? null,
+            ]);
+        }
 
         return $user;
     }
+
+    // Add the mapping as a class property or inside the method
+    protected array $statusMapping = [
+        'requires_capture' => 'requires-capture',
+        'canceled' => 'cancelled',
+        'processing' => 'processing',
+        'requires_action' => 'awaiting-payment',
+        'requires_confirmation' => 'auth-pending',
+        'requires_payment_method' => 'failed',
+        'succeeded' => 'payment-received',
+    ];
 
     public function handleWebhook(Request $request): JsonResponse
     {
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
 
-        if (! $sigHeader) {
-            return response()->json(['message' => 'Missing Stripe-Signature header'], 400);
-        }
-
         try {
             $event = StripeWebhook::constructEvent($payload, $sigHeader, config('services.stripe.webhook_secret'));
         } catch (Exception $e) {
-            return response()->json(['message' => 'Invalid request'], 400);
+            return response()->json(['message' => __('Invalid request')], 400);
         }
 
-        $handledEvents = ['checkout.session.completed', 'checkout.session.async_payment_succeeded'];
+        // Listen to intent events to catch the full lifecycle
+        $handledEvents = [
+            'checkout.session.completed',
+            'payment_intent.succeeded',
+            'payment_intent.payment_failed',
+            'payment_intent.canceled',
+            'payment_intent.processing',
+        ];
+
         if (! in_array($event->type, $handledEvents)) {
-            return response()->json(['message' => 'Event ignored successfully']);
+            return response()->json(['message' => __('Event ignored')]);
         }
 
-        $session = $event->data->object;
-        $cartId = $session->metadata->cart_id ?? null;
+        $stripeObject = $event->data->object;
+        $cartId = $stripeObject->metadata->cart_id ?? null;
 
         if (! $cartId) {
-            return response()->json(['message' => 'Cart ID not found'], 400);
+            return response()->json(['message' => __('Cart ID not found in metadata')], 400);
         }
 
         $cart = Cart::find($cartId);
-
         if (! $cart) {
-            return response()->json(['message' => 'Cart not found'], 404);
+            return response()->json(['message' => __('Cart not found')], 404);
         }
 
-        $this->handleSuccessfulPayment($cart);
+        // Get the mapped Lunar status based on Stripe's status
+        $stripeStatus = $stripeObject->status ?? 'succeeded'; // Sessions don't always have a 'status' field, they have 'payment_status'
+        if ($event->type === 'checkout.session.completed') {
+            $stripeStatus = $stripeObject->payment_status === 'paid' ? 'succeeded' : 'requires_payment_method';
+        }
 
-        return response()->json(['message' => 'Webhook handled successfully']);
+        $lunarStatus = $this->statusMapping[$stripeStatus] ?? 'processing';
+
+        $this->syncOrderStatus($cart, $lunarStatus, $stripeObject);
+
+        if ($lunarStatus === 'payment-received') {
+            $this->handleSuccessfulPayment($cart, $stripeObject->payment_intent);
+        }
+
+        return response()->json(['message' => __('Webhook handled successfully')]);
     }
 
-    private function handleSuccessfulPayment(Cart $cart): void
+    private function syncOrderStatus(Cart $cart, string $lunarStatus, $stripeObject): void
+    {
+        DB::beginTransaction();
+        try {
+            // Ensure the order exists (Lunar creates it from cart if not present)
+            $order = $cart->draftOrder ?: $cart->createOrder();
+
+            $order->update([
+                'status' => $lunarStatus,
+                'placed_at' => $order->placed_at ?? now(),
+                'customer_reference' => 'USER-'.$order->user_id,
+            ]);
+
+            // Only finalize shipping and emails if payment is fully received
+            if ($lunarStatus === 'payment-received' && ! $order->transactions()->where('success', true)->exists()) {
+                $order->transactions()->create([
+                    'success' => true,
+                    'type' => 'capture',
+                    'driver' => 'stripe',
+                    'amount' => $order->total->value,
+                    'reference' => $stripeObject->id,
+                    'status' => 'succeeded',
+                    'card_type' => 'stripe',
+                ]);
+
+                $this->processShippingAndNotifications($order);
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to sync order status: '.$e->getMessage());
+        }
+    }
+
+    private function handleSuccessfulPayment(Cart $cart, $paymentIntent): void
     {
         DB::beginTransaction();
         try {
@@ -370,7 +440,7 @@ class CheckoutController extends Controller
                 'type' => 'capture',
                 'driver' => 'stripe',
                 'amount' => $order->total->value,
-                'reference' => 'Stripe Checkout',
+                'reference' => $paymentIntent,
                 'status' => 'succeeded',
                 'card_type' => 'stripe',
             ]);

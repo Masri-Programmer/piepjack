@@ -51,19 +51,39 @@ class CheckoutRequest extends FormRequest
                     $variant = $this->productVariants->get($variantId);
 
                     if (! $variant) {
-                        $fail("The selected variant (ID: {$variantId}) is invalid.");
+                        $fail(__('The selected variant is invalid.'));
 
                         return;
                     }
 
                     if ($value > $variant->stock) {
-                        $fail("The requested quantity for variant ID {$variantId} exceeds the available stock of {$variant->stock}.");
+                        $fail(__('The requested quantity exceeds the available stock of :stock.', ['stock' => $variant->stock]));
                     }
                 },
             ],
 
             'promo_code' => 'nullable|string|max:6',
             'shipping_method_id' => 'required|string|max:255',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => __('Please enter an email address'),
+            'email.email' => __('Enter a valid email address'),
+            'first_name.required' => __('Please enter a first name'),
+            'last_name.required' => __('Please enter a last name'),
+            'street_address.required' => __('Please enter an address'),
+            'city.required' => __('Please enter a city'),
+            'state_province.required' => __('Please enter a state'),
+            'postal_code.required' => __('Please enter a zip code'),
+            'country_code.required' => __('Please select a country'),
+            'country_code.exists' => __('Please select a valid country'),
+            'billing_same_as_shipping.required' => __('Please specify if billing is same as shipping'),
+            'products.required' => __('Your cart is empty'),
+            'products.min' => __('Your cart is empty'),
+            'shipping_method_id.required' => __('Please select a shipping method'),
         ];
     }
 

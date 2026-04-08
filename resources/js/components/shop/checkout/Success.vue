@@ -9,7 +9,8 @@
                 <p
                     class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
                 >
-                    {{ $t("validation.success.order") }} Status
+                    {{ $t("validation.success.order") }}
+                    {{ $t("validation.success.status") }}
                 </p>
                 <h1
                     class="text-6xl sm:text-7xl font-bold uppercase tracking-tighter leading-none italic text-foreground"
@@ -23,8 +24,8 @@
                     [
                         'paid',
                         'payment-received',
-                        'shipped',
-                        'delivered',
+                        'dispatched',
+                        'requires-capture',
                     ].includes(orderStatus)
                 "
                 class="space-y-12 animate-in fade-in duration-700"
@@ -44,7 +45,7 @@
                     <p
                         class="text-2xl font-bold uppercase tracking-widest mb-2"
                     >
-                        Order Confirmed
+                        {{ $t("validation.success.confirmed") }}
                     </p>
                     <p class="text-4xl font-mono font-bold mb-6">
                         #{{ orderReference }}
@@ -71,7 +72,7 @@
                         <h4
                             class="text-lg font-bold uppercase tracking-widest text-foreground"
                         >
-                            Order Summary
+                            {{ $t("validation.success.summary") }}
                         </h4>
                     </div>
 
@@ -99,7 +100,8 @@
                                 <p
                                     class="text-sm font-bold uppercase tracking-widest text-muted-foreground mt-1"
                                 >
-                                    Qty: {{ product.item.quantity }} |
+                                    {{ $t("validation.success.qty") }}:
+                                    {{ product.item.quantity }} |
                                     {{
                                         product.item.options
                                             .map((o) => o.value)
@@ -120,7 +122,7 @@
                         <div
                             class="flex justify-between items-center text-sm font-bold uppercase tracking-widest text-muted-foreground"
                         >
-                            <span>Subtotal</span>
+                            <span>{{ $t("validation.success.subtotal") }}</span>
                             <span class="font-mono text-foreground"
                                 >{{
                                     orderDetailsData.data.total_price.toFixed(2)
@@ -131,7 +133,7 @@
                         <div
                             class="flex justify-between items-center text-2xl font-bold uppercase italic border-t-2 border-border pt-4"
                         >
-                            <span>Total Paid</span>
+                            <span>{{ $t("validation.success.totalPaid") }}</span>
                             <span class="font-mono"
                                 >{{
                                     orderDetailsData.data.total_price.toFixed(2)
@@ -143,41 +145,63 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 pt-8">
-                    <!-- <Button
-                        as-child
-                        class="view-all flex-1 h-16 text-sm font-bold uppercase tracking-widest"
-                    >
-                        <router-link to="/shop">Continue Shopping</router-link>
-                    </Button> -->
                     <Button
                         as-child
                         variant="outline"
                         class="flex-1 h-16 border-2 border-main text-sm font-bold uppercase tracking-widest rounded-none hover:bg-main hover:text-accent transition-colors"
                     >
-                        <router-link :to="'/track-order/' + orderReference"
-                            >Track Order</router-link
-                        >
+                        <router-link :to="'/track-order/' + orderReference">
+                            {{ $t("validation.success.trackOrder") }}
+                        </router-link>
                     </Button>
                 </div>
             </div>
 
             <div
-                v-else-if="orderStatus === 'pending' && !isTimeout"
-                class="text-center py-32 border-4 border-border animate-pulse"
+                v-else-if="paymentStateDetails"
+                class="space-y-8 animate-in fade-in duration-700 max-w-2xl mx-auto"
             >
-                <div class="relative w-24 h-24 mx-auto mb-8 text-main">
-                    <Spinner class="w-full h-full" />
+                <div
+                    :class="[
+                        'p-8 sm:p-12 border-4 flex flex-col items-center text-center',
+                        paymentStateDetails.colorClass,
+                    ]"
+                >
+                    <svg
+                        class="w-20 h-20 mb-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            :d="paymentStateDetails.icon"
+                        />
+                    </svg>
+                    <p
+                        class="text-2xl font-bold uppercase tracking-widest mb-2"
+                    >
+                        {{ paymentStateDetails.title }}
+                    </p>
+                    <p
+                        class="text-lg font-medium opacity-80 mb-6 text-foreground"
+                    >
+                        {{ paymentStateDetails.description }}
+                    </p>
+                    <Button
+                        as-child
+                        :class="[
+                            'h-14 px-8 text-sm font-bold uppercase tracking-widest',
+                            paymentStateDetails.buttonClass,
+                        ]"
+                    >
+                        <router-link :to="paymentStateDetails.buttonLink">
+                            {{ paymentStateDetails.buttonText }}
+                        </router-link>
+                    </Button>
                 </div>
-                <h3
-                    class="text-3xl font-bold text-foreground uppercase tracking-tighter italic mb-4"
-                >
-                    {{ $t("validation.success.processingTitle") }}
-                </h3>
-                <p
-                    class="text-sm font-bold uppercase tracking-widest text-muted-foreground max-w-md mx-auto"
-                >
-                    {{ $t("validation.success.processingDesc") }}
-                </p>
             </div>
 
             <div v-else class="text-center py-32 border-4 border-border">
@@ -202,7 +226,9 @@
                         as-child
                         class="view-all w-full h-16 text-sm font-bold uppercase tracking-widest"
                     >
-                        <router-link to="/shop">Return to Shop</router-link>
+                        <router-link to="/shop">
+                            {{ $t("validation.success.returnToShop") }}
+                        </router-link>
                     </Button>
                 </div>
                 <Spinner v-else class="w-16 h-16 mx-auto text-main" />
@@ -230,6 +256,7 @@
 import { onMounted, ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useQuery } from "@tanstack/vue-query";
+import { useI18n } from "vue-i18n";
 
 import Spinner from "@components/ui/Spinner.vue";
 import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
@@ -238,25 +265,32 @@ import { Button } from "@/components/ui/button";
 import { apiQuery, apiRequest } from "@lib/helpers";
 import { cartState } from "@lib/store/shop/index.js";
 
+const { t } = useI18n();
 const route = useRoute();
 const cartId = route.query.cart_id;
 const userEmail = route.query.email;
-const { data, error, isLoading } = apiQuery("categories").useGet({});
+const { data, isLoading } = apiQuery("categories").useGet({});
 
 const isTimeout = ref(false);
 
-const { data: orderData, isError } = useQuery({
+const { data: orderData } = useQuery({
     queryKey: ["orderLookup", cartId, userEmail],
     queryFn: () =>
         apiRequest("get", `/order-lookup/${cartId}`, {}, { email: userEmail }),
     enabled: !!cartId && !!userEmail,
     refetchInterval: (data) => {
-        if (
-            data?.status === "paid" ||
-            data?.status === "payment-received" ||
-            isTimeout.value
-        )
-            return false;
+        const terminalStates = [
+            "paid",
+            "payment-received",
+            "failed",
+            "cancelled",
+            "requires-capture",
+            "awaiting-payment",
+        ];
+
+        if (data && terminalStates.includes(data.status)) return false;
+        if (isTimeout.value) return false;
+
         return 3000;
     },
     retry: false,
@@ -278,7 +312,9 @@ const { data: orderDetailsData } = useQuery({
         () =>
             (orderStatus.value === "paid" ||
                 orderStatus.value === "payment-received" ||
-                orderStatus.value === "shipped") &&
+                orderStatus.value === "shipped" ||
+                orderStatus.value === "dispatched" ||
+                orderStatus.value === "requires-capture") &&
             !!orderReference.value &&
             !!userEmail,
     ),
@@ -296,7 +332,59 @@ onMounted(() => {
 });
 
 watch(orderStatus, (newStatus) => {
-    if (newStatus === "paid" || newStatus === "payment-received")
+    if (newStatus !== "pending") {
         isTimeout.value = false;
+    }
+});
+
+const paymentStateDetails = computed(() => {
+    switch (orderStatus.value) {
+        case "failed":
+            return {
+                title: t("validation.success.issue"),
+                description: t("validation.success.issueDesc"),
+                buttonText: t("validation.success.returnToCheckout"),
+                buttonLink: "/checkout",
+                icon: "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z",
+                colorClass:
+                    "text-destructive border-destructive bg-destructive/10",
+                buttonClass:
+                    "bg-destructive hover:bg-destructive/90 text-destructive-foreground",
+            };
+        case "cancelled":
+            return {
+                title: t("validation.success.issue"),
+                description: t("validation.success.issueDesc"),
+                buttonText: t("validation.success.returnToCheckout"),
+                buttonLink: "/checkout",
+                icon: "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z",
+                colorClass: "text-muted-foreground border-border bg-muted/50",
+                buttonClass:
+                    "bg-primary hover:bg-primary/90 text-primary-foreground",
+            };
+        case "awaiting-payment":
+            return {
+                title: t("validation.success.pendingTitle"),
+                description: t("validation.success.pendingDesc"),
+                buttonText: t("validation.success.returnToShop"),
+                buttonLink: "/shop",
+                icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+                colorClass:
+                    "text-orange-500 border-orange-500 bg-orange-500/10",
+                buttonClass: "bg-orange-500 hover:bg-orange-600 text-white",
+            };
+        case "requires-capture":
+            return {
+                title: t("validation.success.authorizedTitle"),
+                description: t("validation.success.authorizedDesc"),
+                buttonText: t("validation.success.trackOrder"),
+                buttonLink: "/track-order/" + orderReference.value,
+                icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+                colorClass: "text-green-600 border-green-600 bg-green-600/10",
+                buttonClass: "bg-green-600 hover:bg-green-700 text-white",
+            };
+        default:
+            return null;
+    }
 });
 </script>
