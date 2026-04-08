@@ -33,7 +33,7 @@ const COMPANY_PHONE = "015756421797";
             </div>
         </template>
 
-        <div class="max-w-4xl space-y-16">
+        <div class="max-w-4xl space-y-24">
             <section class="prose prose-xl prose-invert max-w-none">
                 <p class="text-muted-foreground leading-relaxed text-pretty">
                     {{ $t("pages.privacy.intro") }}

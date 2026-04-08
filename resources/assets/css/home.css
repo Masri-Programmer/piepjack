@@ -1,9 +1,7 @@
 .hero {
     position: relative;
-    margin: -1rem;
-    padding-bottom: 1rem;
-    margin-top: -4rem;
     overflow: hidden;
+    width: 100%;
 }
 
 .hero-container {
@@ -13,7 +11,7 @@
     justify-content: center;
     overflow: hidden;
     gap: 1.5rem;
-    padding-bottom: 1rem;
+    padding-bottom: 4rem;
 }
 
 .hero-content {
@@ -109,11 +107,6 @@
 }
 
 @media (min-width: 768px) {
-    .hero {
-        margin: -2rem;
-        padding-bottom: 2rem;
-    }
-
     .hero-container {
         max-height: 100vh;
         padding-bottom: 2rem;
@@ -127,18 +120,14 @@
 }
 
 @media (min-width: 1536px) {
-    .hero {
-        margin: -4rem;
-        padding-bottom: 4rem;
-    }
-
     .hero-container {
         padding-bottom: 4rem;
     }
 }
 
 #piepjack-hero {
-    height: 80vh;
+    height: 100vh;
+    min-height: 600px;
     background-image: url('@assets/img/hintergrund.jpg');
     background-position: center;
     background-size: cover;
