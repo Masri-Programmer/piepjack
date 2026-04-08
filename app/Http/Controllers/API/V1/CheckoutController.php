@@ -28,6 +28,7 @@ use Lunar\Models\ProductVariant;
 use Stripe\Checkout\Session;
 use Stripe\Coupon;
 use Stripe\Customer;
+use Stripe\PaymentIntent;
 use Stripe\Stripe;
 use Stripe\Webhook as StripeWebhook;
 
@@ -180,8 +181,23 @@ class CheckoutController extends Controller
             return response()->json(['message' => __('Cart or Cart ID not found')], 404);
         }
 
-        // 1. Determine the Payment Intent ID (pi_...) - CRITICAL for refunds
+        // 1. Determine the Charge ID (ch_...) - CRITICAL for refunds in Lunar
         $paymentIntentId = $stripeObject->payment_intent ?? ($stripeObject->object === 'payment_intent' ? $stripeObject->id : null);
+        $chargeId = $stripeObject->charge ?? ($stripeObject->object === 'charge' ? $stripeObject->id : null);
+
+        // If we only have a PI ID, try to get the latest charge ID from Stripe
+        if (! $chargeId && $paymentIntentId) {
+            try {
+                Stripe::setApiKey(config('services.stripe.secret'));
+                $pi = PaymentIntent::retrieve($paymentIntentId);
+                $chargeId = $pi->latest_charge;
+            } catch (Exception $e) {
+                Log::warning("Could not retrieve latest charge for PI {$paymentIntentId}: ".$e->getMessage());
+            }
+        }
+
+        // Fallback to PI ID if charge ID still missing
+        $referenceId = $chargeId ?? $paymentIntentId;
 
         // 2. Determine the status
         $stripeStatus = $stripeObject->status ?? 'succeeded';
@@ -192,12 +208,12 @@ class CheckoutController extends Controller
         $lunarStatus = $this->statusMapping[$stripeStatus] ?? 'processing';
 
         // 3. Sync the order status
-        $this->syncOrderStatus($cart, $lunarStatus, $paymentIntentId);
+        $this->syncOrderStatus($cart, $lunarStatus, $referenceId);
 
         return response()->json(['message' => __('Webhook handled successfully')]);
     }
 
-    private function syncOrderStatus(Cart $cart, string $lunarStatus, ?string $paymentIntentId): void
+    private function syncOrderStatus(Cart $cart, string $lunarStatus, ?string $referenceId): void
     {
         DB::beginTransaction();
         try {
@@ -210,13 +226,13 @@ class CheckoutController extends Controller
             ]);
 
             // Only finalize shipping and emails if payment is fully received
-            if ($lunarStatus === 'payment-received' && $paymentIntentId && ! $order->transactions()->where('reference', $paymentIntentId)->exists()) {
+            if ($lunarStatus === 'payment-received' && $referenceId && ! $order->transactions()->where('reference', $referenceId)->exists()) {
                 $order->transactions()->create([
                     'success' => true,
                     'type' => 'capture',
                     'driver' => 'stripe',
                     'amount' => $order->total->value,
-                    'reference' => $paymentIntentId, // CRITICAL: Must be pi_...
+                    'reference' => $referenceId, // CRITICAL: Prefers ch_...
                     'status' => 'succeeded',
                     'card_type' => 'stripe',
                 ]);

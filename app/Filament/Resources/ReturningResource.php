@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Lunar\Facades\Payments;
 use Lunar\Models\Transaction;
+use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
 class ReturningResource extends Resource
@@ -73,25 +74,32 @@ class ReturningResource extends Resource
                         $capture = Transaction::where('order_id', $record->order_id)
                             ->where('type', 'capture')
                             ->where('success', true)
-                            ->where('reference', 'LIKE', 'pi_%') // Ensure we only get real Payment Intents
                             ->first();
 
-                        if (! $capture) {
-                            // Fallback to any success transaction if pi_ not found, but log it
-                            $capture = Transaction::where('order_id', $record->order_id)
-                                ->where('type', 'capture')
-                                ->where('success', true)
-                                ->first();
-                        }
-
-                        if (! $capture || ! Str::startsWith($capture->reference, ['pi_', 'ch_'])) {
+                        if (! $capture || ! Str::startsWith($capture->reference, ['pi_', 'ch_', 'py_'])) {
                             Notification::make()
                                 ->title('No valid Stripe charge found')
-                                ->body('The transaction reference is missing or invalid (must start with pi_ or ch_).')
+                                ->body('The transaction reference is missing or invalid.')
                                 ->danger()
                                 ->send();
 
                             return;
+                        }
+
+                        Stripe::setApiKey(config('services.stripe.secret'));
+
+                        // CRITICAL FIX: If we have a PaymentIntent ID (pi_...), we MUST resolve the Charge ID (ch_...)
+                        // because Lunar's Stripe driver passes the reference to Stripe's Charge Refund API.
+                        if (Str::startsWith($capture->reference, 'pi_')) {
+                            try {
+                                $pi = PaymentIntent::retrieve($capture->reference);
+                                if ($pi->latest_charge) {
+                                    $capture->update(['reference' => $pi->latest_charge]);
+                                    $capture = $capture->fresh();
+                                }
+                            } catch (\Exception $e) {
+                                Log::error("Failed to resolve Charge ID for PI {$capture->reference}: ".$e->getMessage());
+                            }
                         }
 
                         // 2. Calculate the refund amount in cents
@@ -106,8 +114,6 @@ class ReturningResource extends Resource
 
                             return;
                         }
-
-                        Stripe::setApiKey(config('services.stripe.secret'));
 
                         try {
                             // 3. Process with Lunar
