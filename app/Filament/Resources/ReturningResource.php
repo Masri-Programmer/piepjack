@@ -10,6 +10,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Lunar\Facades\Payments;
 use Lunar\Models\Transaction;
 use Stripe\Stripe;
@@ -67,37 +69,68 @@ class ReturningResource extends Resource
                     ->modalDescription('This will deduct the return fee and refund the remainder to the original payment method.')
                     ->visible(fn (Returning $record) => $record->status === 'requested')
                     ->action(function (Returning $record) {
-
                         // 1. Find the Lunar Capture Transaction
                         $capture = Transaction::where('order_id', $record->order_id)
                             ->where('type', 'capture')
                             ->where('success', true)
+                            ->where('reference', 'LIKE', 'pi_%') // Ensure we only get real Payment Intents
                             ->first();
 
                         if (! $capture) {
-                            Notification::make()->title('No capture transaction found')->danger()->send();
+                            // Fallback to any success transaction if pi_ not found, but log it
+                            $capture = Transaction::where('order_id', $record->order_id)
+                                ->where('type', 'capture')
+                                ->where('success', true)
+                                ->first();
+                        }
+
+                        if (! $capture || ! Str::startsWith($capture->reference, ['pi_', 'ch_'])) {
+                            Notification::make()
+                                ->title('No valid Stripe charge found')
+                                ->body('The transaction reference is missing or invalid (must start with pi_ or ch_).')
+                                ->danger()
+                                ->send();
 
                             return;
                         }
 
                         // 2. Calculate the refund amount in cents
-                        // Assuming return_fee is stored in euros (e.g., 4.90)
-                        $refundAmountCents = $capture->amount->value - ($record->return_fee * 100);
+                        $refundAmountCents = (int) ($capture->amount->value - ($record->return_fee * 100));
+
+                        if ($refundAmountCents <= 0) {
+                            Notification::make()
+                                ->title('Invalid refund amount')
+                                ->body('The return fee exceeds the total order amount.')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
                         Stripe::setApiKey(config('services.stripe.secret'));
 
-                        // 3. Process with Lunar
-                        $response = Payments::driver('stripe')->refund(
-                            $capture,
-                            $refundAmountCents,
-                            "RMA #{$record->id} processed"
-                        );
+                        try {
+                            // 3. Process with Lunar
+                            $response = Payments::driver('stripe')->refund(
+                                $capture,
+                                $refundAmountCents,
+                                "RMA #{$record->id} processed"
+                            );
 
-                        // 4. Handle Response
-                        if ($response->success) {
-                            $record->update(['status' => 'refunded']);
-                            Notification::make()->title('Refund successful')->success()->send();
-                        } else {
-                            Notification::make()->title('Refund failed')->danger()->send();
+                            // 4. Handle Response
+                            if ($response->success) {
+                                $record->update(['status' => 'refunded']);
+                                Notification::make()->title('Refund successful')->success()->send();
+                            } else {
+                                Notification::make()->title('Refund failed')->body($response->message ?? 'Unknown error')->danger()->send();
+                            }
+                        } catch (\Exception $e) {
+                            Log::error("Refund error for Returning ID {$record->id}: ".$e->getMessage());
+                            Notification::make()
+                                ->title('Stripe Refund Error')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
                         }
                     }),
             ]);
