@@ -312,7 +312,7 @@ class CheckoutController extends Controller
         } else {
             $cart->update([
                 'user_id' => $user?->id,
-                'customer_id' => $customer?->id // Add this
+                'customer_id' => $customer?->id
             ]);
         }
 
