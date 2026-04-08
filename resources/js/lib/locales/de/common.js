@@ -163,6 +163,8 @@ export default {
         selected_carrier: "Ausgewählter Paketdienst",
         fee: "Rückgebühr",
         drop_off_desc: "Abgabe an Standort",
+        success_title: "Rückgabe beantragt!",
+        success_message: "Vielen Dank für das Einreichen Ihres Rückgabeantrags. Wir werden ihn so schnell wie möglich bearbeiten.",
     },
     alerts: {
         orderNotFound: "Nicht gefunden.",

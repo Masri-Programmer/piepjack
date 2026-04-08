@@ -159,6 +159,8 @@ export default {
         selected_carrier: "Selected Carrier",
         fee: "Return Fee",
         drop_off_desc: "Drop-off at location",
+        success_title: "Return Requested!",
+        success_message: "Thank you for submitting your return request. We will process it as soon as possible.",
     },
     alerts: {
         orderNotFound: "Order not found.",

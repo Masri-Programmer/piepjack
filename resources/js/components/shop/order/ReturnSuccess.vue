@@ -1,63 +1,77 @@
 <template>
-    <div class="my-3" v-if="!Updating">
-        <div class="bg-gray p-24 md:mx-auto">
-            <svg
-                viewBox="0 0 24 24"
-                class="text-green-600 w-16 h-16 mx-auto mb-6"
-            >
-                <path
-                    fill="currentColor"
-                    d="M12,0A12,12,0,1,0,24,12,12.014,12.014,0,0,0,12,0Zm6.927,8.2-6.845,9.289a1.011,1.011,0,0,1-1.43.188L5.764,13.769a1,1,0,1,1,1.25-1.562l4.076,3.261,6.227-8.451A1,1,0,1,1,18.927,8.2Z"
-                />
-            </svg>
-            <div class="text-center text-main">
-                <h3
-                    class="md:text-3xl text-base text-accent font-semibold text-center"
-                >
-                    # {{ returnId }} <br />
-                    {{ $t("validation.success.title") }}
-                </h3>
-                <p class="my-2">{{ $t("validation.success.thankYou") }}</p>
-                <p>
-                    {{
-                        $t("validation.success.checkEmail", {
-                            payment: $t("validation.success.return"),
-                        })
-                    }}
-                </p>
+    <div class="max-w-4xl mx-auto px-6 py-16 sm:py-24 selection:bg-main selection:text-accent">
+        <div v-if="!isLoading" class="space-y-12 animate-in fade-in zoom-in-95 duration-700">
+            <div class="border-[12px] border-main bg-background p-12 sm:p-20 text-center relative overflow-hidden">
+                <!-- Decorative background element -->
+                <div class="absolute -right-8 -top-8 w-32 h-32 bg-accent_light rotate-12 opacity-50"></div>
+                
+                <div class="relative z-10">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-main text-accent mb-8 rounded-none">
+                        <Check class="w-10 h-10" stroke-width="3" />
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-6xl font-bold uppercase tracking-tighter italic leading-none text-foreground mb-6">
+                        {{ $t("common.return.success_title") }}
+                    </h1>
+                    
+                    <p class="text-xl font-bold uppercase tracking-widest text-main mb-2">
+                        #{{ returnNumber }}
+                    </p>
+                    
+                    <div class="w-24 h-2 bg-border mx-auto mb-8"></div>
+                    
+                    <p class="text-lg font-medium text-muted-foreground max-w-md mx-auto leading-relaxed">
+                        {{ $t("common.return.success_message") }}
+                    </p>
+                </div>
+            </div>
+
+            <div v-if="data?.data" class="space-y-12">
+                <div class="flex items-center gap-4">
+                    <div class="h-px grow bg-border"></div>
+                    <h2 class="text-2xl font-bold uppercase italic tracking-tight shrink-0">
+                        {{ $t("common.titles.peopleAlsoLiked") }}
+                    </h2>
+                    <div class="h-px grow bg-border"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <template v-for="c in data.data" :key="c.id">
+                        <HomeCarousel
+                            v-if="c.promoted"
+                            :name="c.name"
+                            :slug="c.slug"
+                            :id="c.id"
+                            :title="c.name"
+                        />
+                    </template>
+                </div>
             </div>
         </div>
+        
+        <div v-else class="flex justify-center items-center min-h-[60vh]">
+            <Spinner size="lg" />
+        </div>
     </div>
-    <div v-else><Spinner /></div>
-
-    <template v-if="data?.data">
-        <template v-for="c in data.data">
-            <HomeCarousel
-                v-if="c.promoted"
-                :name="c.name"
-                :slug="c.slug"
-                :id="c.id"
-                :title="c.name"
-            />
-        </template>
-    </template>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
+import { Check } from "lucide-vue-next";
 import Spinner from "@components/ui/Spinner.vue";
 import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
 import { apiQuery } from "@lib/helpers";
 import { cartState } from "@lib/store/shop/index.js";
 
 const route = useRoute();
-const returnId = route.query.return_number;
-const { data, error, isLoading } = apiQuery("categories").useGet({});
+const returnNumber = computed(() => route.query.return_number);
+
+// We fetch categories to show recommendations (promoted ones)
+const { data, isLoading } = apiQuery("categories").useGet({});
 
 onMounted(() => {
-    if (returnId) {
-        cartState.value.cartItems = [];
-    }
+    // Clear cart on success
+    cartState.value.cartItems = [];
 });
 </script>

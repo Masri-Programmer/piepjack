@@ -11,9 +11,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Lunar\Base\Traits\LunarUser;
+use Lunar\Models\Address;
 use Lunar\Models\Order;
 use Spatie\Permission\Traits\HasRoles;
-use Lunar\Models\Address;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -57,7 +58,6 @@ class User extends Authenticatable
         return $this->hasMany(Address::class);
     }
 
-
     public function hasRole(string $roleName): bool
     {
         return $this->roles()->where('name', $roleName)->exists();
@@ -66,6 +66,16 @@ class User extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function getNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 
     public static function countByStatus(bool $isActive): int
