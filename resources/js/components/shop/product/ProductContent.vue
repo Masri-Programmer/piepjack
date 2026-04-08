@@ -70,6 +70,12 @@
                     >
                         {{ data?.name }}
                     </h1>
+                    <div v-if="data?.reviews_count > 0" class="flex items-center gap-2 mt-2">
+                        <StarRating :rating="Math.round(data.average_rating)" size="18" />
+                        <span class="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                            {{ data.average_rating.toFixed(1) }} ({{ data.reviews_count }} {{ $t('common.product.reviews') }})
+                        </span>
+                    </div>
                 </div>
 
                 <div class="space-y-6">
@@ -216,8 +222,8 @@
                                         )
                                     }}</span>
                                     <a
-                                        href="#"
-                                        class="text-xs font-accent_dark uppercase text-[#f2f0a1] hover:underline underline-offset-4 w-fit"
+                                        href="/return-order"
+                                        class="text-xs font-accent_dark uppercase text-primary-foreground hover:underline underline-offset-4 w-fit"
                                     >
                                         →
                                         {{
@@ -242,35 +248,6 @@
         @hide="onHide"
     />
 </template>
-
-<style scoped>
-@reference "@assets/css/app.css";
-
-/* Shared navigation styling for both carousels */
-.product-carousel :deep(.carousel__prev),
-.product-carousel :deep(.carousel__next),
-.thumbnail-carousel :deep(.carousel__prev),
-.thumbnail-carousel :deep(.carousel__next) {
-    @apply bg-background border-2 border-accent_dark text-main hover:bg-accent_dark hover:text-primary-foreground transition-colors mx-2;
-    border-radius: 0;
-}
-
-/* Adjust size for thumbnail navigation to not obscure images */
-.thumbnail-carousel :deep(.carousel__prev),
-.thumbnail-carousel :deep(.carousel__next) {
-    transform: scale(0.8) translateY(-50%);
-}
-
-.product-carousel :deep(.carousel__slide),
-.thumbnail-carousel :deep(.carousel__slide) {
-    @apply p-0;
-}
-
-.product-carousel :deep(.carousel__viewport),
-.thumbnail-carousel :deep(.carousel__viewport) {
-    @apply rounded-none;
-}
-</style>
 
 <script setup>
 import { ref, computed } from "vue";
@@ -301,6 +278,7 @@ import {
 // Custom Components
 import ProductVariations from "./ProductVariations.vue";
 import ProductContentAddOns from "./ProductContentAddOns.vue";
+import StarRating from "./StarRating.vue";
 import ProductImage from "@components/ui/ProductImage.vue";
 
 const props = defineProps({

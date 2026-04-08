@@ -33,6 +33,12 @@
                 >
                     {{ product.name }}
                 </p>
+
+                <div v-if="product.reviews_count > 0" class="flex items-center mt-1 gap-1">
+                    <StarRating :rating="Math.round(product.average_rating)" size="14" />
+                    <span class="text-[10px] text-muted-foreground">({{ product.reviews_count }})</span>
+                </div>
+
                 <p
                     v-if="product.price"
                     class="mt-1 text-xs uppercase sm:text-sm text-muted-foreground"
@@ -48,6 +54,7 @@
 import { ref, computed } from "vue";
 import { useNow } from "@vueuse/core";
 import ProductImage from "@ui/ProductImage.vue";
+import StarRating from "./StarRating.vue";
 import { Card, CardContent } from "@ui/card";
 import { Badge } from "@ui/badge";
 import { AspectRatio } from "@ui/aspect-ratio";
@@ -66,6 +73,8 @@ const props = defineProps({
             price: "89.91",
             formatted_price: "89.91 €",
             created_at: new Date().toISOString(),
+            average_rating: 0,
+            reviews_count: 0,
         }),
     },
 });

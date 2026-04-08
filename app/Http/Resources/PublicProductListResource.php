@@ -28,6 +28,9 @@ class PublicProductListResource extends JsonResource
 
             'description' => $this->translateAttribute('description'),
 
+            'average_rating' => (float) ($this->reviews_avg_rating ?? 0),
+            'reviews_count' => (int) ($this->reviews_count ?? 0),
+
             // 4. Map the first Collection to the category fields your frontend expects
             'category_id' => $collection ? $collection->id : null,
             'category_name' => $collection ? $collection->translateAttribute('name') : null,

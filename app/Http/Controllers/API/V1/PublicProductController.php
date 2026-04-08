@@ -13,7 +13,9 @@ class PublicProductController extends Controller
     {
         $query = Product::query()
             ->where('status', 'published') // Lunar uses status instead of active boolean
-            ->with(['variants.prices', 'collections', 'media']); // Eager load Lunar relationships
+            ->with(['variants.prices', 'collections', 'media']) // Eager load Lunar relationships
+            ->withAvg(['reviews' => fn ($q) => $q->where('is_approved', true)], 'rating')
+            ->withCount(['reviews' => fn ($q) => $q->where('is_approved', true)]);
 
         // 1. Filter by Category (Lunar Collections)
         if ($categoryId = request('category_id')) {
@@ -51,7 +53,8 @@ class PublicProductController extends Controller
             'variants.values.option', // This is the corrected relationship path!
             'collections',
             'media',
-        ]);
+        ])->loadAvg(['reviews' => fn ($q) => $q->where('is_approved', true)], 'rating')
+            ->loadCount(['reviews' => fn ($q) => $q->where('is_approved', true)]);
 
         return (new PublicProductListResource($product))->response();
     }
