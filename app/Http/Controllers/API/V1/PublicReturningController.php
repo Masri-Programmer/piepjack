@@ -47,7 +47,7 @@ class PublicReturningController extends Controller
             return $this->unprocessableEntityResponse(__('The provided email does not match the email associated with this order.'));
         }
 
-        if (! in_array($order->status, ['paid', 'shipped', 'delivered'])) {
+        if (! in_array($order->status, ['payment-received', 'dispatched'])) {
             return $this->unprocessableEntityResponse(__('Returns can only be created for paid, shipped, or delivered orders.'));
         }
 

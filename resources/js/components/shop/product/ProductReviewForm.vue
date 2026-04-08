@@ -174,10 +174,7 @@
             <p
                 class="text-sm font-bold uppercase tracking-widest text-muted-foreground leading-relaxed"
             >
-                {{
-                    $t("common.product.review_submitted_message") ||
-                    "Thank you for your review! It is pending approval."
-                }}
+                {{ $t("common.product.review_submitted_message") }}
             </p>
         </div>
     </div>
@@ -186,6 +183,7 @@
 <script setup>
 import { reactive, ref, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
+import { useQueryClient } from "@tanstack/vue-query";
 import * as Yup from "yup";
 
 import { apiQuery } from "@lib/helpers";
@@ -200,6 +198,7 @@ const props = defineProps({
 });
 
 const { t } = useI18n();
+const queryClient = useQueryClient();
 const {
     mutate: createReview,
     isLoading: createLoading,
@@ -241,6 +240,7 @@ const submitReview = async () => {
         await validationSchema.validate(reviewForm, { abortEarly: false });
         createReview(reviewForm, {
             onSuccess: () => {
+                queryClient.invalidateQueries(["products-reviews"]);
                 setTimeout(() => {
                     resetForm();
                 }, 5000);

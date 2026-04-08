@@ -12,14 +12,15 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Lunar\Facades\Payments;
 use Lunar\Models\Transaction;
+use Stripe\Stripe;
 
 class ReturningResource extends Resource
 {
     protected static ?string $model = Returning::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
 
-    protected static ?string $navigationGroup = 'Order Management';
+    protected static ?string $navigationGroup = 'Verkauf';
 
     protected static ?string $modelLabel = 'Return Request';
 
@@ -82,6 +83,7 @@ class ReturningResource extends Resource
                         // 2. Calculate the refund amount in cents
                         // Assuming return_fee is stored in euros (e.g., 4.90)
                         $refundAmountCents = $capture->amount->value - ($record->return_fee * 100);
+                        Stripe::setApiKey(config('services.stripe.secret'));
 
                         // 3. Process with Lunar
                         $response = Payments::driver('stripe')->refund(

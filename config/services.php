@@ -14,10 +14,15 @@ return [
     |
     */
     'stripe' => [
+        'key' => env('STRIPE_SECRET_KEY'),
+        'public_key' => env('STRIPE_PUBLISHABLE_KEY'),
         'secret' => env('STRIPE_SECRET_KEY'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
         'webhook_return_secret' => env('STRIPE_WEBHOOK_SECRET_RETURN'),
         'payment_methods' => ['card', 'sepa_debit', 'paypal'],
+        'webhooks' => [
+            'lunar' => env('LUNAR_STRIPE_WEBHOOK_SECRET'),
+        ],
     ],
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),

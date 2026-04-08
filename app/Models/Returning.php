@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasFilters;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Lunar\Models\Order;
 
 class Returning extends Model
@@ -22,7 +23,7 @@ class Returning extends Model
         });
     }
 
-    protected $table = 'returns';
+    protected $table = 'returnings';
 
     protected $fillable = [
         'order_id',
@@ -40,7 +41,7 @@ class Returning extends Model
         return $this->belongsTo(Order::class, 'order_id');
     }
 
-    public function items()
+    public function items(): HasMany
     {
         return $this->hasMany(ReturnItem::class, 'return_id');
     }
