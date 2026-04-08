@@ -39,13 +39,19 @@ class ProductReviewController extends Controller
             return response()->json(['message' => __('Product not found.')], 404);
         }
 
-        // Check if user bought any variant of this Lunar Product in a delivered order
+        // Get all variant IDs for this product
+        $variantIds = $product->variants()->pluck('id')->toArray();
+
+        // Check if user bought any variant of this Lunar Product in a successful order
+        // We include common final statuses like 'dispatched', 'delivered', 'shipped'
         $canReview = Order::where('user_id', $user->id)
-            ->where('status', 'delivered')
-            ->whereHas('lines', function ($query) use ($product) {
-                $query->whereHasMorph('purchasable', [ProductVariant::class], function ($query) use ($product) {
-                    $query->where('product_id', $product->id);
-                });
+            ->whereIn('status', ['dispatched', 'delivered', 'shipped', 'payment-received'])
+            ->whereHas('lines', function ($query) use ($variantIds) {
+                $query->whereIn('purchasable_id', $variantIds)
+                    ->where(function ($q) {
+                        $q->where('purchasable_type', ProductVariant::class)
+                            ->orWhere('purchasable_type', 'product_variant');
+                    });
             })
             ->exists();
 
