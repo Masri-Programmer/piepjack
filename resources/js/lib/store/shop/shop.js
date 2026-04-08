@@ -1,6 +1,7 @@
 import { createGlobalState, useStorage, useSessionStorage } from "@vueuse/core";
 import { computed } from "vue";
 import axios from "axios";
+import { apiRequest } from "../helpers";
 
 export const useShopGlobalState = createGlobalState(() => {
     const cartState = useStorage("cart-state", {
@@ -67,7 +68,7 @@ export const useShopGlobalState = createGlobalState(() => {
 
     const cartTotalPrice = computed(() => {
         const total = cartState.value.cartItems.reduce((total, product) => {
-            const productTotal = product.items.reduce((acc, item) => {
+            const productTotal = (product.items || []).reduce((acc, item) => {
                 const price = Number(item.price) || 0;
                 const quantity = Number(item.cartQuantity) || 0;
                 return acc + price * quantity;
@@ -80,7 +81,7 @@ export const useShopGlobalState = createGlobalState(() => {
 
     const cartTotalQuantity = computed(() => {
         return cartState.value.cartItems.reduce((total, product) => {
-            const productQuantity = product.items.reduce((acc, item) => {
+            const productQuantity = (product.items || []).reduce((acc, item) => {
                 return acc + (Number(item.cartQuantity) || 0);
             }, 0);
             return total + productQuantity;
@@ -112,10 +113,7 @@ export const useShopGlobalState = createGlobalState(() => {
                 ...product,
                 items: product.items.map((item) => ({
                     ...item,
-                    cartQuantity: Math.max(
-                        1,
-                        Math.min(1, Number(item.quantity) || 0),
-                    ),
+                    cartQuantity: 1,
                 })),
             };
             cartState.value.cartItems.push(newProduct);
@@ -133,7 +131,7 @@ export const useShopGlobalState = createGlobalState(() => {
             );
             if (item) {
                 const maxQuantity = item.quantity;
-                item.cartQuantity = Math.min(quantity, maxQuantity);
+                item.cartQuantity = Math.max(1, Math.min(quantity, maxQuantity));
             }
         }
     };
@@ -165,10 +163,8 @@ export const useShopGlobalState = createGlobalState(() => {
         if (cartState.value.cartItems.length) {
             for (const cartProduct of cartState.value.cartItems) {
                 try {
-                    const response = await axios.get(
-                        `/products/${cartProduct.id}`,
-                    );
-                    const validProduct = response.data.data;
+                    const response = await apiRequest("get", `/products/${cartProduct.id}`);
+                    const validProduct = response.data;
 
                     if (!validProduct || validProduct.id !== cartProduct.id) {
                         console.warn(
