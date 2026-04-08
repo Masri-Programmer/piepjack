@@ -19,8 +19,7 @@
                             >02 {{ $t("common.return.select") }}</span
                         >
                         <ChevronRight class="w-3 h-3" />
-                        <span
-                            :class="activeStep === 3 ? 'text-primary' : ''"
+                        <span :class="activeStep === 3 ? 'text-primary' : ''"
                             >03 {{ $t("common.return.logistics") }}</span
                         >
                     </div>
@@ -46,7 +45,7 @@
         <main class="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <section
                 v-if="activeStep === 1"
-                class="lg:col-span-8 lg:col-start-3 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"
+                class="lg:col-span-6 space-y-8 animate-in fade-in slide-in-from-bottom-4"
             >
                 <p
                     class="text-muted-foreground text-sm font-bold uppercase tracking-widest leading-relaxed text-center"
@@ -93,11 +92,7 @@
                         :disabled="isLoadingOrder"
                         class="w-full rounded-none h-16 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 mt-4"
                     >
-                        <Spinner
-                            v-if="isLoadingOrder"
-                            size="xs"
-                            class="mr-2"
-                        />
+                        <Spinner v-if="isLoadingOrder" size="xs" class="mr-2" />
                         {{ $t("components.buttons.returnOrder") }}
                     </Button>
                 </form>
@@ -155,9 +150,7 @@
                     </Label>
                     <Textarea
                         v-model="form.reason"
-                        :placeholder="
-                            $t('common.return.reason_placeholder')
-                        "
+                        :placeholder="$t('common.return.reason_placeholder')"
                         required
                         class="rounded-none border-2 border-border bg-muted/30 focus-visible:ring-primary focus-visible:border-primary min-h-[150px] font-bold text-sm resize-y"
                     />
@@ -189,9 +182,7 @@
                                 <CardTitle
                                     class="text-xl font-black uppercase tracking-widest"
                                 >
-                                    {{
-                                        $t("common.return.select_shipping")
-                                    }}
+                                    {{ $t("common.return.select_shipping") }}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent class="p-6">
@@ -209,13 +200,15 @@
                                             <span
                                                 class="block font-black uppercase tracking-widest text-sm group-hover:text-primary transition-colors"
                                             >
-                                                {{
-                                                    $t("common.return.dhl")
-                                                }}
+                                                {{ $t("common.return.dhl") }}
                                             </span>
                                             <span
                                                 class="block text-xs font-bold text-muted-foreground uppercase"
-                                                >{{ $t("common.return.drop_off_desc") }}</span
+                                                >{{
+                                                    $t(
+                                                        "common.return.drop_off_desc",
+                                                    )
+                                                }}</span
                                             >
                                         </div>
                                     </div>
@@ -244,26 +237,28 @@
                                     class="space-y-3 text-sm font-bold uppercase tracking-widest"
                                 >
                                     <div class="flex justify-between">
-                                        <span class="opacity-80"
-                                            >{{ $t("common.return.selected_carrier") }}</span
-                                        >
+                                        <span class="opacity-80">{{
+                                            $t("common.return.selected_carrier")
+                                        }}</span>
                                         <span class="font-mono">{{
                                             selectedService
                                         }}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="opacity-80"
-                                            >{{ $t("common.return.fee") }}</span
-                                        >
-                                        <span class="font-mono"
-                                            >0.00 €</span
-                                        >
+                                        <span class="opacity-80">{{
+                                            $t("common.return.fee")
+                                        }}</span>
+                                        <span class="font-mono">0.00 €</span>
                                     </div>
-                                    <div class="flex justify-between pt-2 border-t border-primary-foreground/20">
-                                        <span class="font-black">{{ $t("common.return.total_amount_label") }}</span>
-                                        <span class="font-black"
-                                            >0.00 €</span
-                                        >
+                                    <div
+                                        class="flex justify-between pt-2 border-t border-primary-foreground/20"
+                                    >
+                                        <span class="font-black">{{
+                                            $t(
+                                                "common.return.total_amount_label",
+                                            )
+                                        }}</span>
+                                        <span class="font-black">0.00 €</span>
                                     </div>
                                 </div>
 
@@ -293,7 +288,7 @@
                                     :disabled="!termsAccepted || isLoading"
                                     @click="submitReturn"
                                     variant="outline"
-                                    class="w-full rounded-none h-16 text-lg font-black uppercase tracking-[0.2em] border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-primary-foreground"
+                                    class="view-all"
                                 >
                                     <Spinner
                                         v-if="isLoading"

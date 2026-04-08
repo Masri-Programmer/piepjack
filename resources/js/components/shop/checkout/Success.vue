@@ -1,255 +1,137 @@
 <template>
-    <div
-        class="min-h-screen py-16 sm:py-24 selection:bg-main selection:text-accent"
+    <PageLayout
+        :title="$t('validation.success.title')"
+        :description="$t('validation.success.thankYou')"
     >
-        <div class="container mx-auto px-6">
-            <header
-                class="mb-12 border-b-[12px] border-border pb-8 text-center md:text-left"
-            >
-                <p
-                    class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground"
-                >
+        <template #header>
+            <div class="border-b-[12px] border-border pb-8 text-center md:text-left">
+                <p class="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">
                     {{ $t("validation.success.order") }}
                     {{ $t("validation.success.status") }}
                 </p>
-                <h1
-                    class="text-6xl sm:text-7xl font-bold uppercase tracking-tighter leading-none italic text-foreground"
-                >
+                <h1 class="text-6xl sm:text-7xl font-bold uppercase tracking-tighter leading-none italic text-foreground">
                     {{ $t("validation.success.title") }}
                 </h1>
-            </header>
+            </div>
+        </template>
 
-            <div
-                v-if="
-                    [
-                        'paid',
-                        'payment-received',
-                        'dispatched',
-                        'requires-capture',
-                    ].includes(orderStatus)
-                "
-                class="space-y-12 animate-in fade-in duration-700"
-            >
-                <div
-                    class="bg-main text-accent p-8 sm:p-12 border-4 border-main flex flex-col items-center text-center"
-                >
-                    <svg
-                        viewBox="0 0 24 24"
-                        class="w-24 h-24 mb-8 text-accent animate-in zoom-in duration-500 delay-200"
-                    >
-                        <path
-                            fill="currentColor"
-                            d="M12,0A12,12,0,1,0,24,12,12.014,12.014,0,0,0,12,0Zm6.927,8.2-6.845,9.289a1.011,1.011,0,0,1-1.43.188L5.764,13.769a1,1,0,1,1,1.25-1.562l4.076,3.261,6.227-8.451A1,1,0,1,1,18.927,8.2Z"
-                        />
-                    </svg>
-                    <p
-                        class="text-2xl font-bold uppercase tracking-widest mb-2"
-                    >
-                        {{ $t("validation.success.confirmed") }}
-                    </p>
-                    <p class="text-4xl font-mono font-bold mb-6">
-                        #{{ orderReference }}
-                    </p>
-                    <p class="text-lg font-medium opacity-80 mb-2">
-                        {{ $t("validation.success.thankYou") }}
-                    </p>
-                    <p
-                        class="text-sm font-bold uppercase tracking-widest opacity-60"
-                    >
-                        {{
-                            $t("validation.success.checkEmail", {
-                                payment: $t("validation.success.order"),
-                            })
-                        }}
-                    </p>
+        <div
+            v-if="['paid', 'payment-received', 'dispatched', 'requires-capture'].includes(orderStatus)"
+            class="space-y-12 animate-in fade-in duration-700"
+        >
+            <div class="bg-main text-accent p-8 sm:p-12 border-4 border-main flex flex-col items-center text-center">
+                <svg viewBox="0 0 24 24" class="w-24 h-24 mb-8 text-accent animate-in zoom-in duration-500 delay-200">
+                    <path fill="currentColor" d="M12,0A12,12,0,1,0,24,12,12.014,12.014,0,0,0,12,0Zm6.927,8.2-6.845,9.289a1.011,1.011,0,0,1-1.43.188L5.764,13.769a1,1,0,1,1,1.25-1.562l4.076,3.261,6.227-8.451A1,1,0,1,1,18.927,8.2Z" />
+                </svg>
+                <p class="text-2xl font-bold uppercase tracking-widest mb-2">
+                    {{ $t("validation.success.confirmed") }}
+                </p>
+                <p class="text-4xl font-mono font-bold mb-6">
+                    #{{ orderReference }}
+                </p>
+                <p class="text-lg font-medium opacity-80 mb-2">
+                    {{ $t("validation.success.thankYou") }}
+                </p>
+                <p class="text-sm font-bold uppercase tracking-widest opacity-60">
+                    {{ $t("validation.success.checkEmail", { payment: $t("validation.success.order") }) }}
+                </p>
+            </div>
+
+            <div v-if="orderDetailsData?.data" class="border-2 border-border bg-background animate-in slide-in-from-bottom-4 duration-500 delay-300">
+                <div class="p-6 border-b-2 border-border bg-muted">
+                    <h4 class="text-lg font-bold uppercase tracking-widest text-foreground">
+                        {{ $t("validation.success.summary") }}
+                    </h4>
                 </div>
 
-                <div
-                    v-if="orderDetailsData?.data"
-                    class="border-2 border-border bg-background animate-in slide-in-from-bottom-4 duration-500 delay-300"
-                >
-                    <div class="p-6 border-b-2 border-border bg-muted">
-                        <h4
-                            class="text-lg font-bold uppercase tracking-widest text-foreground"
-                        >
-                            {{ $t("validation.success.summary") }}
-                        </h4>
-                    </div>
-
-                    <div class="divide-y-2 divide-border">
-                        <div
-                            v-for="product in orderDetailsData.data.products"
-                            :key="product.id"
-                            class="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6"
-                        >
-                            <div
-                                class="w-24 h-24 bg-accent_light border-2 border-border flex-shrink-0"
-                            >
-                                <img
-                                    :src="product.image_url"
-                                    :alt="product.name"
-                                    class="w-full h-full object-cover grayscale-[20%]"
-                                />
-                            </div>
-                            <div class="flex-1">
-                                <p
-                                    class="font-bold text-lg uppercase tracking-tight"
-                                >
-                                    {{ product.name }}
-                                </p>
-                                <p
-                                    class="text-sm font-bold uppercase tracking-widest text-muted-foreground mt-1"
-                                >
-                                    {{ $t("validation.success.qty") }}:
-                                    {{ product.item.quantity }} |
-                                    {{
-                                        product.item.options
-                                            .map((o) => o.value)
-                                            .join(" / ")
-                                    }}
-                                </p>
-                            </div>
-                            <p class="font-bold font-mono text-xl">
-                                {{ product.item.price.toFixed(2) }}
-                                {{ $currency }}
+                <div class="divide-y-2 divide-border">
+                    <div v-for="product in orderDetailsData.data.products" :key="product.id" class="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                        <div class="w-24 h-24 bg-accent_light border-2 border-border flex-shrink-0">
+                            <img :src="product.image_url" :alt="product.name" class="w-full h-full object-cover grayscale-[20%]" />
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-lg uppercase tracking-tight">
+                                {{ product.name }}
+                            </p>
+                            <p class="text-sm font-bold uppercase tracking-widest text-muted-foreground mt-1">
+                                {{ $t("validation.success.qty") }}:
+                                {{ product.item.quantity }} |
+                                {{ product.item.options.map((o) => o.value).join(" / ") }}
                             </p>
                         </div>
-                    </div>
-
-                    <div
-                        class="p-6 bg-accent_light border-t-4 border-border space-y-4"
-                    >
-                        <div
-                            class="flex justify-between items-center text-sm font-bold uppercase tracking-widest text-muted-foreground"
-                        >
-                            <span>{{ $t("validation.success.subtotal") }}</span>
-                            <span class="font-mono text-foreground"
-                                >{{
-                                    orderDetailsData.data.total_price.toFixed(2)
-                                }}
-                                {{ $currency }}</span
-                            >
-                        </div>
-                        <div
-                            class="flex justify-between items-center text-2xl font-bold uppercase italic border-t-2 border-border pt-4"
-                        >
-                            <span>{{ $t("validation.success.totalPaid") }}</span>
-                            <span class="font-mono"
-                                >{{
-                                    orderDetailsData.data.total_price.toFixed(2)
-                                }}
-                                {{ $currency }}</span
-                            >
-                        </div>
+                        <p class="font-bold font-mono text-xl">
+                            {{ product.item.price.toFixed(2) }}
+                            {{ $currency }}
+                        </p>
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-4 pt-8">
-                    <Button
-                        as-child
-                        variant="outline"
-                        class="flex-1 h-16 border-2 border-main text-sm font-bold uppercase tracking-widest rounded-none hover:bg-main hover:text-accent transition-colors"
-                    >
-                        <router-link :to="'/track-order/' + orderReference">
-                            {{ $t("validation.success.trackOrder") }}
-                        </router-link>
-                    </Button>
+                <div class="p-6 bg-accent_light border-t-4 border-border space-y-4">
+                    <div class="flex justify-between items-center text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                        <span>{{ $t("validation.success.subtotal") }}</span>
+                        <span class="font-mono text-foreground">{{ orderDetailsData.data.total_price.toFixed(2) }} {{ $currency }}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-2xl font-bold uppercase italic border-t-2 border-border pt-4">
+                        <span>{{ $t("validation.success.totalPaid") }}</span>
+                        <span class="font-mono">{{ orderDetailsData.data.total_price.toFixed(2) }} {{ $currency }}</span>
+                    </div>
                 </div>
             </div>
 
-            <div
-                v-else-if="paymentStateDetails"
-                class="space-y-8 animate-in fade-in duration-700 max-w-2xl mx-auto"
-            >
-                <div
-                    :class="[
-                        'p-8 sm:p-12 border-4 flex flex-col items-center text-center',
-                        paymentStateDetails.colorClass,
-                    ]"
-                >
-                    <svg
-                        class="w-20 h-20 mb-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            :d="paymentStateDetails.icon"
-                        />
-                    </svg>
-                    <p
-                        class="text-2xl font-bold uppercase tracking-widest mb-2"
-                    >
-                        {{ paymentStateDetails.title }}
-                    </p>
-                    <p
-                        class="text-lg font-medium opacity-80 mb-6 text-foreground"
-                    >
-                        {{ paymentStateDetails.description }}
-                    </p>
-                    <Button
-                        as-child
-                        :class="[
-                            'h-14 px-8 text-sm font-bold uppercase tracking-widest',
-                            paymentStateDetails.buttonClass,
-                        ]"
-                    >
-                        <router-link :to="paymentStateDetails.buttonLink">
-                            {{ paymentStateDetails.buttonText }}
-                        </router-link>
-                    </Button>
-                </div>
-            </div>
-
-            <div v-else class="text-center py-32 border-4 border-border">
-                <div
-                    v-if="isTimeout"
-                    class="max-w-lg mx-auto p-8 border-2 border-destructive bg-destructive/10"
-                >
-                    <h3
-                        class="text-2xl font-bold text-destructive uppercase tracking-widest mb-4"
-                    >
-                        {{ $t("validation.success.timeoutTitle") }}
-                    </h3>
-                    <p class="text-base font-medium text-foreground mb-4">
-                        {{ $t("validation.success.timeoutDesc") }}
-                    </p>
-                    <p
-                        class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-8"
-                    >
-                        {{ $t("validation.success.timeoutCheckEmail") }}
-                    </p>
-                    <Button
-                        as-child
-                        class="view-all w-full h-16 text-sm font-bold uppercase tracking-widest"
-                    >
-                        <router-link to="/shop">
-                            {{ $t("validation.success.returnToShop") }}
-                        </router-link>
-                    </Button>
-                </div>
-                <Spinner v-else class="w-16 h-16 mx-auto text-main" />
-            </div>
-
-            <div
-                v-if="data?.data"
-                class="mt-32 pt-16 border-t-4 border-border grid gap-16"
-            >
-                <template v-for="c in data.data" :key="c.id">
-                    <HomeCarousel
-                        v-if="c.promoted"
-                        :name="c.name"
-                        :slug="c.slug"
-                        :id="c.id"
-                        :title="c.name"
-                    />
-                </template>
+            <div class="flex flex-col sm:flex-row gap-4 pt-8">
+                <Button as-child variant="outline" class="flex-1 h-16 border-2 border-main text-sm font-bold uppercase tracking-widest rounded-none hover:bg-main hover:text-accent transition-colors">
+                    <router-link :to="'/track-order/' + orderReference">
+                        {{ $t("validation.success.trackOrder") }}
+                    </router-link>
+                </Button>
             </div>
         </div>
-    </div>
+
+        <div v-else-if="paymentStateDetails" class="space-y-8 animate-in fade-in duration-700 max-w-2xl mx-auto">
+            <div :class="['p-8 sm:p-12 border-4 flex flex-col items-center text-center', paymentStateDetails.colorClass]">
+                <svg class="w-20 h-20 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="paymentStateDetails.icon" />
+                </svg>
+                <p class="text-2xl font-bold uppercase tracking-widest mb-2">
+                    {{ paymentStateDetails.title }}
+                </p>
+                <p class="text-lg font-medium opacity-80 mb-6 text-foreground">
+                    {{ paymentStateDetails.description }}
+                </p>
+                <Button as-child :class="['h-14 px-8 text-sm font-bold uppercase tracking-widest', paymentStateDetails.buttonClass]">
+                    <router-link :to="paymentStateDetails.buttonLink">
+                        {{ paymentStateDetails.buttonText }}
+                    </router-link>
+                </Button>
+            </div>
+        </div>
+
+        <div v-else class="text-center py-32 border-4 border-border">
+            <div v-if="isTimeout" class="max-w-lg mx-auto p-8 border-2 border-destructive bg-destructive/10">
+                <h3 class="text-2xl font-bold text-destructive uppercase tracking-widest mb-4">
+                    {{ $t("validation.success.timeoutTitle") }}
+                </h3>
+                <p class="text-base font-medium text-foreground mb-4">
+                    {{ $t("validation.success.timeoutDesc") }}
+                </p>
+                <p class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-8">
+                    {{ $t("validation.success.timeoutCheckEmail") }}
+                </p>
+                <Button as-child class="view-all w-full h-16 text-sm font-bold uppercase tracking-widest">
+                    <router-link to="/shop">
+                        {{ $t("validation.success.returnToShop") }}
+                    </router-link>
+                </Button>
+            </div>
+            <Spinner v-else class="w-16 h-16 mx-auto text-main" />
+        </div>
+
+        <div v-if="data?.data" class="mt-32 pt-16 border-t-4 border-border space-y-24">
+            <template v-for="c in data.data" :key="c.id">
+                <HomeCarousel v-if="c.promoted" :name="c.name" :slug="c.slug" :id="c.id" :title="c.name" />
+            </template>
+        </div>
+    </PageLayout>
 </template>
 
 <script setup>
@@ -258,6 +140,7 @@ import { useRoute } from "vue-router";
 import { useQuery } from "@tanstack/vue-query";
 import { useI18n } from "vue-i18n";
 
+import PageLayout from "@components/shop/general/PageLayout.vue";
 import Spinner from "@components/ui/Spinner.vue";
 import HomeCarousel from "@components/shop/home/HomeCarousel.vue";
 import { Button } from "@/components/ui/button";
@@ -346,10 +229,8 @@ const paymentStateDetails = computed(() => {
                 buttonText: t("validation.success.returnToCheckout"),
                 buttonLink: "/checkout",
                 icon: "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z",
-                colorClass:
-                    "text-destructive border-destructive bg-destructive/10",
-                buttonClass:
-                    "bg-destructive hover:bg-destructive/90 text-destructive-foreground",
+                colorClass: "text-destructive border-destructive bg-destructive/10",
+                buttonClass: "bg-destructive hover:bg-destructive/90 text-destructive-foreground",
             };
         case "cancelled":
             return {
@@ -359,8 +240,7 @@ const paymentStateDetails = computed(() => {
                 buttonLink: "/checkout",
                 icon: "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z",
                 colorClass: "text-muted-foreground border-border bg-muted/50",
-                buttonClass:
-                    "bg-primary hover:bg-primary/90 text-primary-foreground",
+                buttonClass: "bg-primary hover:bg-primary/90 text-primary-foreground",
             };
         case "awaiting-payment":
             return {
@@ -369,8 +249,7 @@ const paymentStateDetails = computed(() => {
                 buttonText: t("validation.success.returnToShop"),
                 buttonLink: "/shop",
                 icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
-                colorClass:
-                    "text-orange-500 border-orange-500 bg-orange-500/10",
+                colorClass: "text-orange-500 border-orange-500 bg-orange-500/10",
                 buttonClass: "bg-orange-500 hover:bg-orange-600 text-white",
             };
         case "requires-capture":

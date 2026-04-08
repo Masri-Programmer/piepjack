@@ -13,7 +13,9 @@
         <!-- Standardized Page Wrapper -->
         <div
             :class="[
-                !noContainer ? 'max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20 py-10 md:py-20 lg:py-24' : '',
+                !noContainer
+                    ? 'max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20 py-14 md:py-20 lg:py-24'
+                    : '',
             ]"
         >
             <!-- Optional Page Header Slot (for titles, breadcrumbs etc) -->

@@ -29,7 +29,9 @@
             <!-- Selected Shipping Method Display -->
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium">{{ $t("pages.checkout.shipping") }}</p>
+                    <p class="text-sm font-medium">
+                        {{ $t("pages.checkout.shipping") }}
+                    </p>
                     <p
                         class="text-[10px] text-muted-foreground uppercase tracking-wider"
                     >
@@ -40,7 +42,9 @@
                     {{
                         selectedShippingMethod.price === 0
                             ? $t("pages.checkout.free")
-                            : selectedShippingMethod.price.toFixed(2) + " " + $currency
+                            : selectedShippingMethod.price.toFixed(2) +
+                              " " +
+                              $currency
                     }}
                 </p>
             </div>
@@ -50,7 +54,9 @@
                 v-if="cartTotalPrice > 100"
                 class="flex justify-between items-center text-green-600"
             >
-                <p class="text-sm font-medium">{{ $t("pages.checkout.orderDiscount") }}</p>
+                <p class="text-sm font-medium">
+                    {{ $t("pages.checkout.orderDiscount") }}
+                </p>
                 <p class="text-sm font-bold">
                     -{{ (cartTotalPrice * 0.05).toFixed(2) }} {{ $currency }}
                 </p>
@@ -69,13 +75,10 @@
                         type="text"
                         id="promoCode"
                         v-model="promoCode"
-                        class="flex-1 h-12 text-sm border border-muted focus:ring-0 focus:border-accent_dark text-main bg-background"
+                        class="flex-1 h-16 text-sm border border-muted focus:ring-0 focus:border-accent_dark text-main bg-background"
                         :placeholder="$t('pages.checkout.enterPromoCode')"
                     />
-                    <Button
-                        @click="applyPromoCode"
-                        class="h-12 px-6 text-xs checkout-cart-promo-button view-all bg-primary text-primary-foreground hover:bg-gray-800 transition-colors"
-                    >
+                    <Button @click="applyPromoCode" class="view-all">
                         {{ $t("pages.checkout.apply") }}
                     </Button>
                 </div>
@@ -156,22 +159,24 @@ const selectedShippingMethod = computed(() => {
 });
 
 const calculateFinalPrice = () => {
-    let price = cartTotalPrice.value;
+    const originalSubtotal = cartTotalPrice.value;
+    let totalDiscount = 0;
 
-    // Apply Promo Discount
+    // 1. 5% Discount for > 100 EUR (calculated on original subtotal)
+    if (originalSubtotal > 100) {
+        totalDiscount += originalSubtotal * 0.05;
+    }
+
+    // 2. Promo Discount
     if (promoApplied.value && promoDiscount.value > 0) {
-        price = Math.max(0, price - promoDiscount.value);
+        totalDiscount += promoDiscount.value;
     }
 
-    // Apply 5% discount for orders > 100 EUR
-    if (price > 100) {
-        price = price * 0.95;
-    }
+    const finalPrice =
+        Math.max(0, originalSubtotal - totalDiscount) +
+        selectedShippingMethod.value.price;
 
-    // Add API-driven Shipping
-    price += selectedShippingMethod.value.price;
-
-    return price.toFixed(2);
+    return finalPrice.toFixed(2);
 };
 
 const applyPromoCode = () => {

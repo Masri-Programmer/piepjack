@@ -68,7 +68,7 @@ return [
             ApplyDiscounts::class,
             CalculateTax::class,
             Calculate::class,
-            // StoreDiscountModifier::class,
+            StoreDiscountModifier::class,
         ],
 
         /*

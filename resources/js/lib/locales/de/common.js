@@ -1,4 +1,7 @@
 export default {
+    total: "Gesamt",
+    remove: "Entfernen",
+    summary: "Zusammenfassung",
     product: {
         size: "Größe",
         new: "neu",

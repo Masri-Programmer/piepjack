@@ -1,8 +1,7 @@
 import { createGlobalState, useStorage, useSessionStorage } from "@vueuse/core";
 import { computed } from "vue";
 import axios from "axios";
-import { apiRequest } from "../helpers";
-
+import { apiRequest } from "../../helpers";
 export const useShopGlobalState = createGlobalState(() => {
     const cartState = useStorage("cart-state", {
         open: false,
@@ -81,9 +80,12 @@ export const useShopGlobalState = createGlobalState(() => {
 
     const cartTotalQuantity = computed(() => {
         return cartState.value.cartItems.reduce((total, product) => {
-            const productQuantity = (product.items || []).reduce((acc, item) => {
-                return acc + (Number(item.cartQuantity) || 0);
-            }, 0);
+            const productQuantity = (product.items || []).reduce(
+                (acc, item) => {
+                    return acc + (Number(item.cartQuantity) || 0);
+                },
+                0,
+            );
             return total + productQuantity;
         }, 0);
     });
@@ -131,7 +133,10 @@ export const useShopGlobalState = createGlobalState(() => {
             );
             if (item) {
                 const maxQuantity = item.quantity;
-                item.cartQuantity = Math.max(1, Math.min(quantity, maxQuantity));
+                item.cartQuantity = Math.max(
+                    1,
+                    Math.min(quantity, maxQuantity),
+                );
             }
         }
     };
@@ -163,7 +168,10 @@ export const useShopGlobalState = createGlobalState(() => {
         if (cartState.value.cartItems.length) {
             for (const cartProduct of cartState.value.cartItems) {
                 try {
-                    const response = await apiRequest("get", `/products/${cartProduct.id}`);
+                    const response = await apiRequest(
+                        "get",
+                        `/products/${cartProduct.id}`,
+                    );
                     const validProduct = response.data;
 
                     if (!validProduct || validProduct.id !== cartProduct.id) {

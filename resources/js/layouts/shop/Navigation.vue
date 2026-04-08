@@ -1,5 +1,8 @@
 <template>
-    <header ref="navigation" class="border-b bg-accent_dark border-gray">
+    <header
+        ref="navigation"
+        class="border-b bg-accent_dark border-gray relative"
+    >
         <!-- <TopBanner /> -->
         <div class="navigation-bar">
             <Button

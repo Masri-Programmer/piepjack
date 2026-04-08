@@ -15,11 +15,6 @@ class StoreDiscountModifier
         // Use subTotal (camelCase) for Lunar 1.x Price object
         $subTotal = $cart->subTotal?->value ?? 0; // in cents
 
-        // 1. 5% Discount for > 100 EUR
-        if ($subTotal > 10000) {
-            $discountTotal += (int) ($subTotal * 0.05);
-        }
-
         // 2. Promo Code (Reading from cart meta)
         $promoCode = $cart->meta['promo_code'] ?? null;
         if ($promoCode && strtolower(trim($promoCode)) === 'pickup') {

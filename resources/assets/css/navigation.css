@@ -141,7 +141,7 @@
 }
 
 .dropdown-menu {
-    @apply absolute z-50 flex justify-center w-full p-6 text-xs border-t bg-background border-gray;
+    @apply fixed z-50 flex justify-center w-full p-6 text-xs border-t bg-background border-gray top-12;
 }
 
 .dropdown-content {
