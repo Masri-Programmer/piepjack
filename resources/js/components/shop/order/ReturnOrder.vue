@@ -1,317 +1,316 @@
 <template>
-    <div
-        class="min-h-screen bg-background p-4 md:p-8 lg:p-12 selection:bg-primary selection:text-primary-foreground"
+    <PageLayout
+        title="Return Order"
+        description="Initiate your return or exchange process for Piepjack orders."
     >
-        <div class="max-w-4xl mx-auto">
-            <header class="mb-12 space-y-6">
-                <div
-                    class="flex items-center justify-between border-b-4 border-primary pb-6"
-                >
-                    <div>
-                        <div
-                            class="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2"
-                        >
-                            <span :class="activeStep >= 1 ? 'text-primary' : ''"
-                                >01 {{ $t("common.return.verify") }}</span
-                            >
-                            <ChevronRight class="w-3 h-3" />
-                            <span :class="activeStep >= 2 ? 'text-primary' : ''"
-                                >02 {{ $t("common.return.select") }}</span
-                            >
-                            <ChevronRight class="w-3 h-3" />
-                            <span
-                                :class="activeStep === 3 ? 'text-primary' : ''"
-                                >03 {{ $t("common.return.logistics") }}</span
-                            >
-                        </div>
-                        <h1
-                            class="text-5xl md:text-7xl font-bold uppercase tracking-tighter italic leading-none text-foreground"
-                        >
-                            {{ $t("common.titles.return_exchange") }}
-                        </h1>
-                    </div>
-
-                    <Button
-                        v-if="activeStep > 1"
-                        variant="ghost"
-                        @click="goBack"
-                        class="rounded-none h-auto p-0 uppercase tracking-widest text-xs font-black hover:bg-transparent hover:text-primary transition-colors"
+        <template #header>
+            <div
+                class="flex items-center justify-between border-b-4 border-primary pb-6"
+            >
+                <div>
+                    <div
+                        class="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2"
                     >
-                        <ArrowLeft class="w-4 h-4 mr-2" />
-                        {{ $t("components.buttons.back") }}
-                    </Button>
+                        <span :class="activeStep >= 1 ? 'text-primary' : ''"
+                            >01 {{ $t("common.return.verify") }}</span
+                        >
+                        <ChevronRight class="w-3 h-3" />
+                        <span :class="activeStep >= 2 ? 'text-primary' : ''"
+                            >02 {{ $t("common.return.select") }}</span
+                        >
+                        <ChevronRight class="w-3 h-3" />
+                        <span
+                            :class="activeStep === 3 ? 'text-primary' : ''"
+                            >03 {{ $t("common.return.logistics") }}</span
+                        >
+                    </div>
+                    <h1
+                        class="text-5xl md:text-7xl font-bold uppercase tracking-tighter italic leading-none text-foreground"
+                    >
+                        {{ $t("common.titles.return_exchange") }}
+                    </h1>
                 </div>
-            </header>
 
-            <main class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                <section
-                    v-if="activeStep === 1"
-                    class="lg:col-span-8 lg:col-start-3 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"
+                <Button
+                    v-if="activeStep > 1"
+                    variant="ghost"
+                    @click="goBack"
+                    class="rounded-none h-auto p-0 uppercase tracking-widest text-xs font-black hover:bg-transparent hover:text-primary transition-colors"
                 >
-                    <p
-                        class="text-muted-foreground text-sm font-bold uppercase tracking-widest leading-relaxed text-center"
-                    >
-                        {{ $t("common.return.identify_desc") }}
-                    </p>
+                    <ArrowLeft class="w-4 h-4 mr-2" />
+                    {{ $t("components.buttons.back") }}
+                </Button>
+            </div>
+        </template>
 
-                    <form
-                        @submit.prevent="submitForm"
-                        class="space-y-6 p-8 border-2 border-border bg-muted/30"
-                    >
-                        <div class="space-y-2">
-                            <Label
-                                class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
-                            >
-                                {{ $t("common.forms.emailLabel") }}
-                            </Label>
-                            <Input
-                                v-model="form.email"
-                                type="email"
-                                required
-                                :placeholder="$t('common.input.email')"
-                                class="rounded-none border-2 border-border bg-background h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
-                            />
-                        </div>
-
-                        <div class="space-y-2">
-                            <Label
-                                class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
-                            >
-                                {{ $t("validation.form.orderNumber") }}
-                            </Label>
-                            <Input
-                                v-model="form.orderNr"
-                                type="text"
-                                required
-                                :placeholder="$t('common.input.orderTracking')"
-                                class="rounded-none border-2 border-border bg-background h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
-                            />
-                        </div>
-
-                        <Button
-                            type="submit"
-                            :disabled="isLoadingOrder"
-                            class="w-full rounded-none h-16 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 mt-4"
-                        >
-                            <Spinner
-                                v-if="isLoadingOrder"
-                                size="xs"
-                                class="mr-2"
-                            />
-                            {{ $t("components.buttons.returnOrder") }}
-                        </Button>
-                    </form>
-                </section>
-
-                <section
-                    v-else-if="activeStep === 2 && order?.data"
-                    class="lg:col-span-12 space-y-10 animate-in fade-in duration-500"
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <section
+                v-if="activeStep === 1"
+                class="lg:col-span-8 lg:col-start-3 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
+                <p
+                    class="text-muted-foreground text-sm font-bold uppercase tracking-widest leading-relaxed text-center"
                 >
-                    <div class="space-y-4">
-                        <h2
-                            class="text-xl font-black uppercase tracking-widest border-b-2 border-border pb-2"
-                        >
-                            {{ $t("common.return.select_items_title") }}
-                        </h2>
-                        <div
-                            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                        >
-                            <div
-                                v-for="product in order.data.products"
-                                :key="product.item.id"
-                                @click="
-                                    toggleProductSelection(
-                                        product.item,
-                                        product.quantity,
-                                    )
-                                "
-                                :class="[
-                                    'relative cursor-pointer border-2 transition-all duration-200 bg-background group',
-                                    isSelected(product.item)
-                                        ? 'border-primary shadow-[4px_4px_0px_0px_var(--theme-primary)]'
-                                        : 'border-border hover:border-primary/50',
-                                ]"
-                            >
-                                <div
-                                    v-if="isSelected(product.item)"
-                                    class="absolute top-2 right-2 z-10 bg-primary text-primary-foreground px-3 py-1 text-[10px] font-black uppercase tracking-widest"
-                                >
-                                    {{ $t("common.return.selected") }}
-                                </div>
-                                <ProductSmallCard
-                                    :product="product"
-                                    :item="product.item"
-                                    class="border-none pointer-events-none p-4"
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    {{ $t("common.return.identify_desc") }}
+                </p>
 
-                    <div class="space-y-4">
+                <form
+                    @submit.prevent="submitForm"
+                    class="space-y-6 p-8 border-2 border-border bg-muted/30"
+                >
+                    <div class="space-y-2">
                         <Label
-                            class="text-xl font-black uppercase tracking-widest border-b-2 border-border pb-2 block"
+                            class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
                         >
-                            {{ $t("common.return.provide_reason") }}
+                            {{ $t("common.forms.emailLabel") }}
                         </Label>
-                        <Textarea
-                            v-model="form.reason"
-                            :placeholder="
-                                $t('common.return.reason_placeholder')
-                            "
+                        <Input
+                            v-model="form.email"
+                            type="email"
                             required
-                            class="rounded-none border-2 border-border bg-muted/30 focus-visible:ring-primary focus-visible:border-primary min-h-[150px] font-bold text-sm resize-y"
+                            :placeholder="$t('common.input.email')"
+                            class="rounded-none border-2 border-border bg-background h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
                         />
                     </div>
 
-                    <div class="flex justify-end pt-4">
-                        <Button
-                            @click="goToNextStep"
-                            class="rounded-none h-16 px-12 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto"
+                    <div class="space-y-2">
+                        <Label
+                            class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
                         >
-                            {{ $t("common.return.next") }}
-                            <ChevronRight class="w-5 h-5 ml-2" />
-                        </Button>
+                            {{ $t("validation.form.orderNumber") }}
+                        </Label>
+                        <Input
+                            v-model="form.orderNr"
+                            type="text"
+                            required
+                            :placeholder="$t('common.input.orderTracking')"
+                            class="rounded-none border-2 border-border bg-background h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
+                        />
                     </div>
-                </section>
 
-                <section
-                    v-else-if="activeStep === 3"
-                    class="lg:col-span-12 space-y-12 animate-in fade-in slide-in-from-right-4 duration-500"
-                >
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                        <div class="lg:col-span-7 space-y-8">
-                            <Card
-                                class="rounded-none border-2 border-border shadow-none bg-background"
+                    <Button
+                        type="submit"
+                        :disabled="isLoadingOrder"
+                        class="w-full rounded-none h-16 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 mt-4"
+                    >
+                        <Spinner
+                            v-if="isLoadingOrder"
+                            size="xs"
+                            class="mr-2"
+                        />
+                        {{ $t("components.buttons.returnOrder") }}
+                    </Button>
+                </form>
+            </section>
+
+            <section
+                v-else-if="activeStep === 2 && order?.data"
+                class="lg:col-span-12 space-y-10 animate-in fade-in duration-500"
+            >
+                <div class="space-y-4">
+                    <h2
+                        class="text-xl font-black uppercase tracking-widest border-b-2 border-border pb-2"
+                    >
+                        {{ $t("common.return.select_items_title") }}
+                    </h2>
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                    >
+                        <div
+                            v-for="product in order.data.products"
+                            :key="product.item.id"
+                            @click="
+                                toggleProductSelection(
+                                    product.item,
+                                    product.quantity,
+                                )
+                            "
+                            :class="[
+                                'relative cursor-pointer border-2 transition-all duration-200 bg-background group',
+                                isSelected(product.item)
+                                    ? 'border-primary shadow-[4px_4px_0px_0px_var(--theme-primary)]'
+                                    : 'border-border hover:border-primary/50',
+                            ]"
+                        >
+                            <div
+                                v-if="isSelected(product.item)"
+                                class="absolute top-2 right-2 z-10 bg-primary text-primary-foreground px-3 py-1 text-[10px] font-black uppercase tracking-widest"
                             >
-                                <CardHeader
-                                    class="border-b-2 border-border p-6 bg-muted/30"
+                                {{ $t("common.return.selected") }}
+                            </div>
+                            <ProductSmallCard
+                                :product="product"
+                                :item="product.item"
+                                class="border-none pointer-events-none p-4"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <Label
+                        class="text-xl font-black uppercase tracking-widest border-b-2 border-border pb-2 block"
+                    >
+                        {{ $t("common.return.provide_reason") }}
+                    </Label>
+                    <Textarea
+                        v-model="form.reason"
+                        :placeholder="
+                            $t('common.return.reason_placeholder')
+                        "
+                        required
+                        class="rounded-none border-2 border-border bg-muted/30 focus-visible:ring-primary focus-visible:border-primary min-h-[150px] font-bold text-sm resize-y"
+                    />
+                </div>
+
+                <div class="flex justify-end pt-4">
+                    <Button
+                        @click="goToNextStep"
+                        class="rounded-none h-16 px-12 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto"
+                    >
+                        {{ $t("common.return.next") }}
+                        <ChevronRight class="w-5 h-5 ml-2" />
+                    </Button>
+                </div>
+            </section>
+
+            <section
+                v-else-if="activeStep === 3"
+                class="lg:col-span-12 space-y-12 animate-in fade-in slide-in-from-right-4 duration-500"
+            >
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-7 space-y-8">
+                        <Card
+                            class="rounded-none border-2 border-border shadow-none bg-background"
+                        >
+                            <CardHeader
+                                class="border-b-2 border-border p-6 bg-muted/30"
+                            >
+                                <CardTitle
+                                    class="text-xl font-black uppercase tracking-widest"
                                 >
-                                    <CardTitle
-                                        class="text-xl font-black uppercase tracking-widest"
-                                    >
-                                        {{
-                                            $t("common.return.select_shipping")
-                                        }}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent class="p-6">
-                                    <label
-                                        class="flex items-center justify-between cursor-pointer group p-4 border-2 border-primary bg-primary/5"
-                                    >
-                                        <div class="flex items-center gap-4">
-                                            <input
-                                                type="radio"
-                                                value="DHL Parcel Shop"
-                                                v-model="selectedService"
-                                                class="w-5 h-5 accent-primary cursor-pointer"
-                                            />
-                                            <div class="space-y-1">
-                                                <span
-                                                    class="block font-black uppercase tracking-widest text-sm group-hover:text-primary transition-colors"
-                                                >
-                                                    {{
-                                                        $t("common.return.dhl")
-                                                    }}
-                                                </span>
-                                                <span
-                                                    class="block text-xs font-bold text-muted-foreground uppercase"
-                                                    >{{ $t("common.return.drop_off_desc") }}</span
-                                                >
-                                            </div>
-                                        </div>
-                                        <span
-                                            class="font-black uppercase tracking-widest text-sm text-primary"
-                                            >{{ $t("common.forms.free") }}</span
-                                        >
-                                    </label>
-                                </CardContent>
-                            </Card>
-                        </div>
-
-                        <div class="lg:col-span-5 space-y-8">
-                            <Card
-                                class="rounded-none border-none bg-primary text-primary-foreground shadow-none"
-                            >
-                                <CardHeader class="p-8 pb-4">
-                                    <CardTitle
-                                        class="text-sm font-black uppercase tracking-[0.2em] opacity-80"
-                                    >
-                                        {{ $t("common.return.summary_title") }}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent class="p-8 pt-0 space-y-6">
-                                    <div
-                                        class="space-y-3 text-sm font-bold uppercase tracking-widest"
-                                    >
-                                        <div class="flex justify-between">
-                                            <span class="opacity-80"
-                                                >{{ $t("common.return.selected_carrier") }}</span
-                                            >
-                                            <span class="font-mono">{{
-                                                selectedService
-                                            }}</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="opacity-80"
-                                                >{{ $t("common.return.fee") }}</span
-                                            >
-                                            <span class="font-mono"
-                                                >0.00 €</span
-                                            >
-                                        </div>
-                                        <div class="flex justify-between pt-2 border-t border-primary-foreground/20">
-                                            <span class="font-black">{{ $t("common.return.total_amount_label") }}</span>
-                                            <span class="font-black"
-                                                >0.00 €</span
-                                            >
-                                        </div>
-                                    </div>
-
-                                    <Separator
-                                        class="bg-primary-foreground/20 h-[2px]"
-                                    />
-
-                                    <div class="pt-2">
-                                        <label
-                                            class="flex gap-4 items-start cursor-pointer group"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                v-model="termsAccepted"
-                                                class="mt-1 w-5 h-5 accent-primary-foreground cursor-pointer flex-shrink-0"
-                                            />
-                                            <span
-                                                class="text-[10px] font-bold uppercase tracking-wider leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                {{ $t("common.return.terms") }}
-                                            </span>
-                                        </label>
-                                    </div>
-                                </CardContent>
-                                <div class="p-8 pt-0 mt-4">
-                                    <Button
-                                        :disabled="!termsAccepted || isLoading"
-                                        @click="submitReturn"
-                                        variant="outline"
-                                        class="w-full rounded-none h-16 text-lg font-black uppercase tracking-[0.2em] border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-primary-foreground"
-                                    >
-                                        <Spinner
-                                            v-if="isLoading"
-                                            size="xs"
-                                            class="mr-2"
+                                    {{
+                                        $t("common.return.select_shipping")
+                                    }}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent class="p-6">
+                                <label
+                                    class="flex items-center justify-between cursor-pointer group p-4 border-2 border-primary bg-primary/5"
+                                >
+                                    <div class="flex items-center gap-4">
+                                        <input
+                                            type="radio"
+                                            value="DHL Parcel Shop"
+                                            v-model="selectedService"
+                                            class="w-5 h-5 accent-primary cursor-pointer"
                                         />
-                                        <span v-else>{{
-                                            $t("common.return.next_step")
-                                        }}</span>
-                                    </Button>
-                                </div>
-                            </Card>
-                        </div>
+                                        <div class="space-y-1">
+                                            <span
+                                                class="block font-black uppercase tracking-widest text-sm group-hover:text-primary transition-colors"
+                                            >
+                                                {{
+                                                    $t("common.return.dhl")
+                                                }}
+                                            </span>
+                                            <span
+                                                class="block text-xs font-bold text-muted-foreground uppercase"
+                                                >{{ $t("common.return.drop_off_desc") }}</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="font-black uppercase tracking-widest text-sm text-primary"
+                                        >{{ $t("common.forms.free") }}</span
+                                    >
+                                </label>
+                            </CardContent>
+                        </Card>
                     </div>
-                </section>
-            </main>
-        </div>
-    </div>
+
+                    <div class="lg:col-span-5 space-y-8">
+                        <Card
+                            class="rounded-none border-none bg-primary text-primary-foreground shadow-none"
+                        >
+                            <CardHeader class="p-8 pb-4">
+                                <CardTitle
+                                    class="text-sm font-black uppercase tracking-[0.2em] opacity-80"
+                                >
+                                    {{ $t("common.return.summary_title") }}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent class="p-8 pt-0 space-y-6">
+                                <div
+                                    class="space-y-3 text-sm font-bold uppercase tracking-widest"
+                                >
+                                    <div class="flex justify-between">
+                                        <span class="opacity-80"
+                                            >{{ $t("common.return.selected_carrier") }}</span
+                                        >
+                                        <span class="font-mono">{{
+                                            selectedService
+                                        }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="opacity-80"
+                                            >{{ $t("common.return.fee") }}</span
+                                        >
+                                        <span class="font-mono"
+                                            >0.00 €</span
+                                        >
+                                    </div>
+                                    <div class="flex justify-between pt-2 border-t border-primary-foreground/20">
+                                        <span class="font-black">{{ $t("common.return.total_amount_label") }}</span>
+                                        <span class="font-black"
+                                            >0.00 €</span
+                                        >
+                                    </div>
+                                </div>
+
+                                <Separator
+                                    class="bg-primary-foreground/20 h-[2px]"
+                                />
+
+                                <div class="pt-2">
+                                    <label
+                                        class="flex gap-4 items-start cursor-pointer group"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            v-model="termsAccepted"
+                                            class="mt-1 w-5 h-5 accent-primary-foreground cursor-pointer flex-shrink-0"
+                                        />
+                                        <span
+                                            class="text-[10px] font-bold uppercase tracking-wider leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            {{ $t("common.return.terms") }}
+                                        </span>
+                                    </label>
+                                </div>
+                            </CardContent>
+                            <div class="p-8 pt-0 mt-4">
+                                <Button
+                                    :disabled="!termsAccepted || isLoading"
+                                    @click="submitReturn"
+                                    variant="outline"
+                                    class="w-full rounded-none h-16 text-lg font-black uppercase tracking-[0.2em] border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-primary-foreground"
+                                >
+                                    <Spinner
+                                        v-if="isLoading"
+                                        size="xs"
+                                        class="mr-2"
+                                    />
+                                    <span v-else>{{
+                                        $t("common.return.next_step")
+                                    }}</span>
+                                </Button>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </PageLayout>
 </template>
 
 <script setup>
@@ -322,7 +321,8 @@ import { ChevronRight, ArrowLeft } from "lucide-vue-next";
 import { useToast } from "vue-toastification";
 import { useSessionStorage } from "@vueuse/core";
 
-// shadcn-vue components
+// components
+import PageLayout from "@components/shop/general/PageLayout.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

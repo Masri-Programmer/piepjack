@@ -1,3 +1,20 @@
+<script setup>
+import PageLayout from "@components/shop/general/PageLayout.vue";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-vue-next";
+import { useI18n } from "vue-i18n";
+
+const { tm, t } = useI18n();
+
+// Filter out the 'title' key from sections object to get only numbered sections
+const sections = Object.entries(tm("pages.tos.sections")).filter(
+    ([key]) => key !== "title"
+);
+
+const customerInfo = tm("pages.tos.info");
+</script>
+
 <template>
     <PageLayout
         :title="$t('pages.tos.title')"
@@ -21,11 +38,12 @@
         </template>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-16">
+            <!-- Sidebar Navigation -->
             <aside
                 class="hidden lg:block lg:col-span-1 sticky top-24 h-fit space-y-4"
             >
                 <div
-                    class="text-xs font-accent_dark uppercase tracking-widest border-l-4 border-accent_dark pl-4 py-1"
+                    class="text-xs font-bold uppercase tracking-widest border-l-4 border-main pl-4 py-1"
                 >
                     Navigation
                 </div>
@@ -33,218 +51,128 @@
                     class="flex flex-col space-y-2 text-xs font-bold uppercase"
                 >
                     <a
-                        href="#section-1"
-                        class="hover:underline underline-offset-4"
-                        >§ 1 Bestimmungen</a
+                        v-for="([key, section]) in sections"
+                        :key="key"
+                        :href="`#${key}`"
+                        class="hover:underline underline-offset-4 transition-all hover:text-main"
                     >
-                    <a
-                        href="#section-2"
-                        class="hover:underline underline-offset-4"
-                        >§ 2 Vertragsschluss</a
-                    >
-                    <a
-                        href="#section-3"
-                        class="hover:underline underline-offset-4"
-                        >§ 3 Umtausch</a
-                    >
-                    <a
-                        href="#section-4"
-                        class="hover:underline underline-offset-4"
-                        >§ 4 Eigentum</a
-                    >
+                        {{ section.title }}
+                    </a>
                     <a
                         href="#info"
-                        class="hover:underline underline-offset-4 text-muted-foreground"
-                        >Kundeninfo</a
+                        class="hover:underline underline-offset-4 text-muted-foreground hover:text-main transition-all"
                     >
+                        {{ $t("pages.tos.info.title") }}
+                    </a>
                 </nav>
             </aside>
 
-            <main class="lg:col-span-3 space-y-12 text-pretty">
-                <section class="space-y-8">
+            <!-- Main Content -->
+            <main class="lg:col-span-3 space-y-16 text-pretty">
+                <section class="space-y-12">
                     <h2
-                        class="text-2xl font-accent_dark uppercase bg-primary text-primary-foreground px-4 py-2 w-fit rounded-none"
+                        class="text-2xl font-bold uppercase bg-main text-accent px-6 py-3 w-fit tracking-tight"
                     >
-                        I. Allgemeine Geschäftsbedingungen
+                        {{ $t("pages.tos.sections.title") }}
                     </h2>
 
-                    <div id="section-1" class="space-y-4">
-                        <h3
-                            class="text-lg font-accent_dark uppercase italic tracking-tight"
-                        >
-                            § 1 Grundlegende Bestimmungen
-                        </h3>
-                        <div
-                            class="space-y-4 text-gray-800 dark:text-gray-300 leading-relaxed"
-                        >
-                            <p>
-                                (1) Die nachstehenden Geschäftsbedingungen
-                                gelten für Verträge, die Sie mit uns als
-                                Anbieter
-                                <span
-                                    class="font-bold underline decoration-2 underline-offset-2"
-                                    >(Marvin Pieprzyk)</span
-                                >
-                                über diese Internetseite schließen.
-                            </p>
-                            <p>
-                                (2)
-                                <span
-                                    class="font-bold uppercase text-[10px] bg-muted px-1"
-                                    >Verbraucher</span
-                                >
-                                ist jede natürliche Person, die ein
-                                Rechtsgeschäft zu Zwecken abschließt, die
-                                überwiegend weder ihrer gewerblichen noch ihrer
-                                selbständigen beruflichen Tätigkeit zugerechnet
-                                werden kann.
-                            </p>
-                        </div>
-                    </div>
-
-                    <Separator class="bg-gray-200" />
-
-                    <div id="section-2" class="space-y-4">
-                        <h3
-                            class="text-lg font-accent_dark uppercase italic tracking-tight"
-                        >
-                            § 2 Zustandekommen des Vertrages
-                        </h3>
-                        <p
-                            class="text-gray-800 dark:text-gray-300 leading-relaxed"
-                        >
-                            (1) Gegenstand des Vertrages ist der Verkauf von
-                            Waren. Unsere Angebote im Internet sind
-                            unverbindlich und stellen kein verbindliches Angebot
-                            zum Abschluss eines Vertrages dar.
-                        </p>
-                    </div>
-
-                    <Separator class="bg-gray-200" />
-
+                    <!-- Dynamic Sections -->
                     <div
-                        id="section-3"
-                        class="space-y-4 bg-accent_light p-6 border-l-4 border-accent_dark rounded-none"
+                        v-for="([key, section]) in sections"
+                        :key="key"
+                        :id="key"
+                        class="space-y-6 group"
                     >
                         <h3
-                            class="text-lg font-accent_dark uppercase italic tracking-tight text-red-600"
+                            class="text-2xl font-bold uppercase italic tracking-tighter text-foreground group-hover:text-main transition-colors"
                         >
-                            § 3 Umtausch und Rückgabe
+                            {{ section.title }}
                         </h3>
-                        <div class="space-y-3 text-sm font-medium">
-                            <p>
-                                (1) Ein Umtausch ist eine freiwillige
-                                Serviceleistung. Ein Rechtsanspruch besteht
-                                nicht.
-                            </p>
-                            <p>
-                                (2) Bei mangelhafter Ware übernehmen wir die
-                                Rücksendekosten und leisten Ersatz.
-                            </p>
-                            <p class="font-bold underline italic">
-                                (3) Hygiene-Hinweis: Versiegelte Waren sind vom
-                                Widerruf ausgeschlossen, sobald die Versiegelung
-                                entfernt wurde.
+                        <div
+                            class="space-y-4 text-lg font-medium leading-relaxed text-muted-foreground/90"
+                        >
+                            <p v-for="(p, pKey) in section" :key="pKey" v-show="pKey !== 'title'">
+                                {{ p }}
                             </p>
                         </div>
-                    </div>
-
-                    <div id="section-4" class="space-y-4">
-                        <h3
-                            class="text-lg font-accent_dark uppercase italic tracking-tight"
-                        >
-                            § 4 Eigentumsvorbehalt
-                        </h3>
-                        <p
-                            class="text-gray-800 dark:text-gray-300 leading-relaxed"
-                        >
-                            (1) Die Ware bleibt bis zur vollständigen Zahlung
-                            des Kaufpreises unser Eigentum.
-                        </p>
+                        <Separator class="bg-border/50" />
                     </div>
                 </section>
 
+                <!-- Customer Information Section -->
                 <section
                     id="info"
-                    class="pt-12 border-t-2 border-accent_dark space-y-6"
+                    class="pt-16 border-t-8 border-border space-y-10"
                 >
-                    <h2 class="text-2xl font-accent_dark uppercase italic">
-                        II. Kundeninformationen
+                    <h2 class="text-4xl font-black uppercase italic tracking-tighter">
+                        {{ customInfo?.title || $t('pages.tos.info.title') }}
                     </h2>
 
                     <div
-                        class="grid grid-cols-1 sm:grid-cols-2 gap-8 bg-primary text-primary-foreground p-8 rounded-none"
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-0 border-4 border-main"
                     >
-                        <div class="space-y-1">
-                            <p
-                                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
-                            >
-                                Anbieter
+                        <div class="p-8 bg-main text-accent space-y-2">
+                            <p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">
+                                {{ $t("pages.tos.info.provider") }}
                             </p>
-                            <p class="text-lg font-bold uppercase">
+                            <p class="text-2xl font-black uppercase tracking-tighter">
                                 PIEPJACK Clothing
                             </p>
-                            <p class="text-sm">Inhaber: Marvin Pieprzyk</p>
+                            <p class="text-sm font-bold italic opacity-80">
+                                {{ $t("pages.tos.info.owner") }}
+                            </p>
                         </div>
-                        <div class="space-y-1">
-                            <p
-                                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
-                            >
-                                Support
+                        <div class="p-8 bg-background border-t-4 sm:border-t-0 sm:border-l-4 border-main space-y-2">
+                            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
+                                {{ $t("pages.tos.info.support") }}
                             </p>
-                            <p class="text-lg font-bold">TEL: 015756421797</p>
-                            <p class="text-sm underline italic">
+                            <p class="text-2xl font-black tracking-tighter text-foreground">
+                                TEL: 015756421797
+                            </p>
+                            <a href="mailto:info@piepjack-clothing.de" class="text-sm font-bold italic underline decoration-2 underline-offset-4 text-main block">
                                 info@piepjack-clothing.de
-                            </p>
+                            </a>
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <h4
-                            class="font-accent_dark uppercase text-sm italic underline decoration-1 underline-offset-4"
-                        >
-                            Alternative Streitbeilegung
+                    <!-- Dispute Resolution -->
+                    <div class="space-y-4 p-8 bg-muted border-2 border-border">
+                        <h4 class="font-bold uppercase text-lg tracking-tight">
+                            {{ $t("pages.tos.info.dispute.title") }}
                         </h4>
-                        <p class="text-sm text-gray-600">
-                            Die EU-Kommission bietet eine Plattform zur
-                            Online-Streitbeilegung:
+                        <div class="text-base text-muted-foreground font-medium leading-relaxed">
+                            {{ $t("pages.tos.info.dispute.p1") }}
                             <a
                                 href="https://ec.europa.eu/consumers/odr"
                                 target="_blank"
-                                class="font-bold hover:bg-accent_dark hover:text-primary-foreground px-1 transition-colors"
+                                class="inline-block mt-2 font-black text-main hover:underline decoration-2 underline-offset-4"
                             >
                                 https://ec.europa.eu/consumers/odr
                             </a>
-                        </p>
+                        </div>
                     </div>
                 </section>
 
-                <footer class="pt-12">
-                    <p
-                        class="text-[10px] font-accent_dark uppercase tracking-widest text-gray-400"
-                    >
-                        Stand: 29.08.2023 // PIEPJACK LEGAL DEPT.
+                <!-- Footer -->
+                <footer class="pt-12 border-t-2 border-border flex justify-between items-center">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                        {{ $t("pages.tos.footer") }}
                     </p>
+                    <p class="text-[10px] font-black text-main">PIEPJACK // LEGAL</p>
                 </footer>
             </main>
         </div>
 
-        <div class="mt-20 border-t border-gray-100 pt-8">
+        <!-- Back Button -->
+        <div class="mt-20 pt-10 border-t-4 border-border">
             <Button variant="ghost" as-child class="rounded-none px-0 group">
-                <router-link to="/" class="flex items-center gap-2">
-                    <span
-                        class="text-xs font-accent_dark uppercase border-b-2 border-accent_dark group-hover:bg-accent_dark group-hover:text-primary-foreground transition-all"
-                    >
-                        Zurück zum Shop
+                <router-link to="/" class="flex items-center gap-3">
+                    <ArrowLeft class="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+                    <span class="text-xs font-bold uppercase tracking-widest border-b-2 border-foreground group-hover:bg-foreground group-hover:text-background transition-all">
+                        {{ $t("pages.tos.backToShop") }}
                     </span>
                 </router-link>
             </Button>
         </div>
     </PageLayout>
 </template>
-
-<script setup>
-import PageLayout from "@components/shop/general/PageLayout.vue";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-</script>

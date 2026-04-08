@@ -15,16 +15,18 @@
             <hr class="border-t border-border/50" />
 
             <template v-if="data?.data">
-                <template v-for="c in data.data" :key="c.id">
-                    <section v-if="c.promoted" class="my-12">
-                        <HomeCarousel
-                            :name="c.name"
-                            :slug="c.slug"
-                            :id="c.id"
-                            :title="c.name"
-                        />
-                    </section>
-                </template>
+                <div class="space-y-24 md:space-y-32">
+                    <template v-for="c in data.data" :key="c.id">
+                        <section v-if="c.promoted" class="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <HomeCarousel
+                                :name="c.name"
+                                :slug="c.slug"
+                                :id="c.id"
+                                :title="c.name"
+                            />
+                        </section>
+                    </template>
+                </div>
             </template>
         </div>
     </PageLayout>

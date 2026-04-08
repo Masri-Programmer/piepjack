@@ -83,7 +83,7 @@
 }
 
 .navigation-bar {
-    @apply z-10 flex items-center justify-between w-full h-12 px-4 text-main;
+    @apply z-30 flex items-center justify-between w-full h-12 px-4 text-main fixed bg-accent_dark/90;
 }
 
 @media (max-width: 768px) {
