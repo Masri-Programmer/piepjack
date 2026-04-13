@@ -4,7 +4,11 @@
 
     # Set the base path
     RewriteBase /
+    # If the request comes in with 'www'...
+    RewriteCond %{HTTP_HOST} ^www\.piepjack-clothing\.de$ [NC]
 
+    # ...redirect it to the non-www version securely (HTTPS)
+    RewriteRule ^(.*)$ https://piepjack-clothing.de/$1 [L,R=301]
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
