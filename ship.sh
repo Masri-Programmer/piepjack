@@ -4,7 +4,7 @@ set -e
 
 # --- CONFIGURATION ---
 REMOTE_USER="piepjack"
-REMOTE_HOST="gienah.uberspace.de"
+REMOTE_HOST="barnard.uberspace.de"
 REMOTE_APP_PATH="/var/www/virtual/piepjack/testing-piepjack"
 REMOTE_DEPLOY_SCRIPT="${REMOTE_APP_PATH}/deploy.sh"
 SSR_PROCESS="piepjack-ssr"
