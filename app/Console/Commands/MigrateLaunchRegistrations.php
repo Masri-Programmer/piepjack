@@ -65,7 +65,7 @@ class MigrateLaunchRegistrations extends Command
                 }
 
                 // 2. Create or get Customer
-                $customer = $user->latestCustomer;
+                $customer = $user->latestCustomer();
 
                 if (! $customer) {
                     $customer = Customer::create([
