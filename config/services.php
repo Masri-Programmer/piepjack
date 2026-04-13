@@ -46,7 +46,8 @@ return [
     ],
 
     'branding' => [
-        'logo_url' => 'https://piepjack-clothing.de/logo_new_gray_bg_black.jpeg',
+        'logo_url' => 'https://piepjack-clothing.de/001-logo-new-gray-removebg.png',
+        'logo_url_with_bg' => 'https://piepjack-clothing.de/logo_new_gray_bg_black.jpeg',
     ],
 
     'frontend_url' => env('APP_URL'),

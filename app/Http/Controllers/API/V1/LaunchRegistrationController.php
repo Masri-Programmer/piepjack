@@ -5,12 +5,17 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Controllers\Controller;
 use App\Mail\LaunchRegistrationMail;
 use App\Models\LaunchRegistration;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Lunar\Models\Customer;
 
 class LaunchRegistrationController extends Controller
 {
@@ -38,6 +43,41 @@ class LaunchRegistrationController extends Controller
             'name' => $request->name,
             'email' => $request->email,
         ]);
+
+        // Integrate with User and Lunar system
+        try {
+            DB::transaction(function () use ($request) {
+                // Split name into first and last name
+                $parts = explode(' ', trim($request->name), 2);
+                $firstName = $parts[0];
+                $lastName = $parts[1] ?? '';
+
+                // 1. Create User
+                $user = User::firstOrCreate(
+                    ['email' => $request->email],
+                    [
+                        'first_name' => $firstName,
+                        'last_name' => $lastName,
+                        'password' => Hash::make(Str::random(16)),
+                        'active' => true,
+                    ]
+                );
+
+                // 2. Create or get Customer (Lunar)
+                if (! $user->latestCustomer) {
+                    $customer = Customer::create([
+                        'first_name' => $firstName,
+                        'last_name' => $lastName,
+                    ]);
+
+                    // Link them
+                    $user->customers()->attach($customer);
+                }
+            });
+        } catch (\Exception $e) {
+            // Log error but don't fail the registration
+            report($e);
+        }
 
         try {
             Mail::to($registration->email)->send(new LaunchRegistrationMail($registration));

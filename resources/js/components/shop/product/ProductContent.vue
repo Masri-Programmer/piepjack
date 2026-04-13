@@ -366,7 +366,7 @@ const onHide = () => (visibleRef.value = false);
     border: 0 !important;
     background-color: transparent; /* Ensures no background overrides the pseudo-element */
     background-size: 1em;
-    border-radius: 50%;
+    border-radius: 0;
     background-repeat: no-repeat;
     background-position: center center;
 }
@@ -382,7 +382,7 @@ const onHide = () => (visibleRef.value = false);
     z-index: -1;
     height: 3rem;
     position: absolute;
-    border-radius: 50%;
+    border-radius: 0;
     background-color: white;
     transform: translate(-50%, -50%);
     background-position: center;

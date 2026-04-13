@@ -1,46 +1,48 @@
 <template>
     <div
-        class="launch-countdown min-h-[100dvh] bg-neutral-950 flex flex-col items-center justify-center p-4 relative overflow-x-hidden font-manrope selection:bg-main/20 selection:text-primary-foreground"
+        class="launch-countdown min-h-dvh bg-accent_black text-foreground flex flex-col items-center justify-center p-4 relative overflow-x-hidden font-manrope selection:bg-primary/20 selection:text-primary-foreground"
     >
         <router-link
             to="/"
-            class="logo-link absolute top-4 left-4 md:top-6 md:left-6 z-20"
-            v-motion-fade
+            class="logo-link absolute top-4 left-4 md:top-6 md:left-6 z-20 animate-in fade-in duration-700"
         >
-            <img :src="logoCircle" alt="Piepjack Logo" class="h-10 md:h-16" />
+            <img
+                :src="logoCircle"
+                alt="Piepjack Logo"
+                class="h-10 md:h-16 rounded-none"
+            />
         </router-link>
 
         <div
             class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden"
         >
             <div
-                class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-main/5 blur-[90px] rounded-full"
+                class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/5 blur-[90px] rounded-none"
             ></div>
             <div
-                class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-background/5 blur-[90px] rounded-full"
-            ></div>
-            <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_0,transparent_100%)]"
+                class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-secondary/10 blur-[90px] rounded-none"
             ></div>
         </div>
 
         <div
             class="relative z-10 w-full max-w-4xl text-center space-y-12 my-auto pt-24 pb-12"
         >
-            <div class="space-y-4" v-motion-fade>
+            <div
+                class="space-y-4 animate-in slide-in-from-bottom-4 fade-in duration-700"
+            >
                 <div
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-background/5 backdrop-blur-md text-primary-foreground/60 text-xs font-semibold uppercase tracking-widest animate-pulse"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-none border border-border bg-secondary/50 backdrop-blur-md text-foreground/80 text-xs font-semibold uppercase tracking-widest animate-pulse"
                 >
-                    <span class="w-2 h-2 rounded-full bg-main"></span>
+                    <span class="w-2 h-2 rounded-none bg-primary"></span>
                     {{ isLaunched ? "Kollektion ist Live" : "Demnächst" }}
                 </div>
                 <h1
-                    class="text-5xl md:text-8xl font-bold text-primary-foreground tracking-tighter"
+                    class="text-5xl md:text-8xl font-bold text-primary tracking-tighter uppercase"
                 >
                     P I E P J A C K
                 </h1>
                 <p
-                    class="text-primary-foreground/40 text-sm md:text-lg max-w-lg mx-auto font-medium"
+                    class="text-muted-foreground text-sm md:text-lg max-w-lg mx-auto font-medium"
                 >
                     {{
                         isLaunched
@@ -52,9 +54,8 @@
 
             <div
                 v-if="!isLaunched"
-                class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 pt-8 px-4"
+                class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 pt-8 px-4 animate-in slide-in-from-bottom-8 fade-in duration-1000"
                 :class="{ 'heartbeat-active': isHeartbeat }"
-                v-motion-slide-bottom
             >
                 <div
                     v-for="(val, unit) in timeGroups"
@@ -62,15 +63,15 @@
                     class="group"
                 >
                     <div
-                        class="relative bg-background/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-8 backdrop-blur-xl transition-all duration-500 group-hover:bg-background/[0.05] group-hover:border-white/20"
+                        class="relative bg-muted/20 border border-border rounded-none p-6 md:p-8 backdrop-blur-xl transition-all duration-500 group-hover:bg-muted/40 group-hover:border-primary/50"
                     >
                         <div
-                            class="text-4xl md:text-6xl font-accent_dark text-primary-foreground group-hover:scale-105 transition-transform duration-500"
+                            class="text-4xl md:text-6xl font-bold text-foreground group-hover:scale-105 transition-transform duration-500"
                         >
                             {{ val.toString().padStart(2, "0") }}
                         </div>
                         <div
-                            class="text-[10px] md:text-xs font-bold text-primary-foreground/30 uppercase tracking-[0.2em] mt-2 group-hover:text-main/60 transition-colors"
+                            class="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mt-2 group-hover:text-primary transition-colors"
                         >
                             {{ translateUnit(unit) }}
                         </div>
@@ -80,12 +81,11 @@
 
             <div
                 v-if="!isLaunched"
-                v-motion-fade
-                class="max-w-md mx-auto pt-10 space-y-6"
+                class="max-w-md mx-auto pt-10 space-y-6 animate-in fade-in duration-1000 delay-150"
             >
                 <div v-if="!isRegistered" class="space-y-4 px-4 md:px-0">
                     <p
-                        class="text-primary-foreground/40 text-xs font-bold tracking-[0.2em] uppercase"
+                        class="text-muted-foreground text-xs font-bold tracking-[0.2em] uppercase"
                     >
                         Registrieren, um benachrichtigt zu werden
                     </p>
@@ -95,99 +95,76 @@
                         novalidate
                     >
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <input
+                            <Input
                                 v-model="form.name"
                                 type="text"
                                 placeholder="Name"
-                                class="bg-background/10 border border-white/40 px-5 py-3 text-primary-foreground text-sm placeholder:text-primary-foreground/40 focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-all"
+                                class="rounded-none bg-background/50 border-border px-5 py-3 text-foreground text-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 transition-all h-12"
                                 required
                             />
-                            <input
+                            <Input
                                 v-model="form.email"
                                 type="email"
                                 placeholder="E-Mail"
-                                class="bg-background/10 border border-white/40 px-5 py-3 text-primary-foreground text-sm placeholder:text-primary-foreground/40 focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-all"
+                                class="rounded-none bg-background/50 border-border px-5 py-3 text-foreground text-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 transition-all h-12"
                                 required
                             />
                         </div>
-                        <button
+                        <Button
                             type="submit"
                             :disabled="isSubmitting"
-                            class="w-full bg-background text-neutral-950 py-3 font-accent_dark text-sm hover:bg-main hover:text-primary-foreground transition-all disabled:opacity-50 active:scale-[0.98]"
+                            class="w-full rounded-none bg-primary text-primary-foreground h-12 font-bold uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-50 active:scale-[0.98]"
                         >
                             {{
                                 isSubmitting
                                     ? "SENDEN..."
                                     : "BEI DROP BENACHRICHTIGEN"
                             }}
-                        </button>
+                        </Button>
                     </form>
                     <p
                         v-if="errorMsg"
-                        class="text-rose-500 text-[10px] font-bold uppercase tracking-wider"
+                        class="text-destructive text-[10px] font-bold uppercase tracking-wider text-left"
                     >
                         {{ errorMsg }}
                     </p>
                 </div>
+
                 <div
                     v-else
-                    class="bg-background/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl animate-in fade-in zoom-in duration-500 mx-4 md:mx-0"
+                    class="bg-secondary/30 border border-border rounded-none p-8 backdrop-blur-xl animate-in zoom-in-95 duration-500 mx-4 md:mx-0"
                 >
                     <div
-                        class="w-12 h-12 bg-main/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                        class="w-12 h-12 bg-primary/10 border border-primary/20 rounded-none flex items-center justify-center mx-auto mb-4"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="3"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="text-main"
-                        >
-                            <path d="M20 6 9 17l-5-5" />
-                        </svg>
+                        <Check class="w-6 h-6 text-primary" stroke-width="3" />
                     </div>
-                    <h3 class="text-primary-foreground font-bold mb-2">
+                    <h3 class="text-foreground font-bold mb-2">
                         Du bist dabei!
                     </h3>
-                    <p class="text-primary-foreground/40 text-xs font-medium">
+                    <p class="text-muted-foreground text-xs font-medium">
                         Wir haben deine Anmeldung erhalten und melden uns zum
                         Launch.
                     </p>
                 </div>
             </div>
 
-            <div class="pt-8" v-motion-fade>
+            <div class="pt-8 animate-in fade-in duration-1000 delay-300">
                 <router-link
                     v-if="isLaunched"
                     to="/"
-                    class="inline-flex items-center gap-3 bg-background text-neutral-950 px-10 py-5 rounded-full text-base font-accent_dark hover:bg-main hover:text-primary-foreground transition-all duration-500 group shadow-2xl shadow-white/5 active:scale-95"
+                    class="inline-flex items-center gap-3 bg-primary text-primary-foreground px-10 py-5 rounded-none text-base font-bold hover:bg-primary/90 transition-all duration-500 group shadow-2xl active:scale-95 uppercase tracking-widest"
                 >
                     ZUM SHOP
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
+                    <ArrowRight
+                        class="w-5 h-5 transition-transform group-hover:translate-x-1"
                         stroke-width="2.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="transition-transform group-hover:translate-x-1"
-                    >
-                        <path d="M5 12h14" />
-                        <path d="m12 5 7 7-7 7" />
-                    </svg>
+                    />
                 </router-link>
 
                 <div
                     v-else
-                    class="text-primary-foreground/20 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]"
+                    class="text-muted-foreground text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]"
                 >
                     {{
                         new Date(targetDate).toLocaleDateString("de-DE", {
@@ -209,7 +186,7 @@
         </div>
 
         <div
-            class="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-primary-foreground/20 text-[10px] font-bold uppercase tracking-[0.3em] z-10 relative mt-auto pb-6"
+            class="w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-muted-foreground text-[10px] font-bold uppercase tracking-[0.3em] z-10 relative mt-auto pb-6"
         >
             <div>© 2026 PIEPJACK CLOTHING</div>
             <div class="flex gap-8">
@@ -217,17 +194,17 @@
                     href="https://www.instagram.com/piepjack"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="social-media-button hover:text-primary-foreground transition-colors"
+                    class="hover:text-primary transition-colors"
                     aria-label="Besuche uns auf Instagram"
                 >
-                    <Instagram />
+                    <Instagram class="w-5 h-5" />
                 </a>
 
                 <a
                     href="https://www.tiktok.com/@piepjack"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="social-media-button hover:text-primary-foreground transition-colors"
+                    class="hover:text-primary transition-colors"
                     aria-label="Besuche uns auf TikTok"
                 >
                     <svg
@@ -235,7 +212,6 @@
                         width="20"
                         height="20"
                         fill="currentColor"
-                        class="bi bi-tiktok"
                         viewBox="0 0 16 16"
                     >
                         <path
@@ -252,10 +228,16 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import confetti from "canvas-confetti";
-import logoCircle from "@img/logo-new.png";
-import { Instagram } from "lucide-vue-next";
 import axios from "axios";
+import { Instagram, Check, ArrowRight } from "lucide-vue-next";
+
+// Helper & Assets
+import logoCircle from "@img/logo-new.png";
 import { apiRequest } from "@lib/helpers";
+
+// shadcn-vue component imports (adjust path as needed for your specific setup)
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const router = useRouter();
 const targetDate = new Date(
@@ -298,23 +280,19 @@ const translateUnit = (unit) => {
     return map[unit] || unit;
 };
 
-// Simple Regex for verifying email format on the client side
 const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 };
 
 const register = async () => {
-    // Reset Error Message
     errorMsg.value = "";
 
-    // 1. Basic validation required fields check
     if (!form.value.name.trim() || !form.value.email.trim()) {
         errorMsg.value = "Bitte fülle alle Felder aus.";
         return;
     }
 
-    // 2. Strict Email format validation
     if (!isValidEmail(form.value.email)) {
         errorMsg.value = "Bitte gib eine gültige E-Mail-Adresse ein.";
         return;
@@ -354,11 +332,7 @@ const updateCountdown = () => {
         return;
     }
 
-    if (distance <= 10000) {
-        isHeartbeat.value = true;
-    } else {
-        isHeartbeat.value = false;
-    }
+    isHeartbeat.value = distance <= 10000;
 
     countdown.value.days = Math.floor(distance / (1000 * 60 * 60 * 24));
     countdown.value.hours = Math.floor(
@@ -371,7 +345,6 @@ const updateCountdown = () => {
 };
 
 const triggerConfetti = () => {
-    console.log("Triggering Confetti...");
     const duration = 7 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = {
@@ -422,8 +395,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Removed the fixed positioning here so the page can scroll natively on small screens */
-
 @keyframes heartbeat {
     0% {
         transform: scale(1);
@@ -444,12 +415,12 @@ onUnmounted(() => {
 
 .heartbeat-active .group > div {
     animation: heartbeat 1s ease-in-out infinite;
-    border-color: rgba(244, 63, 94, 0.5); /* rose-500 */
-    box-shadow: 0 0 30px rgba(244, 63, 94, 0.15);
+    border-color: hsl(var(--destructive) / 0.5);
+    box-shadow: 0 0 30px hsl(var(--destructive) / 0.15);
 }
 
 .heartbeat-active .group > div > div:first-child {
-    color: #f43f5e; /* rose-500 */
-    text-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
+    color: hsl(var(--destructive));
+    text-shadow: 0 0 20px hsl(var(--destructive) / 0.4);
 }
 </style>

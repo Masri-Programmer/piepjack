@@ -57,7 +57,9 @@ DB_PASSWORD=
 Run migrations and seed the database:
 
 ```bash
-php artisan migrate --seed
+php artisan migrate:fresh
+php artisan lunar:install
+php artisan db:seed
 ```
 
 ### 5. Payment Setup (Stripe)

@@ -23,7 +23,7 @@
                     class="flex gap-4 pb-6 border-b border-muted last:border-b-0"
                 >
                     <div
-                        class="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-slate-200 rounded-full"
+                        class="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-slate-200 rounded-none"
                     >
                         <span class="text-lg font-bold text-slate-600">
                             {{ getInitials(review.user) }}

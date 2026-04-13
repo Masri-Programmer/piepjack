@@ -35,11 +35,11 @@
                             !isOptionAvailable(option.name, color.value) &&
                                 'opacity-40 cursor-not-allowed',
                         ]"
-                        class="flex items-center flex-col justify-center rounded-full transition-all"
+                        class="flex items-center flex-col justify-center rounded-none transition-all"
                         :title="color.value"
                     >
                         <div
-                            class="w-8 h-8 rounded-full shadow-inner"
+                            class="w-8 h-8 rounded-none shadow-inner"
                             :style="{
                                 backgroundColor: getColorCode(color.value),
                             }"

@@ -10,7 +10,7 @@ class ArtisanController extends Controller
 {
     public function call(Request $request)
     {
-        $correctPassword = config('app.artisan_password'); // Set password in .env/config
+        $correctPassword = config('app.artisan_password');
 
         if ($request->isMethod('post')) {
             if ($request->has('password')) {
@@ -24,17 +24,18 @@ class ArtisanController extends Controller
             if ($request->has('command') && Session::get('artisan_authenticated')) {
                 try {
                     Artisan::call($request->command);
-                    return nl2br(Artisan::output()) . "<br><br><a href='api/V1/shop/m-artisan'>Run another command</a>";
+
+                    return nl2br(Artisan::output())."<br><br><a href='api/V1/shop/m-artisan'>Run another command</a>";
                 } catch (\Throwable $th) {
-                    return "Error: " . $th->getMessage();
+                    return 'Error: '.$th->getMessage();
                 }
             }
         }
 
-        if (!Session::get('artisan_authenticated')) {
+        if (! Session::get('artisan_authenticated')) {
             return "
             <form method='post'>
-                <input type='hidden' name='_token' value='" . csrf_token() . "' />
+                <input type='hidden' name='_token' value='".csrf_token()."' />
                 <input type='password' name='password' placeholder='Enter password' required />
                 <button>Submit</button>
             </form>
@@ -43,7 +44,7 @@ class ArtisanController extends Controller
 
         return "
         <form method='post'>
-            <input type='hidden' name='_token' value='" . csrf_token() . "' />
+            <input type='hidden' name='_token' value='".csrf_token()."' />
             <input type='text' name='command' placeholder='Write your Artisan command' required />
             <button>Execute</button>
         </form>
@@ -55,6 +56,7 @@ class ArtisanController extends Controller
     public function logout()
     {
         Session::forget('artisan_authenticated');
+
         return "Logged out. <a href='api/V1/shop/m-artisan'>Login again</a>";
     }
 }

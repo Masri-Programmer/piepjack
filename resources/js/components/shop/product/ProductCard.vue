@@ -7,11 +7,11 @@
         @mouseleave="mouseLeave"
     >
         <Card
-            class="relative flex flex-col overflow-hidden transition-all duration-300 border-transparent hover:border-border hover:shadow-md"
+            class="relative flex flex-col overflow-hidden transition-all duration-300 border-transparent hover:border-border hover:shadow-md rounded-none"
         >
             <Badge
                 v-if="isNewProduct"
-                class="absolute z-10 transition-transform duration-300 top-3 left-3 group-hover:scale-105"
+                class="absolute z-10 transition-transform duration-300 top-3 left-3 group-hover:scale-105 rounded-none"
                 variant="default"
             >
                 {{ $t("common.product.new") }}
