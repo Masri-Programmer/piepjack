@@ -64,7 +64,7 @@ class LaunchRegistrationController extends Controller
                 );
 
                 // 2. Create or get Customer (Lunar)
-                if (! $user->latestCustomer) {
+                if (! $user->latestCustomer()) {
                     $customer = Customer::create([
                         'first_name' => $firstName,
                         'last_name' => $lastName,
