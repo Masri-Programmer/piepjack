@@ -122,7 +122,7 @@
                         @click="cartState.open = false"
                         class="block w-full"
                     >
-                        <Button variant="outline" class="w-full" size="lg">
+                        <Button variant="outline" class="view-all" size="lg">
                             {{ $t("components.buttons.weiterKaufen") }}
                         </Button>
                     </router-link>

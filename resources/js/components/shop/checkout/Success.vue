@@ -46,7 +46,7 @@
 
                 <div class="divide-y-2 divide-border">
                     <div v-for="product in orderDetailsData.data.products" :key="product.id" class="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                        <div class="w-24 h-24 bg-accent_light border-2 border-border flex-shrink-0">
+                        <div class="w-20 sm:w-24 aspect-square bg-accent_light border-2 border-border flex-shrink-0 overflow-hidden">
                             <img :src="product.image_url" :alt="product.name" class="w-full h-full object-cover grayscale-[20%]" />
                         </div>
                         <div class="flex-1">
@@ -79,7 +79,7 @@
             </div>
 
             <div class="flex flex-col sm:flex-row gap-4 pt-8">
-                <Button as-child variant="outline" class="flex-1 h-16 border-2 border-main text-sm font-bold uppercase tracking-widest rounded-none hover:bg-main hover:text-accent transition-colors">
+                <Button as-child variant="outline" class="view-all">
                     <router-link :to="'/track-order/' + orderReference">
                         {{ $t("validation.success.trackOrder") }}
                     </router-link>
@@ -98,7 +98,7 @@
                 <p class="text-lg font-medium opacity-80 mb-6 text-foreground">
                     {{ paymentStateDetails.description }}
                 </p>
-                <Button as-child :class="['h-14 px-8 text-sm font-bold uppercase tracking-widest', paymentStateDetails.buttonClass]">
+                <Button as-child :class="['view-all', paymentStateDetails.buttonClass]">
                     <router-link :to="paymentStateDetails.buttonLink">
                         {{ paymentStateDetails.buttonText }}
                     </router-link>
@@ -117,7 +117,7 @@
                 <p class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-8">
                     {{ $t("validation.success.timeoutCheckEmail") }}
                 </p>
-                <Button as-child class="view-all w-full h-16 text-sm font-bold uppercase tracking-widest">
+                <Button as-child class="view-all">
                     <router-link to="/shop">
                         {{ $t("validation.success.returnToShop") }}
                     </router-link>

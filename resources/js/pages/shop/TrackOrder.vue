@@ -229,7 +229,7 @@
                                 as="a"
                                 :href="order.data.tracking.url"
                                 target="_blank"
-                                class="w-full rounded-none uppercase font-black tracking-widest text-xs h-12"
+                                class="view-all"
                             >
                                 {{ $t("pages.tracking.carrierSite") }}
                             </Button>

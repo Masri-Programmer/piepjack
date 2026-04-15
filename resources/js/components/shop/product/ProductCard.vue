@@ -29,7 +29,7 @@
             </AspectRatio>
 
             <CardContent
-                class="flex flex-col items-center justify-start grow p-3 sm:p-4 w-full"
+                class="flex flex-col items-center justify-start grow p-3 sm:p-4 w-full border-t"
             >
                 <div
                     class="flex items-center justify-center w-full h-10 sm:h-12 mb-1"

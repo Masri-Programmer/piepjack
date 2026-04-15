@@ -63,7 +63,7 @@
                 <Button
                     type="submit"
                     :disabled="nextDisabled || nextLoading"
-                    class="w-full sm:w-auto rounded-none bg-primary text-primary-foreground hover:bg-main hover:text-accent px-8 py-6 uppercase font-bold view-all"
+                    class="view-all w-full sm:w-auto"
                 >
                     <span v-if="nextLoading">{{
                         $t("common.forms.processing") || "Processing..."

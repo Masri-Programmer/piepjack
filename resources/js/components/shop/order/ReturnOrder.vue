@@ -159,7 +159,7 @@
                 <div class="flex justify-end pt-4">
                     <Button
                         @click="goToNextStep"
-                        class="rounded-none h-16 px-12 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto"
+                        class="view-all w-full sm:w-auto"
                     >
                         {{ $t("common.return.next") }}
                         <ChevronRight class="w-5 h-5 ml-2" />
