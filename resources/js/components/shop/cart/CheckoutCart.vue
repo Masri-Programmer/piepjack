@@ -78,7 +78,6 @@
                         id="promoCode"
                         v-model="promoCode"
                         :placeholder="$t('pages.checkout.enterPromoCode')"
-                        class="rounded-none border border-border bg-background focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
                     />
                     <Button
                         @click="applyPromoCode"

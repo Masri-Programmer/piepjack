@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PublicProductListResource;
+use App\Http\Resources\PublicProductResource;
 use Illuminate\Http\JsonResponse;
 use Lunar\Models\Product;
 
@@ -50,12 +51,12 @@ class PublicProductController extends Controller
         // Ensure we load the necessary Lunar relationships for a single product view
         $product->load([
             'variants.prices',
-            'variants.values.option', // This is the corrected relationship path!
+            'variants.values.option',
             'collections',
             'media',
         ])->loadAvg(['reviews' => fn ($q) => $q->where('is_approved', true)], 'rating')
             ->loadCount(['reviews' => fn ($q) => $q->where('is_approved', true)]);
 
-        return (new PublicProductListResource($product))->response();
+        return (new PublicProductResource($product))->response();
     }
 }

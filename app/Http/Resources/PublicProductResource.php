@@ -26,7 +26,7 @@ class PublicProductResource extends JsonResource
             'image_url' => $media ? $media->getUrl() : null,
             'image_mime' => $media ? $media->mime_type : null,
             'image_size' => $media ? $media->size : null,
-            'images' => $this->getMedia('images')->map(fn ($m) => $m->getUrl())->toArray(),
+            'images' => $this->media->filter(fn ($m) => str_contains($m->mime_type, 'image'))->map(fn ($m) => $m->getUrl())->values()->toArray(),
             'description' => $this->translateAttribute('description'),
             'category_id' => $collection ? $collection->id : null,
             'category_name' => $collection ? $collection->translateAttribute('name') : null,

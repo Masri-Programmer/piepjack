@@ -70,10 +70,21 @@
                     >
                         {{ data?.name }}
                     </h1>
-                    <div v-if="data?.reviews_count > 0" class="flex items-center gap-2 mt-2">
-                        <StarRating :rating="Math.round(data.average_rating)" size="18" />
-                        <span class="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-                            {{ data.average_rating.toFixed(1) }} ({{ data.reviews_count }} {{ $t('common.product.reviews') }})
+                    <div
+                        v-if="data?.reviews_count > 0"
+                        class="flex items-center gap-2 mt-2"
+                    >
+                        <StarRating
+                            :rating="Math.round(data.average_rating)"
+                            size="18"
+                        />
+                        <span
+                            class="text-sm font-bold uppercase tracking-widest text-muted-foreground"
+                        >
+                            {{ data.average_rating.toFixed(1) }} ({{
+                                data.reviews_count
+                            }}
+                            {{ $t("common.product.reviews") }})
                         </span>
                     </div>
                 </div>
@@ -366,7 +377,7 @@ const onHide = () => (visibleRef.value = false);
     border: 0 !important;
     background-color: transparent; /* Ensures no background overrides the pseudo-element */
     background-size: 1em;
-    border-radius: 0;
+    border-radius: 50%;
     background-repeat: no-repeat;
     background-position: center center;
 }
@@ -382,7 +393,7 @@ const onHide = () => (visibleRef.value = false);
     z-index: -1;
     height: 3rem;
     position: absolute;
-    border-radius: 0;
+    border-radius: 50%;
     background-color: white;
     transform: translate(-50%, -50%);
     background-position: center;
@@ -500,6 +511,6 @@ const onHide = () => (visibleRef.value = false);
 
     /* Explicitly set the background to transparent so nothing shows behind the arrow */
     background-color: transparent !important;
-    border-radius: 0;
+    border-radius: 50%;
 }
 </style>
