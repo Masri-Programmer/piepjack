@@ -16,12 +16,13 @@ export default {
         reviews: "Reviews",
         comment: "Comment",
         title: "title",
-        submit_review: 'Save',
+        submit_review: "Save",
         maximum_quantity: "The product has reached it's maximum quantity",
         notFound: "NO PRODUCTS FOUND",
         productOutofStock: "product Out of Stock",
         review_success_title: "Review Submitted!",
-        review_submitted_message: "Thank you for your review! It has been submitted successfully.",
+        review_submitted_message:
+            "Thank you for your review! It has been submitted successfully.",
         otherProductTitle: "MORE LOVE MESH JERSEY GREEN",
         creditAndMobile: "All credit cards & mobile payments",
         no_reviews: "No Reviews",
@@ -84,6 +85,7 @@ export default {
         emailTooltip: "We'll use this email to send your order details.",
         contact: "Contact",
         deliveryAddress: "Delivery Address",
+        billingAddress: "Billing Address",
         emailPlaceholder: "Enter your email",
         subscribeLabel: "Receive news and offers via email",
         firstNameLabel: "First Name",
@@ -118,10 +120,12 @@ export default {
         applyCode: "Apply Code",
         stripeCheckout: "Stripe Checkout",
         paymentMethodsInfo: "Credit Card / PayPal / Klarna",
-        stripeRedirectInfo: "After clicking \"Pay Now\", you will be redirected to Stripe to securely complete your purchase.",
+        stripeRedirectInfo:
+            'After clicking "Pay Now", you will be redirected to Stripe to securely complete your purchase.',
         openingSecureCheckout: "Opening secure checkout...",
         processing: "Processing...",
-        noShippingMethods: "No shipping methods available for your address. Please check your details.",
+        noShippingMethods:
+            "No shipping methods available for your address. Please check your details.",
         free: "Free",
     },
     input: {
@@ -163,7 +167,8 @@ export default {
         fee: "Return Fee",
         drop_off_desc: "Drop-off at location",
         success_title: "Return Requested!",
-        success_message: "Thank you for submitting your return request. We will process it as soon as possible.",
+        success_message:
+            "Thank you for submitting your return request. We will process it as soon as possible.",
     },
     alerts: {
         orderNotFound: "Order not found.",

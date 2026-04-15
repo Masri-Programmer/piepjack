@@ -1,6 +1,6 @@
 <template>
     <div class="breadcrumb-container">
-        <div class="mb-3 py-2 breadcrumb flex flex-wrap items-center">
+        <div class="readcrumb flex flex-wrap items-center">
             <template v-for="(crumb, index) in data" :key="index">
                 <div class="breadcrumb-item">
                     <router-link

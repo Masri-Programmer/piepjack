@@ -110,7 +110,7 @@
                         @click="cartState.open = false"
                         class="block w-full"
                     >
-                        <Button class="w-full gap-2 h-14" size="lg">
+                        <Button class="view-all" size="lg">
                             <LockKeyhole size="18" />
                             {{ $t("components.buttons.sicherZahlen") }}
                         </Button>

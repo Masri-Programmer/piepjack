@@ -1,18 +1,24 @@
 <template>
-    <div
-        class="space-y-8 animate-in fade-in duration-500 selection:bg-main selection:text-accent"
+    <CheckoutStepLayout
+        :prevLabel="$t('common.forms.backToBilling')"
+        :nextLabel="$t('components.buttons.payNow')"
+        :nextLoading="isLoading"
+        @prev="$emit('prev')"
+        @submit="submitCheckout"
     >
-        <header class="border-b-[6px] border-border pb-4">
-            <h1
-                class="text-4xl sm:text-5xl font-bold uppercase tracking-tighter italic text-foreground leading-none"
-            >
-                {{ $t("common.forms.payment") }}
-            </h1>
-        </header>
+        <template #header>
+            <header class="border-b-[6px] border-border pb-4">
+                <h1
+                    class="text-4xl sm:text-5xl font-bold uppercase tracking-tighter italic text-foreground leading-none"
+                >
+                    {{ $t("common.forms.payment") }}
+                </h1>
+            </header>
+        </template>
 
         <div
-            class="relative overflow-hidden rounded-none border-4 border-border bg-accent_light p-6 sm:p-8 transition-colors duration-300"
-            :class="{ 'border-main': isLoading }"
+            class="relative overflow-hidden rounded-none border-4 border-border bg-accent-shadcn p-6 sm:p-8 transition-colors duration-300"
+            :class="{ 'border-primary': isLoading }"
         >
             <div
                 :class="{ 'opacity-20 blur-sm pointer-events-none': isLoading }"
@@ -43,7 +49,7 @@
                     </div>
                 </div>
 
-                <div class="border-l-4 border-main pl-4">
+                <div class="border-l-4 border-primary pl-4">
                     <p
                         class="text-sm font-medium italic text-muted-foreground leading-relaxed"
                     >
@@ -54,9 +60,9 @@
 
             <div
                 v-if="isLoading"
-                class="absolute inset-0 z-10 bg-background/90 flex flex-col items-center justify-center m-[-4px] border-4 border-main"
+                class="absolute inset-0 z-10 bg-background/90 flex flex-col items-center justify-center m-[-4px] border-4 border-primary"
             >
-                <Spinner class="w-12 h-12 text-main mb-6" />
+                <Spinner class="w-12 h-12 text-primary mb-6" />
                 <p
                     class="font-bold uppercase tracking-widest text-sm text-foreground animate-pulse text-center px-4"
                 >
@@ -64,41 +70,7 @@
                 </p>
             </div>
         </div>
-
-        <div
-            class="flex justify-between items-center pt-8 border-t border-gray-100 gap-4"
-        >
-            <Button
-                @click="$emit('prev')"
-                as-child
-                variant="ghost"
-                :disabled="isLoading"
-                class="rounded-none hover:bg-transparent px-0 group"
-            >
-                <router-link to="/cart" class="flex items-center gap-2">
-                    <ChevronLeft
-                        :size="20"
-                        class="transition-transform group-hover:-translate-x-1"
-                    />
-                    {{ $t("common.forms.backToBilling") }}
-                </router-link>
-            </Button>
-
-            <Button
-                @click="submitCheckout"
-                :disabled="isLoading"
-                type="submit"
-                class="view-all"
-            >
-                <template v-if="!isLoading">
-                    {{ $t("components.buttons.payNow") }}
-                </template>
-                <template v-else>
-                    {{ $t("common.forms.processing") }}
-                </template>
-            </Button>
-        </div>
-    </div>
+    </CheckoutStepLayout>
 </template>
 
 <script setup>
@@ -107,7 +79,7 @@ import { checkoutform, cartState } from "@lib/store/shop/index.js";
 import { apiQuery } from "@lib/helpers";
 
 import Spinner from "@components/ui/Spinner.vue";
-import { Button } from "@/components/ui/button";
+import CheckoutStepLayout from "./CheckoutStepLayout.vue";
 
 const emit = defineEmits(["prev"]);
 const { mutate: checkout, isLoading } = apiQuery("checkout").useStore();

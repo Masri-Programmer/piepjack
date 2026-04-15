@@ -1,11 +1,14 @@
 <template>
-    <div class="contact-form">
-        <h1 class="contact-form-title">
-            {{ $t("common.forms.shippingMethod") }}
-        </h1>
-
+    <CheckoutStepLayout
+        :title="$t('common.forms.shippingMethod')"
+        :prevLabel="$t('common.forms.backToInfo')"
+        :nextLabel="$t('common.forms.continueToBilling')"
+        :nextDisabled="!checkoutform.shippingMethodId"
+        @prev="$emit('prev')"
+        @submit="$emit('next')"
+    >
         <div v-if="isLoading" class="flex justify-center py-12">
-            <Spinner class="h-10 w-10" />
+            <Spinner class="h-10 w-10 text-primary" />
         </div>
 
         <div
@@ -15,31 +18,36 @@
             {{ $t("common.forms.noShippingMethods") }}
         </div>
 
-        <div v-else class="space-y-3">
+        <RadioGroup
+            v-else
+            :modelValue="checkoutform.shippingMethodId"
+            @update:modelValue="selectMethod"
+            class="space-y-3"
+        >
             <div
                 v-for="method in displayShippingMethods"
                 :key="method.id"
-                @click="
-                    checkoutform.shippingMethodId = method.id;
-                    checkoutform.shippingMethod = method;
-                "
-                class="flex items-center justify-between p-5 border cursor-pointer transition-all duration-200"
+                @click="selectMethod(method.id)"
+                class="flex items-center justify-between p-5 border cursor-pointer transition-all duration-200 rounded-none"
                 :class="
                     checkoutform.shippingMethodId === method.id
-                        ? 'border-accent_dark bg-accent_light ring-1 ring-accent_dark'
+                        ? 'border-primary bg-accent-shadcn ring-1 ring-primary'
                         : 'border-muted hover:border-gray-400'
                 "
             >
                 <div class="flex items-center gap-4">
-                    <input
-                        type="radio"
-                        :id="'method-' + method.id"
+                    <RadioGroupItem
                         :value="method.id"
-                        v-model="checkoutform.shippingMethodId"
-                        class="accent-accent_dark w-4 h-4"
+                        :id="'method-' + method.id"
+                        class="rounded-none border-primary text-primary pointer-events-none"
                     />
-                    <div>
-                        <p class="font-bold text-sm uppercase tracking-tight">
+                    <Label
+                        :htmlFor="'method-' + method.id"
+                        class="cursor-pointer"
+                    >
+                        <p
+                            class="font-bold text-sm uppercase tracking-tight text-foreground"
+                        >
                             {{ method.name }}
                         </p>
                         <p
@@ -48,9 +56,9 @@
                         >
                             {{ method.description }}
                         </p>
-                    </div>
+                    </Label>
                 </div>
-                <p class="font-bold text-sm">
+                <p class="font-bold text-sm text-foreground">
                     {{
                         method.price === 0
                             ? $t("common.forms.free")
@@ -58,49 +66,36 @@
                     }}
                 </p>
             </div>
-        </div>
-
-        <div class="contact-form-footer mt-8">
-            <Button
-                @click="$emit('prev')"
-                variant="ghost"
-                class="contact-form-back-link"
-            >
-                <ChevronLeft size="20" />{{ $t("common.forms.backToInfo") }}
-            </Button>
-            <Button
-                @click="$emit('next')"
-                :disabled="!checkoutform.shippingMethodId"
-                class="view-all flex-1"
-            >
-                {{ $t("common.forms.continueToBilling") }}
-            </Button>
-        </div>
-    </div>
+        </RadioGroup>
+    </CheckoutStepLayout>
 </template>
 
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
-import { ChevronLeft } from "lucide-vue-next";
-import {
-    checkoutform,
-    cartState,
-    cartTotalPrice,
-} from "@lib/store/shop/index.js";
+import CheckoutStepLayout from "./CheckoutStepLayout.vue";
+import { checkoutform, cartState } from "@lib/store/shop/index.js";
 import { apiRequest } from "@lib/helpers";
 import Spinner from "@components/ui/Spinner.vue";
-import { Button } from "@/components/ui/button";
-import "@assets/css/checkout/contactFrom.css";
+
+// Import Shadcn UI Radio components & Label
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 defineEmits(["next", "prev"]);
 
 const shippingMethods = ref([]);
 const isLoading = ref(false);
 
-// Dynamically apply free shipping over 100 for the UI
-// ShippingMethodStep.vue
-
 const displayShippingMethods = computed(() => shippingMethods.value);
+
+// Extracted selection logic to handle both click on div and RadioGroup updates
+const selectMethod = (methodId) => {
+    const selected = shippingMethods.value.find((m) => m.id === methodId);
+    if (selected) {
+        checkoutform.value.shippingMethodId = selected.id;
+        checkoutform.value.shippingMethod = selected;
+    }
+};
 
 const loadMethods = async () => {
     const countryCode =
@@ -126,17 +121,10 @@ const loadMethods = async () => {
                 !checkoutform.value.shippingMethodId &&
                 shippingMethods.value.length
             ) {
-                checkoutform.value.shippingMethodId =
-                    shippingMethods.value[0].id;
-                checkoutform.value.shippingMethod = shippingMethods.value[0];
+                selectMethod(shippingMethods.value[0].id);
             } else if (checkoutform.value.shippingMethodId) {
                 // Sync current selection
-                const current = shippingMethods.value.find(
-                    (m) => m.id === checkoutform.value.shippingMethodId,
-                );
-                if (current) {
-                    checkoutform.value.shippingMethod = current;
-                }
+                selectMethod(checkoutform.value.shippingMethodId);
             }
         }
     } catch (error) {

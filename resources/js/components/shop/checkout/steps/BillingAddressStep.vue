@@ -1,9 +1,11 @@
 <template>
-    <form @submit.prevent="submitStep" class="contact-form">
-        <h1 class="text-2xl font-bold mb-6 uppercase tracking-tight">
-            {{ $t("common.forms.billingAddress") }}
-        </h1>
-
+    <CheckoutStepLayout
+        :title="$t('common.forms.billingAddress')"
+        :prevLabel="$t('common.forms.backToShipping')"
+        :nextLabel="$t('common.forms.continueToPayment')"
+        @prev="$emit('prev')"
+        @submit="submitStep"
+    >
         <RadioGroup
             v-model="checkoutform.billingSameAsShipping"
             class="mb-8 space-y-3"
@@ -12,7 +14,7 @@
                 class="flex items-center space-x-4 p-5 border cursor-pointer transition-all rounded-none"
                 :class="
                     checkoutform.billingSameAsShipping
-                        ? 'border-accent_dark bg-accent_light ring-1 ring-accent_dark'
+                        ? 'border-primary bg-accent-shadcn ring-1 ring-primary'
                         : 'border-muted'
                 "
                 @click="checkoutform.billingSameAsShipping = true"
@@ -20,7 +22,7 @@
                 <RadioGroupItem
                     :value="true"
                     id="same"
-                    class="rounded-none border-accent_dark text-main"
+                    class="rounded-none border-primary text-primary"
                 />
                 <Label
                     htmlFor="same"
@@ -34,7 +36,7 @@
                 class="flex items-center space-x-4 p-5 border cursor-pointer transition-all rounded-none"
                 :class="
                     !checkoutform.billingSameAsShipping
-                        ? 'border-accent_dark bg-accent_light ring-1 ring-accent_dark'
+                        ? 'border-primary bg-accent-shadcn ring-1 ring-primary'
                         : 'border-muted'
                 "
                 @click="checkoutform.billingSameAsShipping = false"
@@ -42,7 +44,7 @@
                 <RadioGroupItem
                     :value="false"
                     id="diff"
-                    class="rounded-none border-accent_dark text-main"
+                    class="rounded-none border-primary text-primary"
                 />
                 <Label
                     htmlFor="diff"
@@ -65,11 +67,14 @@
                             @input="clearError('firstName')"
                             @blur="validateField('firstName')"
                             :class="[
-                                'rounded-none border-gray-300 focus:ring-accent_dark',
-                                errors.firstName && 'border-red-500',
+                                'rounded-none border-border focus:ring-primary',
+                                errors.firstName && 'border-destructive',
                             ]"
                         />
-                        <p v-if="errors.firstName" class="text-red-500 text-xs">
+                        <p
+                            v-if="errors.firstName"
+                            class="text-destructive text-xs"
+                        >
                             {{ errors.firstName }}
                         </p>
                     </div>
@@ -82,11 +87,14 @@
                             @input="clearError('lastName')"
                             @blur="validateField('lastName')"
                             :class="[
-                                'rounded-none border-gray-300 focus:ring-accent_dark',
-                                errors.lastName && 'border-red-500',
+                                'rounded-none border-border focus:ring-primary',
+                                errors.lastName && 'border-destructive',
                             ]"
                         />
-                        <p v-if="errors.lastName" class="text-red-500 text-xs">
+                        <p
+                            v-if="errors.lastName"
+                            class="text-destructive text-xs"
+                        >
                             {{ errors.lastName }}
                         </p>
                     </div>
@@ -105,8 +113,8 @@
                     >
                         <SelectTrigger
                             :class="[
-                                'rounded-none h-12 border-gray-300',
-                                errors.land && 'border-red-500',
+                                'rounded-none h-12 border-border',
+                                errors.land && 'border-destructive',
                             ]"
                         >
                             <SelectValue
@@ -126,7 +134,7 @@
                             </SelectItem>
                         </SelectContent>
                     </Select>
-                    <p v-if="errors.land" class="text-red-500 text-xs">
+                    <p v-if="errors.land" class="text-destructive text-xs">
                         {{ errors.land }}
                     </p>
                 </div>
@@ -140,11 +148,11 @@
                         @input="clearError('address')"
                         @blur="validateField('address')"
                         :class="[
-                            'rounded-none border-gray-300',
-                            errors.address && 'border-red-500',
+                            'rounded-none border-border',
+                            errors.address && 'border-destructive',
                         ]"
                     />
-                    <p v-if="errors.address" class="text-red-500 text-xs">
+                    <p v-if="errors.address" class="text-destructive text-xs">
                         {{ errors.address }}
                     </p>
                 </div>
@@ -159,11 +167,11 @@
                             @input="clearError('zip')"
                             @blur="validateField('zip')"
                             :class="[
-                                'rounded-none border-gray-300',
-                                errors.zip && 'border-red-500',
+                                'rounded-none border-border',
+                                errors.zip && 'border-destructive',
                             ]"
                         />
-                        <p v-if="errors.zip" class="text-red-500 text-xs">
+                        <p v-if="errors.zip" class="text-destructive text-xs">
                             {{ errors.zip }}
                         </p>
                     </div>
@@ -176,11 +184,11 @@
                             @input="clearError('city')"
                             @blur="validateField('city')"
                             :class="[
-                                'rounded-none border-gray-300',
-                                errors.city && 'border-red-500',
+                                'rounded-none border-border',
+                                errors.city && 'border-destructive',
                             ]"
                         />
-                        <p v-if="errors.city" class="text-red-500 text-xs">
+                        <p v-if="errors.city" class="text-destructive text-xs">
                             {{ errors.city }}
                         </p>
                     </div>
@@ -196,38 +204,20 @@
                         @blur="validateField('stateProvince')"
                         :placeholder="$t('common.forms.state')"
                         :class="[
-                            'rounded-none border-gray-300',
-                            errors.stateProvince && 'border-red-500',
+                            'rounded-none border-border',
+                            errors.stateProvince && 'border-destructive',
                         ]"
                     />
-                    <p v-if="errors.stateProvince" class="text-red-500 text-xs">
+                    <p
+                        v-if="errors.stateProvince"
+                        class="text-destructive text-xs"
+                    >
                         {{ errors.stateProvince }}
                     </p>
                 </div>
             </div>
         </transition>
-
-        <div class="flex justify-between items-center mt-10">
-            <Button
-                type="button"
-                variant="ghost"
-                class="rounded-none flex items-center gap-2 px-0 hover:bg-transparent"
-                @click="$emit('prev')"
-            >
-                <ChevronLeft :size="20" />
-                <span class="uppercase text-xs font-bold">{{
-                    $t("common.forms.backToShipping")
-                }}</span>
-            </Button>
-
-            <Button
-                type="submit"
-                class="rounded-none bg-primary text-primary-foreground hover:bg-gray-800 px-8 py-6 uppercase font-bold"
-            >
-                {{ $t("common.forms.continueToPayment") }}
-            </Button>
-        </div>
-    </form>
+    </CheckoutStepLayout>
 </template>
 
 <script setup>
@@ -235,10 +225,8 @@ import axios from "axios";
 import * as Yup from "yup";
 import { reactive, ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { ChevronLeft } from "lucide-vue-next";
+import CheckoutStepLayout from "./CheckoutStepLayout.vue";
 
-// Shadcn imports
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -249,13 +237,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
 import { checkoutform } from "@lib/store/shop/index.js";
 
 const emit = defineEmits(["next", "prev"]);
 const { t, locale } = useI18n();
 
-// Initialization and state logic remains the same as your original snippet
 if (!checkoutform.value.billing) {
     checkoutform.value.billing = {
         firstName: "",
@@ -279,6 +265,7 @@ const errors = reactive({
     stateProvince: null,
 });
 
+// ... Validation logic and fetching countries (exact same as original) ...
 const validationSchema = Yup.object().shape({
     firstName: Yup.string()
         .max(255, t("validation.validation.firstNameMax", { max: 255 }))
@@ -300,11 +287,9 @@ const validationSchema = Yup.object().shape({
         .max(255, t("validation.validation.stateMax", { max: 255 }))
         .required(t("validation.validation.state")),
 });
-
 const clearError = (field) => {
     errors[field] = null;
 };
-
 const validateField = async (field) => {
     try {
         await Yup.reach(validationSchema, field).validate(
@@ -315,7 +300,6 @@ const validateField = async (field) => {
         errors[field] = error.message;
     }
 };
-
 const countries = ref([]);
 const fetchCountries = async () => {
     try {
@@ -329,7 +313,6 @@ const fetchCountries = async () => {
         console.error("Error fetching countries:", error);
     }
 };
-
 const translatedCountries = computed(() => {
     return countries.value
         .map((country) => {
@@ -346,11 +329,10 @@ const translatedCountries = computed(() => {
 
 const submitStep = async () => {
     if (checkoutform.value.billingSameAsShipping) {
-        checkoutform.value.billing = { ...checkoutform.value }; // Sync logic
+        checkoutform.value.billing = { ...checkoutform.value };
         emit("next");
         return;
     }
-
     try {
         await validationSchema.validate(checkoutform.value.billing, {
             abortEarly: false,

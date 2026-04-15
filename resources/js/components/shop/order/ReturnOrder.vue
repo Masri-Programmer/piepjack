@@ -5,7 +5,7 @@
     >
         <template #header>
             <div
-                class="flex items-center justify-between border-b-4 border-primary pb-6"
+                class="flex flex-wrap items-center justify-between border-b-4 border-primary pb-6"
             >
                 <div>
                     <div
@@ -68,7 +68,7 @@
                             type="email"
                             required
                             :placeholder="$t('common.input.email')"
-                            class="rounded-none border-2 border-border bg-background h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
+                            class="rounded-none border-2 border-border bg-background focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
                         />
                     </div>
 
@@ -83,14 +83,14 @@
                             type="text"
                             required
                             :placeholder="$t('common.input.orderTracking')"
-                            class="rounded-none border-2 border-border bg-background h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
+                            class="rounded-none border-2 border-border bg-background focus-visible:ring-primary focus-visible:border-primary uppercase font-bold text-xs"
                         />
                     </div>
 
                     <Button
                         type="submit"
                         :disabled="isLoadingOrder"
-                        class="w-full rounded-none h-16 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 mt-4"
+                        class="view-all"
                     >
                         <Spinner v-if="isLoadingOrder" size="xs" class="mr-2" />
                         {{ $t("components.buttons.returnOrder") }}

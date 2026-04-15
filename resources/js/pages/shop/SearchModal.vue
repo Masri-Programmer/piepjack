@@ -2,11 +2,19 @@
 import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useDebounceFn } from "@vueuse/core";
-import { Search, X } from "lucide-vue-next";
+import { Search } from "lucide-vue-next";
 import { RouterLink } from "vue-router";
 
+// Shadcn UI Components
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
+
 // Components & Libs
-import Modal from "@components/Modal.vue";
 import ProductSmallCard from "@components/shop/product/ProductSmallCard.vue";
 import { apiQuery } from "@lib/helpers";
 import searchIllustration from "@img/svg/search.svg";
@@ -30,7 +38,7 @@ const selectTab = (index) => {
     selectedTab.value = index;
 };
 
-// Search Logic - Localized for "Full Search"
+// Search Logic
 const localSearchTerm = ref("");
 const debouncedSearchTerm = ref("");
 
@@ -42,14 +50,14 @@ watch(localSearchTerm, (newVal) => {
     updateDebounce(newVal);
 });
 
-// Dedicated search params for "Full Search" (unfiltered by current category)
+// Dedicated search params
 const searchParams = computed(() => ({
     search: debouncedSearchTerm.value,
-    per_page: 30, // Increased for full search experience
+    per_page: 30,
     active: 1,
 }));
 
-// API Queries - Using dedicated searchParams
+// API Queries
 const { data, isLoading } = apiQuery("products").useGet(searchParams);
 const { data: categories } = apiQuery("categories").useGet(searchParams);
 
@@ -63,42 +71,57 @@ watch(
         }
     },
 );
+
+const handleOpenChange = (isOpen) => {
+    if (!isOpen) {
+        emit("close");
+    }
+};
 </script>
 
 <template>
-    <Modal :open="props.open" @close="emit('close')">
-        <div class="flex flex-col w-full bg-background text-foreground">
-            <div
-                class="flex items-center justify-between p-6 border-b border-border"
+    <Dialog :open="props.open" @update:open="handleOpenChange">
+        <DialogContent
+            class="rounded-none w-[95vw] sm:w-[600px] md:w-[800px] max-w-none h-[85vh] md:h-[75vh] flex flex-col p-0 gap-0 border-border bg-background shadow-xl outline-none"
+        >
+            <DialogHeader
+                class="p-4 md:p-6 border-b border-border bg-background shrink-0"
             >
-                <h1 class="text-xl font-bold uppercase tracking-tight m-0">
+                <DialogTitle
+                    class="text-xl font-bold uppercase tracking-tight text-foreground m-0"
+                >
                     {{ t("common.search.title") }}
-                </h1>
+                </DialogTitle>
+                <DialogDescription class="sr-only">
+                    Search through our products and categories.
+                </DialogDescription>
+            </DialogHeader>
+
+            <div
+                class="relative flex items-center border-b border-border bg-background shrink-0"
+            >
+                <Search
+                    class="absolute right-6 w-5 h-5 text-muted-foreground pointer-events-none"
+                />
+                <input
+                    v-model="localSearchTerm"
+                    type="search"
+                    :placeholder="t('common.search.placeholder')"
+                    class="w-full bg-transparent p-4 md:p-6 pr-14 text-base focus:bg-accent-shadcn focus:outline-none transition-colors rounded-none placeholder:text-muted-foreground text-foreground"
+                    autofocus
+                />
             </div>
 
-            <div class="p-6 pb-0">
-                <div class="relative flex items-center">
-                    <Search
-                        class="absolute right-4 w-5 h-5 text-muted-foreground pointer-events-none"
-                    />
-                    <input
-                        v-model="localSearchTerm"
-                        type="search"
-                        :placeholder="t('common.search.placeholder')"
-                        class="w-full bg-muted border-none p-4 pl-12 text-base focus:ring-2 focus:ring-ring outline-none rounded-none transition-all"
-                        autofocus
-                    />
-                </div>
-            </div>
-
-            <div class="px-6 mt-6">
-                <div class="flex space-x-8 border-b border-border">
+            <div
+                class="px-4 md:px-6 border-b border-border bg-background shrink-0 pt-4"
+            >
+                <div class="flex space-x-8">
                     <button
                         v-for="(tab, index) in computedTabs"
                         :key="index"
                         @click="selectTab(index)"
                         :class="[
-                            'pb-3 text-sm font-bold uppercase tracking-wider transition-all rounded-none border-b-2',
+                            'pb-3 text-sm font-bold uppercase tracking-wider transition-all rounded-none border-b-2 outline-none',
                             selectedTab === index
                                 ? 'border-primary text-primary'
                                 : 'border-transparent text-muted-foreground hover:text-foreground',
@@ -110,85 +133,97 @@ watch(
             </div>
 
             <div
-                class="p-6 min-h-[400px] max-h-[60vh] overflow-y-auto custom-scrollbar"
+                class="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar bg-accent-shadcn/30"
             >
-                <div v-if="selectedTab === 0" class="space-y-4">
+                <div v-if="selectedTab === 0" class="h-full">
                     <div
                         v-if="data?.data?.length"
-                        class="grid grid-cols-1 gap-2"
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-3"
                     >
                         <RouterLink
                             v-for="product in data.data"
                             :key="product.id"
                             :to="`/product/${product.id}/${product.slug}`"
                             @click="emit('close')"
-                            class="group block border border-transparent hover:border-border transition-colors"
+                            class="group block border border-transparent hover:border-border transition-colors bg-background"
                         >
                             <ProductSmallCard
                                 :product="product"
-                                class="rounded-none"
+                                :item="product"
                             />
                         </RouterLink>
                     </div>
 
                     <div
                         v-else-if="!isLoading"
-                        class="flex flex-col items-center justify-center py-12 opacity-40"
+                        class="flex flex-col items-center justify-center h-full opacity-40 min-h-[300px]"
                     >
                         <img
                             :src="searchIllustration"
-                            class="w-32 h-32 mb-4 grayscale"
+                            class="w-24 md:w-32 h-24 md:h-32 mb-4 grayscale"
                             alt="No results"
                         />
-                        <p class="text-sm uppercase tracking-widest">
+                        <p
+                            class="text-sm font-bold uppercase tracking-widest text-foreground"
+                        >
                             {{ t("common.search.no_results") }}
                         </p>
                     </div>
                 </div>
 
-                <div v-if="selectedTab === 1">
+                <div v-if="selectedTab === 1" class="h-full">
                     <div
                         v-if="categories?.data?.length"
-                        class="flex flex-col border-t border-l border-border"
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
                     >
                         <RouterLink
                             v-for="category in categories.data"
                             :key="category.id"
                             :to="`/collections/${category.id}/${category.slug}`"
                             @click="emit('close')"
-                            class="p-4 border-b border-r border-border hover:bg-muted transition-colors font-medium uppercase text-sm"
+                            class="flex items-center p-4 border border-border bg-background hover:bg-muted transition-colors font-bold uppercase text-sm text-foreground rounded-none group"
                         >
-                            {{ category.name }}
+                            <span
+                                class="group-hover:translate-x-1 transition-transform"
+                            >
+                                {{ category.name }}
+                            </span>
                         </RouterLink>
                     </div>
 
                     <div
                         v-else
-                        class="flex flex-col items-center justify-center py-12 opacity-40"
+                        class="flex flex-col items-center justify-center h-full opacity-40 min-h-[300px]"
                     >
                         <img
                             :src="searchIllustration"
-                            class="w-32 h-32 mb-4 grayscale"
+                            class="w-24 md:w-32 h-24 md:h-32 mb-4 grayscale"
                             alt="No results"
                         />
-                        <p class="text-sm uppercase tracking-widest">
+                        <p
+                            class="text-sm font-bold uppercase tracking-widest text-foreground"
+                        >
                             {{ t("common.search.no_categories") }}
                         </p>
                     </div>
                 </div>
             </div>
-        </div>
-    </Modal>
+        </DialogContent>
+    </Dialog>
 </template>
 
 <style scoped>
 .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: var(--accent_light);
+    background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--main);
+    background: var(--border);
+    border: 2px solid var(--background); /* Creates a padded look */
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
 }
 </style>

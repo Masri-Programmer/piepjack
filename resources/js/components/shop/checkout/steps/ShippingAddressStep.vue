@@ -1,5 +1,10 @@
 <template>
-    <form @submit.prevent="submitStep" class="max-w-2xl mx-auto space-y-8">
+    <CheckoutStepLayout
+        :prevLabel="$t('common.forms.backToCart')"
+        prevRoute="/cart"
+        :nextLabel="$t('common.forms.continueToShipping')"
+        @submit="submitStep"
+    >
         <div class="space-y-4">
             <h1 class="text-2xl font-bold uppercase tracking-tight">
                 {{ $t("common.forms.contact") }}
@@ -17,11 +22,11 @@
                     @blur="validateField('email')"
                     :placeholder="$t('common.forms.emailPlaceholder')"
                     :class="[
-                        'rounded-none border-gray-300 focus:ring-accent_dark',
-                        errors.email && 'border-red-500',
+                        'rounded-none border-border focus:ring-accent-shadcn',
+                        errors.email && 'border-destructive',
                     ]"
                 />
-                <p v-if="errors.email" class="text-red-500 text-xs mt-1">
+                <p v-if="errors.email" class="text-destructive text-xs mt-1">
                     {{ errors.email }}
                 </p>
             </div>
@@ -33,9 +38,9 @@
             </h1>
 
             <div class="space-y-2">
-                <Label class="text-xs font-bold uppercase">
-                    {{ $t("common.forms.country") || "Land / Region" }}
-                </Label>
+                <Label class="text-xs font-bold uppercase">{{
+                    $t("common.forms.country")
+                }}</Label>
                 <Select
                     v-model="checkoutform.land"
                     @update:modelValue="
@@ -45,8 +50,8 @@
                 >
                     <SelectTrigger
                         :class="[
-                            'rounded-none h-12 border-gray-300',
-                            errors.land && 'border-red-500',
+                            'rounded-none h-12 border-border',
+                            errors.land && 'border-destructive',
                         ]"
                     >
                         <SelectValue
@@ -64,7 +69,7 @@
                         </SelectItem>
                     </SelectContent>
                 </Select>
-                <p v-if="errors.land" class="text-red-500 text-xs mt-1">
+                <p v-if="errors.land" class="text-destructive text-xs mt-1">
                     {{ errors.land }}
                 </p>
             </div>
@@ -186,34 +191,11 @@
                 </p>
             </div>
         </div>
-
-        <div
-            class="flex justify-between items-center pt-8 border-t border-gray-100 gap-4"
-        >
-            <Button
-                as-child
-                variant="ghost"
-                class="rounded-none hover:bg-transparent px-0 group"
-            >
-                <router-link to="/cart" class="flex items-center gap-2">
-                    <ChevronLeft
-                        :size="20"
-                        class="transition-transform group-hover:-translate-x-1"
-                    />
-                    <span class="text-xs font-bold uppercase">{{
-                        $t("common.forms.backToCart")
-                    }}</span>
-                </router-link>
-            </Button>
-
-            <Button type="submit" class="view-all">
-                {{ $t("common.forms.continueToShipping") }}
-            </Button>
-        </div>
-    </form>
+    </CheckoutStepLayout>
 </template>
 
 <script setup>
+import CheckoutStepLayout from "./CheckoutStepLayout.vue";
 import axios from "axios";
 import * as Yup from "yup";
 import { useI18n } from "vue-i18n";

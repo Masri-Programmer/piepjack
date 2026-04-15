@@ -15,7 +15,8 @@ export default {
         notFound: "Keine Produkte gefunden",
         productOutofStock: "Produkt aus dem Vorrat",
         review_success_title: "Bewertung eingereicht!",
-        review_submitted_message: "Vielen Dank für Ihre Bewertung! Sie wurde erfolgreich eingereicht.",
+        review_submitted_message:
+            "Vielen Dank für Ihre Bewertung! Sie wurde erfolgreich eingereicht.",
         ab: "ab",
         reviews: "Bewertungen",
         comment: "Kommentar",
@@ -88,6 +89,7 @@ export default {
             "Wir werden diese E -Mail verwenden, um Ihre Bestelldaten zu senden.",
         contact: "Kontakt",
         deliveryAddress: "LIEFERADRESSE",
+        billingAddress: "RECHNUNGSADRESSE",
         emailPlaceholder: "E-Mail-Adresse eingeben",
         subscribeLabel: "Neuigkeiten und Angebote via E-Mail erhalten",
         firstNameLabel: "Vorname",
@@ -122,10 +124,12 @@ export default {
         applyCode: "Code anwenden",
         stripeCheckout: "Stripe Checkout",
         paymentMethodsInfo: "Kreditkarte / PayPal / Klarna",
-        stripeRedirectInfo: "Nach dem Klicken auf \"Jetzt bezahlen\" werden Sie zu Stripe weitergeleitet, um Ihren Kauf sicher abzuschließen.",
+        stripeRedirectInfo:
+            'Nach dem Klicken auf "Jetzt bezahlen" werden Sie zu Stripe weitergeleitet, um Ihren Kauf sicher abzuschließen.',
         openingSecureCheckout: "Sichere Kasse wird geöffnet...",
         processing: "Wird bearbeitet...",
-        noShippingMethods: "Keine Versandmethoden für Ihre Adresse verfügbar. Bitte prüfen Sie Ihre Angaben.",
+        noShippingMethods:
+            "Keine Versandmethoden für Ihre Adresse verfügbar. Bitte prüfen Sie Ihre Angaben.",
         free: "Kostenlos",
     },
     input: {
@@ -160,14 +164,16 @@ export default {
         verify: "Überprüfen",
         select: "Auswählen",
         logistics: "Logistik",
-        identify_desc: "Identifizieren Sie Ihre Bestellung, um den Rückgabevorgang einzuleiten.",
+        identify_desc:
+            "Identifizieren Sie Ihre Bestellung, um den Rückgabevorgang einzuleiten.",
         select_items_title: "Artikel zur Rückgabe auswählen",
         summary_title: "Zusammenfassung",
         selected_carrier: "Ausgewählter Paketdienst",
         fee: "Rückgebühr",
         drop_off_desc: "Abgabe an Standort",
         success_title: "Rückgabe beantragt!",
-        success_message: "Vielen Dank für das Einreichen Ihres Rückgabeantrags. Wir werden ihn so schnell wie möglich bearbeiten.",
+        success_message:
+            "Vielen Dank für das Einreichen Ihres Rückgabeantrags. Wir werden ihn so schnell wie möglich bearbeiten.",
     },
     alerts: {
         orderNotFound: "Nicht gefunden.",

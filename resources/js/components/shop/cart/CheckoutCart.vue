@@ -67,38 +67,42 @@
             <div class="pt-4 space-y-3">
                 <label
                     for="promoCode"
-                    class="block text-[10px] font-bold uppercase tracking-widest text-gray-400"
+                    class="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
                 >
                     {{ $t("pages.checkout.promoCode") }}
                 </label>
-                <div class="flex items-center gap-2">
+
+                <div class="flex items-stretch gap-2 w-full">
                     <Input
                         type="text"
                         id="promoCode"
                         v-model="promoCode"
-                        class="flex-1 h-16 text-sm border border-muted focus:ring-0 focus:border-accent_dark text-main bg-background"
+                        class="flex-1 text-sm border-border bg-background text-foreground rounded-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
                         :placeholder="$t('pages.checkout.enterPromoCode')"
                     />
-                    <Button @click="applyPromoCode" class="view-all">
+                    <Button
+                        @click="applyPromoCode"
+                        class="view-all shrink-0 rounded-none h-10"
+                    >
                         {{ $t("pages.checkout.apply") }}
                     </Button>
                 </div>
+
                 <transition name="fade">
                     <p
                         v-if="promoApplied"
-                        class="text-xs text-green-600 font-medium"
+                        class="text-xs text-green-600 dark:text-green-400 font-bold uppercase tracking-wide"
                     >
                         {{ $t("pages.checkout.promoApplied") }}
                     </p>
                     <p
                         v-else-if="promoError"
-                        class="text-xs text-red-600 font-medium"
+                        class="text-xs text-destructive font-bold uppercase tracking-wide"
                     >
                         {{ $t("pages.checkout.invalidPromo") }}
                     </p>
                 </transition>
             </div>
-
             <!-- Total -->
             <div class="pt-8 border-t border-muted">
                 <div class="flex justify-between items-baseline mb-1">

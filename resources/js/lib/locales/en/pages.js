@@ -186,6 +186,7 @@ export default {
         liveTracking: "Live Tracking",
         carrierSite: "Carrier Site",
         deliveryAddress: "Delivery Address",
+        billingAddress: "Billing Address",
         summary: "Summary",
         subtotal: "Subtotal",
         shipping: "Shipping",

@@ -14,7 +14,7 @@
         <div
             :class="[
                 !noContainer
-                    ? 'max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20 py-14 md:py-20 lg:py-24'
+                    ? 'max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20 mt-8 md:mt-0 py-14 md:py-20 lg:py-24'
                     : '',
             ]"
         >

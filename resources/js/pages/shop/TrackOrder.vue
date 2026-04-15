@@ -5,7 +5,7 @@
     >
         <template #header>
             <div
-                class="flex items-center justify-between border-b-4 border-primary pb-6"
+                class="flex flex-wrap items-center justify-between border-b-4 border-primary pb-6"
             >
                 <div>
                     <div
@@ -79,7 +79,7 @@
                             v-model="form.email"
                             type="email"
                             required
-                            class="rounded-none border-2 border-border bg-accent_light h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-black text-xs"
+                            class="rounded-none border-2 border-border bg-accent_light focus-visible:ring-primary focus-visible:border-primary uppercase font-black text-xs"
                         />
                     </div>
 
@@ -93,14 +93,14 @@
                             v-model="form.orderNr"
                             type="text"
                             required
-                            class="rounded-none border-2 border-border bg-accent_light h-14 focus-visible:ring-primary focus-visible:border-primary uppercase font-black text-xs"
+                            class="rounded-none border-2 border-border bg-accent_light focus-visible:ring-primary focus-visible:border-primary uppercase font-black text-xs"
                         />
                     </div>
 
                     <Button
                         type="submit"
                         :disabled="isLoadingOrder"
-                        class="rounded-none w-full h-20 text-lg font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+                        class="view-all"
                     >
                         <Spinner v-if="isLoadingOrder" size="xs" class="mr-2" />
                         {{ $t("components.buttons.track") }}
@@ -143,12 +143,16 @@
                                     >
                                         {{ $t("pages.tracking.reference") }}
                                     </p>
-                                    <div class="flex items-center space-x-2 group">
+                                    <div
+                                        class="flex items-center space-x-2 group"
+                                    >
                                         <p class="font-black">
                                             {{ order.data.order_number }}
                                         </p>
                                         <button
-                                            @click="copy(order.data.order_number)"
+                                            @click="
+                                                copy(order.data.order_number)
+                                            "
                                             class="hover:text-accent_light transition-colors focus:outline-none p-1 -m-1"
                                             :title="$t('common.copy')"
                                         >
@@ -250,21 +254,53 @@
                                 {{ order.data.shipping_address.first_name }}
                                 {{ order.data.shipping_address.last_name
                                 }}<br />
-                                <span class="text-muted-foreground not-italic">{{
-                                    order.data.shipping_address.line_one
-                                }}</span
+                                <span
+                                    class="text-muted-foreground not-italic"
+                                    >{{
+                                        order.data.shipping_address.line_one
+                                    }}</span
                                 ><br />
                                 <span class="text-muted-foreground not-italic"
                                     >{{ order.data.shipping_address.postcode }}
-                                    {{
-                                        order.data.shipping_address.city
+                                    {{ order.data.shipping_address.city }}</span
+                                >
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card
+                        class="rounded-none border-2 border-border bg-accent_light shadow-none"
+                    >
+                        <CardHeader class="p-6">
+                            <CardTitle
+                                class="text-xs font-black uppercase tracking-widest"
+                                >{{
+                                    $t("pages.tracking.billingAddress")
+                                }}</CardTitle
+                            >
+                        </CardHeader>
+                        <CardContent
+                            class="p-6 pt-0 text-sm font-black uppercase leading-tight italic"
+                        >
+                            <div v-if="order.data.billing_address">
+                                {{ order.data.billing_address.first_name }}
+                                {{ order.data.billing_address.last_name }}<br />
+                                <span
+                                    class="text-muted-foreground not-italic"
+                                    >{{
+                                        order.data.billing_address.line_one
                                     }}</span
+                                ><br />
+                                <span class="text-muted-foreground not-italic"
+                                    >{{ order.data.billing_address.postcode }}
+                                    {{ order.data.billing_address.city }}</span
                                 >
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card class="rounded-none border-2 border-border shadow-none">
+                    <Card
+                        class="rounded-none border-2 border-border shadow-none"
+                    >
                         <CardHeader class="p-6">
                             <CardTitle
                                 class="text-xs font-black uppercase tracking-widest border-b border-border pb-3"
@@ -355,7 +391,7 @@ import { checkoutform } from "@lib/store/shop/index.js";
 const { t } = useI18n();
 const toast = useToast();
 const route = useRoute();
-const slug = route.params.slug;
+const id = route.params.id;
 
 const { copy, copied } = useClipboard();
 
@@ -363,7 +399,7 @@ const activeStep = ref(1);
 const errorMessage = ref("");
 const form = useSessionStorage("active-track-form", {
     email: checkoutform.value.email || "",
-    orderNr: route.params.id || "",
+    orderNr: id || "",
 });
 
 const orderQueryKey = computed(() => form.value.orderNr);
@@ -390,7 +426,8 @@ const fetchOrder = async () => {
         const { data, isError, error } = await refetchOrder();
 
         if (isError) {
-            errorMessage.value = error?.message || t("common.alerts.fetchError");
+            errorMessage.value =
+                error?.message || t("common.alerts.fetchError");
             toast.error(errorMessage.value);
             return;
         }
@@ -421,11 +458,16 @@ const goBack = () => {
 };
 
 onMounted(() => {
-    if (slug === "success") {
+    if (id && id !== "success") {
+        form.value.orderNr = id;
+    }
+
+    if (id === "success") {
         activeStep.value = 1;
         toast.success(t("common.alerts.trackSuccess"));
     }
-    if (form.value.email && form.value.orderNr) {
+
+    if (form.value.email && form.value.orderNr && id !== "success") {
         handleSubmit();
     }
 });
@@ -433,9 +475,11 @@ onMounted(() => {
 watch(
     () => route.params.id,
     (newId) => {
-        if (newId) {
+        if (newId && newId !== "success") {
             form.value.orderNr = newId;
-            handleSubmit();
+            if (form.value.email) {
+                handleSubmit();
+            }
         }
     },
 );

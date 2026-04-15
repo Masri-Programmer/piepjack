@@ -126,17 +126,13 @@ body {
 .font-mustica {
     font-family: "mustica-SemiBold";
 }
-
 .view-all {
+    /* Base Button Layout */
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 4rem;
-    min-width: 0;
     text-transform: uppercase;
     cursor: pointer;
-    padding: 0 2rem;
     color: var(--accent_dark);
     border: 2px solid var(--main);
     background-size: 200% 100%;
@@ -152,18 +148,23 @@ body {
         var(--accent_dark) 50%
     );
     border-radius: 0;
-    font-size: 0.875rem;
     font-weight: 700;
     letter-spacing: 0.1em;
+
+    /* --- THE RESPONSIVE TEXT FIX --- */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+
+    /* --- BASE (Mobile First, < 640px) --- */
+    width: 100%;
+    height: 2.5rem; /* 40px */
+    padding: 0 1rem;
+    font-size: 0.75rem;
 }
 
-@media (min-width: 640px) {
-    .view-all {
-        width: fit-content;
-        min-width: 200px;
-    }
-}
-
+/* Hover and Disabled States */
 .view-all:hover {
     color: var(--main);
     background-position: left;
@@ -180,10 +181,56 @@ body {
     transition: none;
 }
 
+/* --- RESPONSIVE SCALING --- */
+
+/* sm: 640px (40rem) */
+@media (min-width: 40rem) {
+    .view-all {
+        width: fit-content;
+        min-width: 160px;
+        height: 2.75rem;
+        padding: 0 1.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* md: 768px (48rem) */
+@media (min-width: 48rem) {
+    .view-all {
+        min-width: 180px;
+        height: 3rem;
+        padding: 0 2rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* lg: 1024px (64rem) */
+@media (min-width: 64rem) {
+    .view-all {
+        min-width: 200px;
+        font-size: 0.875rem;
+    }
+}
+
+/* xl: 1280px (80rem) */
+@media (min-width: 80rem) {
+    .view-all {
+        min-width: 220px;
+        font-size: 0.875rem;
+    }
+}
+
+/* 2xl: 1536px (96rem) */
+@media (min-width: 96rem) {
+    .view-all {
+        min-width: 240px;
+    }
+}
+
 .footer p {
     opacity: 0.75;
     margin: 12px 0px;
-    font-size: 0.85em;
+    font-size: 0.875rem;
 }
 
 .square {

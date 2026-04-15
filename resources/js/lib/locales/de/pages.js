@@ -186,6 +186,7 @@ export default {
         liveTracking: "Live-Verfolgung",
         carrierSite: "Frachtführer-Website",
         deliveryAddress: "Lieferadresse",
+        billingAddress: "Rechnungsadresse",
         summary: "Zusammenfassung",
         subtotal: "Zwischensumme",
         shipping: "Versand",

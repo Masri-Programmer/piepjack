@@ -7,44 +7,71 @@
         @mouseleave="mouseLeave"
     >
         <Card
-            class="relative flex flex-col overflow-hidden transition-all duration-300 border-transparent hover:border-border hover:shadow-md rounded-none"
+            class="relative flex flex-col h-full overflow-hidden transition-all duration-300 border-transparent hover:border-border hover:shadow-md rounded-none bg-card"
         >
             <Badge
                 v-if="isNewProduct"
-                class="absolute z-10 transition-transform duration-300 top-3 left-3 group-hover:scale-105 rounded-none"
+                class="absolute z-10 transition-transform duration-300 top-3 left-3 group-hover:scale-105 rounded-none bg-primary text-primary-foreground"
                 variant="default"
             >
                 {{ $t("common.product.new") }}
             </Badge>
 
-            <AspectRatio :ratio="3 / 4" class="overflow-hidden bg-muted">
+            <AspectRatio
+                :ratio="3 / 4"
+                class="w-full overflow-hidden bg-muted rounded-none"
+            >
                 <ProductImage
                     :src="product.image_url"
                     :alt="product.name"
-                    customClass="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    customClass="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105 rounded-none"
                 />
             </AspectRatio>
 
             <CardContent
-                class="flex flex-col items-center justify-center grow p-3 mt-2 text-center sm:p-4"
+                class="flex flex-col items-center justify-start grow p-3 sm:p-4 w-full"
             >
-                <p
-                    class="w-full text-sm font-semibold uppercase truncate sm:text-base text-card-foreground"
+                <div
+                    class="flex items-center justify-center w-full h-10 sm:h-12 mb-1"
                 >
-                    {{ product.name }}
-                </p>
-
-                <div v-if="product.reviews_count > 0" class="flex items-center mt-1 gap-1">
-                    <StarRating :rating="Math.round(product.average_rating)" size="14" />
-                    <span class="text-[10px] text-muted-foreground">({{ product.reviews_count }})</span>
+                    <p
+                        class="w-full text-sm font-semibold uppercase line-clamp-2 sm:text-base text-card-foreground text-center"
+                        :title="product.name"
+                    >
+                        {{ product.name }}
+                    </p>
                 </div>
 
-                <p
-                    v-if="product.price"
-                    class="mt-1 text-xs uppercase sm:text-sm text-muted-foreground"
+                <div
+                    class="flex items-center justify-center w-full h-5 sm:h-6 mb-1"
                 >
-                    {{ $t("common.product.ab") }} {{ product.formatted_price }}
-                </p>
+                    <div
+                        v-if="product.reviews_count > 0"
+                        class="flex items-center gap-1"
+                    >
+                        <StarRating
+                            :rating="Math.round(product.average_rating)"
+                            size="14"
+                        />
+                        <span
+                            class="text-[10px] sm:text-xs text-muted-foreground"
+                        >
+                            ({{ product.reviews_count }})
+                        </span>
+                    </div>
+                </div>
+
+                <div
+                    class="flex items-center justify-center w-full h-5 sm:h-6 mt-auto"
+                >
+                    <p
+                        v-if="product.price"
+                        class="text-xs uppercase sm:text-sm text-muted-foreground font-mustica"
+                    >
+                        {{ $t("common.product.ab") }}
+                        {{ product.formatted_price }}
+                    </p>
+                </div>
             </CardContent>
         </Card>
     </router-link>
@@ -85,6 +112,7 @@ const mouseLeave = () => (imgHover.value = false);
 
 const now = useNow();
 
+// Determines if the product is new (within the last 7 days)
 const isNewProduct = computed(() => {
     if (!props.product?.created_at) return false;
     const createdAt = new Date(props.product.created_at);
