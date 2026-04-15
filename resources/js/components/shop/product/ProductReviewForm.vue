@@ -37,7 +37,7 @@
                             :class="[
                                 star <= (hoverRating || reviewForm.rating)
                                     ? 'text-accent bg-main border-main'
-                                    : 'text-muted-foreground bg-accent_light border-border hover:border-main',
+                                    : 'text-muted-foreground bg-accent-shadcn border-border hover:border-main',
                             ]"
                         >
                             <path
@@ -61,15 +61,14 @@
                 >
                     {{ $t("common.forms.emailLabel") }}
                 </label>
-                <input
+                <Input
                     v-model="reviewForm.email"
                     type="email"
                     id="email"
                     :class="[
-                        'w-full bg-accent_light border-2 p-4 text-base outline-none rounded-none transition-all',
                         errors.email
-                            ? 'border-destructive focus:border-destructive'
-                            : 'border-border focus:border-main',
+                            ? 'border-destructive focus-visible:ring-destructive'
+                            : 'border-border focus-visible:ring-main focus-visible:border-main',
                     ]"
                     :placeholder="$t('common.forms.emailPlaceholder')"
                 />
@@ -88,15 +87,14 @@
                 >
                     {{ $t("common.product.title") }}
                 </label>
-                <input
+                <Input
                     v-model="reviewForm.title"
                     type="text"
                     id="title"
                     :class="[
-                        'w-full bg-accent_light border-2 p-4 text-base outline-none rounded-none transition-all',
                         errors.title
-                            ? 'border-destructive focus:border-destructive'
-                            : 'border-border focus:border-main',
+                            ? 'border-destructive focus-visible:ring-destructive'
+                            : 'border-border focus-visible:ring-main focus-visible:border-main',
                     ]"
                     :placeholder="$t('common.product.title')"
                 />
@@ -115,18 +113,17 @@
                 >
                     {{ $t("common.product.comment") }}
                 </label>
-                <textarea
+                <Textarea
                     v-model="reviewForm.comment"
                     id="comment"
                     rows="5"
                     :class="[
-                        'w-full bg-accent_light border-2 p-4 text-base outline-none rounded-none transition-all resize-y min-h-[120px]',
                         errors.comment
-                            ? 'border-destructive focus:border-destructive'
-                            : 'border-border focus:border-main',
+                            ? 'border-destructive focus-visible:ring-destructive'
+                            : 'border-border focus-visible:ring-main focus-visible:border-main',
                     ]"
                     :placeholder="$t('common.product.comment')"
-                ></textarea>
+                />
                 <p
                     v-if="errors.comment"
                     class="text-destructive text-xs font-bold uppercase tracking-wide animate-in slide-in-from-top-1"
@@ -135,11 +132,7 @@
                 </p>
             </div>
 
-            <Button
-                type="submit"
-                :disabled="createLoading"
-                class="view-all w-full h-16 text-lg font-bold uppercase tracking-widest flex justify-center items-center rounded-none"
-            >
+            <Button type="submit" :disabled="createLoading" class="view-all">
                 <Spinner v-if="createLoading" size="xs" />
                 <span v-else>{{ $t("common.product.submit_review") }}</span>
             </Button>
@@ -188,7 +181,11 @@ import * as Yup from "yup";
 
 import { apiQuery } from "@lib/helpers";
 import Spinner from "@components/ui/Spinner.vue";
+
+// Shadcn UI Imports
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const props = defineProps({
     productId: {
