@@ -72,17 +72,16 @@
                     {{ $t("pages.checkout.promoCode") }}
                 </label>
 
-                <div class="flex items-stretch gap-2 w-full">
+                <div class="grid grid-cols-[1fr_auto] gap-3 w-full">
                     <Input
                         type="text"
                         id="promoCode"
                         v-model="promoCode"
-                        class="flex-1 text-sm border-border bg-background text-foreground rounded-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
                         :placeholder="$t('pages.checkout.enterPromoCode')"
                     />
                     <Button
                         @click="applyPromoCode"
-                        class="view-all shrink-0 rounded-none h-10"
+                        class="view-all whitespace-nowrap"
                     >
                         {{ $t("pages.checkout.apply") }}
                     </Button>
