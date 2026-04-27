@@ -517,7 +517,7 @@ class CheckoutController extends Controller
                 $shippingMethodId = $shippingLine->meta['sendcloud_id'];
             }
 
-            $shippingResult = $this->sendcloud->createParcel($customerData, $weight, (int) $shippingMethodId);
+            $shippingResult = $this->sendcloud->createParcel($customerData, $weight, (int) $shippingMethodId, false);
             if ($shippingResult) {
                 $currentMeta = (array) ($order->meta ?? []);
                 $order->update([

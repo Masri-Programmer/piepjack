@@ -56,7 +56,7 @@ class ShippingController extends Controller
         }
 
         try {
-            $shippingResult = $this->sendcloud->createParcel($customerData, $totalWeight, (int) $shippingMethodId);
+            $shippingResult = $this->sendcloud->createParcel($customerData, $totalWeight, (int) $shippingMethodId, true);
 
             // 3. Save the tracking number to database
             $currentMeta = (array) ($order->meta ?? []);
