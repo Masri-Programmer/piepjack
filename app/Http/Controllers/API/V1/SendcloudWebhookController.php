@@ -54,15 +54,32 @@ class SendcloudWebhookController extends Controller
             return response()->json(['message' => 'Missing tracking number'], 400);
         }
 
-        // 3. Find Order by Tracking Number
-        $order = Order::where('tracking_number', $trackingNumber)->first();
+        $parcelId = $parcel['id'] ?? null;
+
+        // 3. Find Order by Parcel ID or Tracking Number
+        $order = Order::where('meta->sendcloud_parcel_id', $parcelId)
+            ->orWhere(function ($query) use ($trackingNumber) {
+                if ($trackingNumber) {
+                    $query->where('tracking_number', $trackingNumber);
+                }
+            })->first();
 
         if (! $order) {
-            // It might be that the label was just created and the tracking number is not yet in our DB
-            // Or it could be an order created outside of this system.
-            Log::info("Sendcloud webhook: Order not found for tracking {$trackingNumber}");
+            // It might be that the label was just created and the tracking number is not yet in our DB,
+            // and the parcel ID doesn't match either.
+            Log::info("Sendcloud webhook: Order not found for parcel {$parcelId} or tracking {$trackingNumber}");
 
             return response()->json(['status' => 'order_not_found'], 200);
+        }
+
+        // If the order was generated unannounced, it won't have a tracking number yet. Let's save it.
+        if (empty($order->tracking_number) && $trackingNumber) {
+            $currentMeta = (array) ($order->meta ?? []);
+            $order->update([
+                'tracking_number' => $trackingNumber,
+                'meta' => array_merge($currentMeta, ['tracking_number' => $trackingNumber]),
+            ]);
+            Log::info("Order {$order->reference} tracking number initialized via webhook to {$trackingNumber}.");
         }
 
         // 4. Update Order Status based on Sendcloud Status IDs
