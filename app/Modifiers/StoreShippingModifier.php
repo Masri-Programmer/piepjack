@@ -2,48 +2,54 @@
 
 namespace App\Modifiers;
 
+use App\Services\SendcloudService;
 use Closure;
-use Lunar\Base\ShippingModifier; // Lunar's base class
+use Lunar\Base\ShippingModifier;
 use Lunar\DataTypes\Price;
 use Lunar\DataTypes\ShippingOption;
 use Lunar\Facades\ShippingManifest;
 use Lunar\Models\Contracts\Cart;
 use Lunar\Models\TaxClass;
 
-// Renamed to avoid PHP naming collisions
 class StoreShippingModifier extends ShippingModifier
 {
+    public function __construct(protected SendcloudService $sendcloud) {}
+
     public function handle(Cart $cart, Closure $next)
     {
         $taxClass = TaxClass::getDefault();
+        $shippingAddress = $cart->shippingAddress;
+        $countryCode = $shippingAddress?->country?->iso2 ?? 'DE';
 
-        // Safely get the subtotal (in cents)
-        // We removed $cart->calculate() from here to prevent infinite loops!
-        $subTotal = $cart->subTotal?->value ?? 0;
+        $methods = $this->sendcloud->getShippingMethods();
 
-        // DHL Standard (Constant 5.90 EUR)
-        $standardPrice = 590;
+        foreach ($methods as $method) {
+            // Filter by country if countries are specified in the method
+            if (! empty($method['countries'])) {
+                $canShipTo = collect($method['countries'])->contains(fn ($c) => $c['iso_2'] === $countryCode);
+                if (! $canShipTo) {
+                    continue;
+                }
+            }
 
-        ShippingManifest::addOption(
-            new ShippingOption(
-                name: 'DHL Standard',
-                description: 'Standard shipping via DHL',
-                identifier: 'DE_STD',
-                price: new Price($standardPrice, $cart->currency, 1),
-                taxClass: $taxClass
-            )
-        );
+            // For now, we'll keep the existing flat rates for certain DHL methods if they match,
+            // or use a default price if they don't.
+            // In a real scenario, you might want to use Sendcloud's price or a markup.
+            $price = 590; // Default flat rate
+            if (str_contains(strtolower($method['name']), 'express')) {
+                $price = 990;
+            }
 
-        // Rule 2: DHL Express (Always 9.90 EUR)
-        ShippingManifest::addOption(
-            new ShippingOption(
-                name: 'DHL Express',
-                description: 'Express shipping via DHL',
-                identifier: 'DE_EXP',
-                price: new Price(990, $cart->currency, 1),
-                taxClass: $taxClass
-            )
-        );
+            ShippingManifest::addOption(
+                new ShippingOption(
+                    name: $method['name'],
+                    description: $method['service']['name'] ?? 'Shipping via '.$method['carrier'],
+                    identifier: (string) $method['id'],
+                    price: new Price($price, $cart->currency, 1),
+                    taxClass: $taxClass
+                )
+            );
+        }
 
         return $next($cart);
     }

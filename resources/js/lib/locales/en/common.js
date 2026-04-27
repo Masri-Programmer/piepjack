@@ -1,6 +1,9 @@
 export default {
     total: "Total",
     remove: "Remove",
+    buttons: {
+        remove: "Remove",
+    },
     summary: "Summary",
     product: {
         size: "Size",
@@ -19,10 +22,13 @@ export default {
         submit_review: "Save",
         maximum_quantity: "The product has reached it's maximum quantity",
         notFound: "NO PRODUCTS FOUND",
+        outOfStock: "Out of stock",
         productOutofStock: "product Out of Stock",
         review_success_title: "Review Submitted!",
         review_submitted_message:
             "Thank you for your review! It has been submitted successfully.",
+        stock: "Stock: {count} left",
+        lowStock: "Only {count} left!",
         otherProductTitle: "MORE LOVE MESH JERSEY GREEN",
         creditAndMobile: "All credit cards & mobile payments",
         no_reviews: "No Reviews",
@@ -44,12 +50,12 @@ export default {
             switzerland: "Switzerland & other European Countries",
             usa: "USA",
             restOfWorld: "Rest of the World",
-            germanyDelivery: "2-4 working days",
-            austriaDelivery: "2-4 working days",
+            germanyDelivery: "4-8 working days",
+            austriaDelivery: "4-8 working days",
             switzerlandDelivery: "3-5 working days",
             usaDelivery: "8-10 working days",
             restWorldDelivery: "8-10 working days",
-            returnsInfo: "You can return your order within 14 days through our",
+            returnsInfo: "Returns within 14 days via our",
             returnsPortal: "returns portal",
         },
     },
@@ -107,6 +113,10 @@ export default {
         backToInfo: "Back to information",
         backToShipping: "Back to shipping",
         backToBilling: "Back to billing address",
+        information: "Information",
+        shipping: "Shipping",
+        billing: "Billing",
+        payment: "Payment",
         continueToShipping: "Continue to shipping",
         continueToBilling: "Continue to billing address",
         continueToPayment: "Continue to payment",
@@ -127,6 +137,7 @@ export default {
         noShippingMethods:
             "No shipping methods available for your address. Please check your details.",
         free: "Free",
+        swipeToRemove: "Swipe to remove",
     },
     input: {
         orderTracking: "Order number or tracking code (e.g GREFIYOO2Q)",

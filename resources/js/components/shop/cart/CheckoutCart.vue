@@ -4,9 +4,30 @@
         <div class="space-y-1">
             <template v-for="product in cartState.cartItems" :key="product.id">
                 <template v-for="item in product.items" :key="item.id">
-                    <div class="bg-background border border-muted">
+                    <SwipeToDelete
+                        :isUnavailable="item.quantity === 0"
+                        @delete="
+                            removeFromCart({
+                                productId: product.id,
+                                itemId: item.id,
+                            })
+                        "
+                        class="border-b border-muted last:border-b-0"
+                    >
                         <ProductSmallCard :product="product" :item="item" />
-                    </div>
+
+                        <!-- Status message for out of stock -->
+                        <div
+                            v-if="item.quantity === 0"
+                            class="px-4 pb-4 flex items-center justify-between"
+                        >
+                            <p
+                                class="text-[10px] font-black uppercase tracking-widest text-destructive"
+                            >
+                                {{ $t("common.product.outOfStock") }}
+                            </p>
+                        </div>
+                    </SwipeToDelete>
                 </template>
             </template>
         </div>
@@ -133,6 +154,7 @@
 
 <script setup>
 import ProductSmallCard from "../product/ProductSmallCard.vue";
+import SwipeToDelete from "../../ui/SwipeToDelete.vue";
 import { reactive, computed, ref, onBeforeMount } from "vue";
 import { loadStripe } from "@stripe/stripe-js";
 import { useI18n } from "vue-i18n";
@@ -142,6 +164,7 @@ import {
     cartTotalQuantity,
     checkoutform,
     fetchDiscounts,
+    removeFromCart,
 } from "@lib/store/shop/index.js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use App\Services\SendcloudService;
 use Illuminate\Http\Request;
+use Lunar\Models\Order;
 
 class ShippingController extends Controller
 {
@@ -23,36 +23,49 @@ class ShippingController extends Controller
     {
         // 1. Validate the incoming data from Vue
         $validated = $request->validate([
-            'order_id' => 'required|exists:orders,id',
+            'order_id' => 'required|exists:lunar_orders,id',
+            'email' => 'required|email',
         ]);
 
-        $order = Order::with(['user', 'shippingAddress'])->findOrFail($validated['order_id']);
+        $order = Order::with(['user', 'shippingAddress', 'shippingLines'])->findOrFail($validated['order_id']);
 
-        if (! $order->shippingAddress || ! $order->user) {
+        if (! $order->user || $order->user->email !== $validated['email']) {
+            return response()->json(['error' => __('Unauthorized access to this order.')], 403);
+        }
+
+        if (! $order->shippingAddress) {
             return response()->json(['error' => __('Incomplete order customer data.')], 400);
         }
 
         // Format customer data for Sendcloud
         $customerData = [
             'name' => $order->user->first_name.' '.$order->user->last_name,
-            'address' => $order->shippingAddress->street_address,
+            'address' => $order->shippingAddress->line_one,
             'city' => $order->shippingAddress->city,
-            'zip' => $order->shippingAddress->postal_code,
-            'country_code' => $order->shippingAddress->country_code,
+            'zip' => $order->shippingAddress->postcode,
+            'country_code' => $order->shippingAddress->country->iso2 ?? 'DE',
             'email' => $order->user->email,
         ];
 
         // 2. Call the service to create the parcel
         $totalWeight = 1.0; // Placeholder until physical weights exist
-        $shippingMethodId = $order->shipping_method_id ?? 8;
+        $shippingLine = $order->shippingLines->first();
+        $shippingMethodId = $shippingLine && is_numeric($shippingLine->identifier)
+            ? (int) $shippingLine->identifier
+            : 8;
 
         try {
             $shippingResult = $this->sendcloud->createParcel($customerData, $totalWeight, $shippingMethodId);
 
             // 3. Save the tracking number to database
+            $currentMeta = (array) ($order->meta ?? []);
             $order->update([
                 'tracking_number' => $shippingResult['tracking_number'],
                 'label_url' => $shippingResult['label_url'],
+                'meta' => array_merge($currentMeta, [
+                    'tracking_number' => $shippingResult['tracking_number'],
+                    'label_url' => $shippingResult['label_url'],
+                ]),
             ]);
 
             // 4. Return the data

@@ -6,10 +6,10 @@
             class="relative shrink-0 w-24 sm:w-28 bg-muted border-r border-border aspect-[3/4]"
         >
             <span
-                v-if="item?.cartQuantity"
+                v-if="item?.cartQuantity || item?.quantity"
                 class="absolute top-2 left-2 z-10 flex items-center justify-center w-6 h-6 text-xs font-bold text-primary-foreground bg-primary rounded-none shadow-sm"
             >
-                {{ item.cartQuantity }}
+                {{ item.cartQuantity || item.quantity }}
             </span>
 
             <ProductImage
@@ -36,10 +36,10 @@
                 </h6>
 
                 <p
-                    v-if="item?.formatted_price"
+                    v-if="item?.formatted_price || item?.price"
                     class="text-sm sm:text-base font-bold text-foreground whitespace-nowrap shrink-0"
                 >
-                    {{ item.formatted_price }}
+                    {{ item.formatted_price || `${item.price} €` }}
                 </p>
             </div>
 

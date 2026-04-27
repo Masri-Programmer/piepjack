@@ -34,6 +34,7 @@ export default {
     shippingFree: "Super! Now enjoy your <strong>free</strong> shipping",
     taxIncluded: "Tax included.",
     title: "Cart",
+    empty: "Your cart is empty",
     total: "Total",
     totalAmount: "Total: {total}",
     yourItems: "Your selected items are now in your cart."

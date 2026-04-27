@@ -108,7 +108,7 @@
                         v-if="cartState.cartItems.length > 0"
                         to="/checkout"
                         @click="cartState.open = false"
-                        class="block w-full"
+                        class="flex justify-center w-full"
                     >
                         <Button class="view-all" size="lg">
                             <LockKeyhole size="18" />

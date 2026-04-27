@@ -76,8 +76,6 @@ import CheckoutStepLayout from "./CheckoutStepLayout.vue";
 import { checkoutform, cartState } from "@lib/store/shop/index.js";
 import { apiRequest } from "@lib/helpers";
 import Spinner from "@components/ui/Spinner.vue";
-
-// Import Shadcn UI Radio components & Label
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
@@ -128,6 +126,13 @@ const loadMethods = async () => {
             }
         }
     } catch (error) {
+        if (error.response?.status === 422) {
+            console.error(
+                "Invalid products detected in cart. Re-validating...",
+            );
+            await validateCart();
+            // If after validation the cart is empty or changed, the watcher will trigger a reload
+        }
         console.error("Failed to load shipping methods:", error);
     } finally {
         isLoading.value = false;

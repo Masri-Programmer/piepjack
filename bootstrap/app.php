@@ -56,6 +56,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'api/V1/shop/webhook/*',
             'api/V1/shop/webhooks/*',
+            'api/V1/shop/sendcloud/webhook',
             'api/V1/shop/launch-registration',
             'api/V1/shop/trigger-online-notification',
         ]);

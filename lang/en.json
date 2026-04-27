@@ -59,6 +59,8 @@
     "Please select a shipping method": "Please select a shipping method",
     "The selected variant is invalid.": "The selected variant is invalid.",
     "The requested quantity exceeds the available stock of :stock.": "The requested quantity exceeds the available stock of :stock.",
+    "The product \":name\" is no longer available.": "The product \":name\" is no longer available.",
+    "The requested quantity for \":name\" exceeds the available stock of :stock.": "The requested quantity for \":name\" exceeds the available stock of :stock.",
     "Thank you for your order": "Thank you for your order",
     "Hello :name, we have received your order #:reference.": "Hello :name, we have received your order #:reference.",
     "Order Details": "Order Details",

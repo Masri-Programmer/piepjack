@@ -99,7 +99,7 @@
                     </template>
                     <div
                         v-else
-                        class="bg-red-600 text-primary-foreground border-4 border-accent_dark p-4 text-center"
+                        class="bg-red-600 text-primary-foreground border-4 border-accent_dark p-4"
                     >
                         <span
                             class="text-sm font-accent_dark uppercase tracking-widest"
@@ -116,7 +116,7 @@
                             class="border-b-2 border-accent_dark"
                         >
                             <AccordionTrigger
-                                class="text-sm font-accent_dark uppercase tracking-widest hover:no-underline hover:bg-accent_dark hover:text-[#f2f0a1] px-3 py-4 transition-all rounded-none group [&[data-state=open]]:bg-accent_dark [&[data-state=open]]:text-[#f2f0a1]"
+                                class="text-sm font-accent_dark uppercase tracking-widest hover:no-underline hover:bg-accent_dark hover:text-main px-3 py-4 transition-all rounded-none group [&[data-state=open]]:bg-accent_dark [&[data-state=open]]:text-main"
                             >
                                 <span class="flex items-center gap-3">
                                     <Info
@@ -126,7 +126,7 @@
                                 </span>
                             </AccordionTrigger>
                             <AccordionContent
-                                class="text-base text-gray-800 font-medium leading-relaxed px-4 py-6 bg-accent_dark text-main border-t-2 border-accent_dark"
+                                class="text-base font-medium leading-relaxed px-4 py-6 bg-accent_dark text-main border-t-2 border-accent_dark"
                             >
                                 <div v-html="data?.description"></div>
                             </AccordionContent>
@@ -137,7 +137,7 @@
                             class="border-b-2 border-accent_dark"
                         >
                             <AccordionTrigger
-                                class="text-sm font-accent_dark uppercase tracking-widest hover:no-underline hover:bg-accent_dark hover:text-[#f2f0a1] px-3 py-4 transition-all rounded-none group [&[data-state=open]]:bg-accent_dark [&[data-state=open]]:text-[#f2f0a1]"
+                                class="text-sm font-accent_dark uppercase tracking-widest hover:no-underline hover:bg-accent_dark hover:text-main px-3 py-4 transition-all rounded-none group [&[data-state=open]]:bg-accent_dark [&[data-state=open]]:text-main"
                             >
                                 <span class="flex items-center gap-3">
                                     <Package

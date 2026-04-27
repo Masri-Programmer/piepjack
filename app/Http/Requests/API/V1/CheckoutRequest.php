@@ -38,7 +38,18 @@ class CheckoutRequest extends FormRequest
             'billing_country_code' => 'required_if:billing_same_as_shipping,false|nullable|string|size:2|exists:lunar_countries,iso2',
 
             'products' => 'required|array|min:1',
-            'products.*.id' => 'required|exists:lunar_product_variants,id',
+            'products.*.id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $variant = $this->productVariants->get($value);
+
+                    if (! $variant) {
+                        $index = explode('.', $attribute)[1];
+                        $name = $this->input("products.{$index}.name") ?? (__('Product').' #'.($index + 1));
+                        $fail(__('The product ":name" is no longer available.', ['name' => $name]));
+                    }
+                },
+            ],
             'products.*.quantity' => [
                 'required',
                 'integer',
@@ -49,14 +60,14 @@ class CheckoutRequest extends FormRequest
 
                     $variant = $this->productVariants->get($variantId);
 
-                    if (!$variant) {
-                        $fail(__('The selected variant is invalid.'));
-
-                        return;
-                    }
-
-                    if ($value > $variant->stock) {
-                        $fail(__('The requested quantity exceeds the available stock of :stock.', ['stock' => $variant->stock]));
+                    if ($variant) {
+                        $name = $variant->product->translateAttribute('name') ?? $this->input("products.{$index}.name");
+                        if ($value > $variant->stock) {
+                            $fail(__('The requested quantity for ":name" exceeds the available stock of :stock.', [
+                                'name' => $name,
+                                'stock' => $variant->stock,
+                            ]));
+                        }
                     }
                 },
             ],
@@ -82,15 +93,30 @@ class CheckoutRequest extends FormRequest
             'billing_same_as_shipping.required' => __('Please specify if billing is same as shipping'),
             'products.required' => __('Your cart is empty'),
             'products.min' => __('Your cart is empty'),
+            'products.*.id.required' => __('A product ID is missing'),
             'shipping_method_id.required' => __('Please select a shipping method'),
         ];
+    }
+
+    public function attributes(): array
+    {
+        $attributes = [];
+
+        if ($this->has('products')) {
+            foreach ($this->input('products') as $index => $product) {
+                $attributes["products.{$index}.id"] = __('Product').' #'.($index + 1);
+                $attributes["products.{$index}.quantity"] = __('Quantity').' #'.($index + 1);
+            }
+        }
+
+        return $attributes;
     }
 
     protected function prepareForValidation(): void
     {
         if ($this->has('products')) {
             $variantIds = collect($this->input('products'))->pluck('id')->all();
-            $this->productVariants = ProductVariant::whereIn('id', $variantIds)->get()->keyBy('id');
+            $this->productVariants = ProductVariant::with('product')->whereIn('id', $variantIds)->get()->keyBy('id');
         }
     }
 }

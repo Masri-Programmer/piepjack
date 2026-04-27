@@ -38,8 +38,8 @@ export const useShopGlobalState = createGlobalState(() => {
         city: "",
         stateProvince: "",
         phone: "",
-        shippingMethodId: "DE_STD",
-        shippingMethod: { id: "DE_STD", name: "DHL Standard", price: 4.95 },
+        shippingMethodId: null,
+        shippingMethod: null,
         billingSameAsShipping: true,
         billing: {
             firstName: "",
@@ -220,6 +220,14 @@ export const useShopGlobalState = createGlobalState(() => {
                                 };
                             })
                             .filter(Boolean); // Remove null items
+
+                        // If no items are left, remove the product entirely
+                        if (cartProduct.items.length === 0) {
+                            cartState.value.cartItems =
+                                cartState.value.cartItems.filter(
+                                    (cp) => cp.id !== cartProduct.id,
+                                );
+                        }
                     }
                 } catch (error) {
                     console.error(

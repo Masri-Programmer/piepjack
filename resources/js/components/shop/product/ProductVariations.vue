@@ -60,7 +60,7 @@
                     :class="{
                         'bg-primary text-primary-foreground border-accent_dark font-bold shadow-md':
                             selectedValues[option.name] === optValue.value,
-                        'border-muted text-gray-800 dark:text-gray-300 hover:border-accent_dark':
+                        'border-muted  hover:border-accent_dark hover:bg-primary hover:text-primary-foreground ':
                             selectedValues[option.name] !== optValue.value &&
                             isOptionAvailable(option.name, optValue.value),
                         'opacity-30 cursor-not-allowed bg-accent_light':
@@ -78,7 +78,7 @@
                 :disabled="
                     !isSelectionComplete || !selected || selected.stock <= 0
                 "
-                class="view-all text-xs text-center py-4 bg-primary text-primary-foreground uppercase tracking-widest font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors h-auto"
+                class="view-all text-xs py-4 bg-primary text-primary-foreground uppercase tracking-widest font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors h-auto"
             >
                 {{
                     selected && selected.stock <= 0
@@ -87,10 +87,21 @@
                 }}
             </Button>
             <div
-                v-if="selected && selected.stock <= 5 && selected.stock > 0"
-                class="text-[10px] text-orange-600 font-bold uppercase text-center"
+                v-if="selected && selected.stock > 0"
+                :class="[
+                    'text-[10px] font-bold uppercase  transition-colors duration-300',
+                    selected.stock <= 5
+                        ? 'text-red-600'
+                        : 'text-muted-foreground',
+                ]"
             >
-                {{ $t("common.product.lowStock", { count: selected.stock }) }}
+                {{
+                    selected.stock <= 5
+                        ? $t("common.product.lowStock", {
+                              count: selected.stock,
+                          })
+                        : $t("common.product.stock", { count: selected.stock })
+                }}
             </div>
         </div>
     </div>

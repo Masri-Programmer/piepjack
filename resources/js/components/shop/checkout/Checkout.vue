@@ -6,9 +6,7 @@
             <div
                 class="lg:col-span-7 flex flex-col pt-8 lg:pt-12 px-4 sm:px-6 lg:px-8"
             >
-                <div
-                    class="w-full max-w-xl mx-auto lg:ml-auto lg:mr-0 flex-grow"
-                >
+                <div class="w-full max-w-xl mx-auto lg:ml-auto lg:mr-0 grow">
                     <router-link
                         to="/"
                         class="inline-block mb-12 w-full mx-auto"
@@ -51,10 +49,10 @@
             <div
                 class="lg:col-span-5 bg-accent-shadcn lg:border-l border-border h-full lg:sticky lg:top-0"
             >
-                <div
-                    class="max-w-md mx-auto lg:mr-auto lg:ml-0 p-4 sm:p-6 lg:p-12"
-                >
-                    <CheckoutCart />
+                <div class="w-full max-w-xl mx-auto lg:ml-auto lg:mr-0 grow">
+                    <CheckoutCart
+                        class="lg:col-span-7 flex flex-col lg:pt-12 lg:px-8"
+                    />
                 </div>
             </div>
 
@@ -75,11 +73,13 @@
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent } from "vue";
+import { ref, computed, defineAsyncComponent, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import "@assets/css/checkout/checkout.css";
 import logo from "@img/logo-new.png";
 import Breadcrumbs from "../../Breadcrumbs.vue";
 import CheckoutCart from "../cart/CheckoutCart.vue";
+import { validateCart } from "@lib/store/shop/index.js";
 
 import { useStorage } from "@vueuse/core";
 
@@ -97,14 +97,24 @@ const PaymentStep = defineAsyncComponent(
     () => import("./steps/PaymentStep.vue"),
 );
 
+onMounted(async () => {
+    await validateCart();
+    // Reset progress on fresh entry to ensure validation flow
+    maxReachedStep.value = 1;
+});
+
 const currentStep = ref(1);
 const maxReachedStep = useStorage("checkout-max-step", 1);
 
 const steps = [
-    { id: 1, title: "Information", component: ShippingAddressStep },
-    { id: 2, title: "Shipping", component: ShippingMethodStep },
-    { id: 3, title: "Billing", component: BillingAddressStep },
-    { id: 4, title: "Payment", component: PaymentStep },
+    {
+        id: 1,
+        title: "common.forms.information",
+        component: ShippingAddressStep,
+    },
+    { id: 2, title: "common.forms.shipping", component: ShippingMethodStep },
+    { id: 3, title: "common.forms.billing", component: BillingAddressStep },
+    { id: 4, title: "common.forms.payment", component: PaymentStep },
 ];
 
 // Extracted footer links to keep the template DRY
@@ -123,14 +133,16 @@ const currentStepComponent = computed(() => {
     return steps.find((s) => s.id === currentStep.value)?.component;
 });
 
+const { t } = useI18n();
+
 const currentBreadcrumbs = computed(() => {
     return [
-        { title: "Warenkorb", link: "/cart" },
+        { title: t("common.forms.backToCart") || "Warenkorb", link: "/cart" },
         ...steps.map((s) => ({
-            title: s.title,
+            title: t(s.title) || s.title,
             current: s.id === currentStep.value,
             disabled: s.id > maxReachedStep.value,
-            action: null,
+            action: s.id <= maxReachedStep.value ? () => goToStep(s.id) : null,
         })),
     ];
 });

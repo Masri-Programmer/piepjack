@@ -32,5 +32,5 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::post('trigger-online-notification', [LaunchRegistrationController::class, 'triggerOnlineNotification']);
     Route::middleware('auth:sanctum')->group(function () {});
     Route::post('/shipping/generate-label', [ShippingController::class, 'generateLabel']);
-    Route::post('/webhooks/sendcloud', [SendcloudWebhookController::class, 'handle']);
+    Route::post('/sendcloud/webhook', [SendcloudWebhookController::class, 'handle']);
 });

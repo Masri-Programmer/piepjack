@@ -32,9 +32,9 @@ class PublicOrderListResource extends JsonResource
                 'total_price' => $this->total->decimal,
             ],
             'tracking' => [
-                'number' => $this->meta['tracking_number'] ?? null,
-                'url' => $this->meta['tracking_url'] ?? null,
-                'carrier' => $this->meta['carrier'] ?? null,
+                'number' => $this->tracking_number ?? $this->meta['tracking_number'] ?? null,
+                'url' => $this->label_url ?? $this->meta['tracking_url'] ?? $this->meta['label_url'] ?? null,
+                'carrier' => $this->meta['carrier'] ?? 'Sendcloud',
             ],
             // Addresses
             'billing_address' => $this->billingAddress,

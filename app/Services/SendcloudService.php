@@ -20,6 +20,34 @@ class SendcloudService
     }
 
     /**
+     * Get available shipping methods from Sendcloud.
+     */
+    public function getShippingMethods(): array
+    {
+        return cache()->remember('sendcloud_shipping_methods', 86400, function () {
+            try {
+                $response = Http::withBasicAuth($this->publicKey, $this->secretKey)
+                    ->get("{$this->baseUrl}/shipping_methods");
+
+                if ($response->successful()) {
+                    return $response->json('shipping_methods') ?? [];
+                }
+
+                Log::error('Sendcloud Get Shipping Methods API Error', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+
+                return [];
+            } catch (\Exception $e) {
+                Log::error('Sendcloud Get Shipping Methods Exception: '.$e->getMessage());
+
+                return [];
+            }
+        });
+    }
+
+    /**
      * Create a DHL parcel in Sendcloud and generate the label.
      *
      * * @param array $customerData The shipping address and contact info.
@@ -49,9 +77,9 @@ class SendcloudService
                 $data = $response->json('parcel');
 
                 return [
-                    'tracking_number' => $data['tracking_number'],
+                    'tracking_number' => $data['tracking_number'] ?? null,
                     'label_url' => $data['documents'][0]['link'] ?? null, // URL to the PDF
-                    'parcel_id' => $data['id'],
+                    'parcel_id' => $data['id'] ?? null,
                 ];
             }
 

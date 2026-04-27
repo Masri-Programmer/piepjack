@@ -38,6 +38,7 @@ export default {
             "Super! Jetzt genieße deinen <strong>kostenlosen</strong> Versand",
         taxIncluded: "Inkl. Steuern.",
         title: "Warenkorb",
+        empty: "Dein Warenkorb ist leer",
         total: "Gesamt",
         totalAmount: "Gesamt: {total}",
         yourItems: "Deine ausgewählten Artikel sind jetzt in deinem Warenkorb.",

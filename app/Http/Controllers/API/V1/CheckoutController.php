@@ -58,14 +58,24 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'country_code' => 'required|string|max:2',
+            'postal_code' => 'nullable|string|max:12',
             'products' => 'required|array',
-            'products.*.id' => 'required|exists:lunar_product_variants,id',
+            'products.*.id' => 'required',
             'products.*.quantity' => 'required|integer|min:1',
             'email' => 'nullable|email',
         ]);
 
+        // SILENT FIX: Only keep products that actually exist in the database
+        // This prevents 422 errors from stale LocalStorage data
+        $validProductIds = ProductVariant::whereIn('id', collect($request->products)->pluck('id'))->pluck('id')->toArray();
+        $filteredProducts = collect($request->products)->filter(fn ($p) => in_array($p['id'], $validProductIds))->toArray();
+
+        if (empty($filteredProducts)) {
+            return response()->json(['data' => []]);
+        }
+
         $user = $request->email ? User::where('email', $request->email)->first() : null;
-        $cart = $this->getAndSyncCart($user, $request->products);
+        $cart = $this->getAndSyncCart($user, $filteredProducts);
 
         $country = Country::where('iso2', $request->country_code)->first();
         $cart->setShippingAddress([
@@ -76,7 +86,7 @@ class CheckoutController extends Controller
         $options = ShippingManifest::getOptions($cart);
 
         return response()->json([
-            'data' => $options->map(fn($option) => [
+            'data' => $options->map(fn ($option) => [
                 'id' => $option->identifier,
                 'name' => $option->name,
                 'description' => $option->description,
@@ -92,7 +102,7 @@ class CheckoutController extends Controller
 
         $order = Order::with('user')->where('cart_id', $cartId)->latest()->first();
 
-        if (!$order) {
+        if (! $order) {
             return response()->json([
                 'status' => 'pending',
                 'message' => __('Order is being processed'),
@@ -118,7 +128,7 @@ class CheckoutController extends Controller
         try {
             $user = $this->findOrCreateUser($validated);
 
-            if (!$user->active) {
+            if (! $user->active) {
                 return response()->json(['message' => __('You are banned.')], 403);
             }
 
@@ -126,9 +136,9 @@ class CheckoutController extends Controller
             $this->setCartAddresses($cart, $validated, $user);
 
             $availableOptions = ShippingManifest::getOptions($cart);
-            $shippingOption = $availableOptions->first(fn($o) => $o->identifier === $validated['shipping_method_id']);
+            $shippingOption = $availableOptions->first(fn ($o) => $o->identifier === $validated['shipping_method_id']);
 
-            if (!$shippingOption) {
+            if (! $shippingOption) {
                 throw new Exception(__('Shipping method unavailable. Please re-select.'));
             }
 
@@ -149,7 +159,7 @@ class CheckoutController extends Controller
             return response()->json(['id' => $session->id, 'url' => $session->url]);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Checkout error: ' . $e->getMessage());
+            Log::error('Checkout error: '.$e->getMessage());
 
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -174,7 +184,7 @@ class CheckoutController extends Controller
             'payment_intent.processing',
         ];
 
-        if (!in_array($event->type, $handledEvents)) {
+        if (! in_array($event->type, $handledEvents)) {
             return response()->json(['message' => __('Event ignored')]);
         }
 
@@ -185,7 +195,7 @@ class CheckoutController extends Controller
         // Set app locale for this process (e.g. for the email)
         App::setLocale($locale);
 
-        if (!$cartId || !($cart = Cart::find($cartId))) {
+        if (! $cartId || ! ($cart = Cart::find($cartId))) {
             return response()->json(['message' => __('Cart or Cart ID not found')], 404);
         }
 
@@ -194,13 +204,13 @@ class CheckoutController extends Controller
         $chargeId = $stripeObject->charge ?? ($stripeObject->object === 'charge' ? $stripeObject->id : null);
 
         // If we only have a PI ID, try to get the latest charge ID from Stripe
-        if (!$chargeId && $paymentIntentId) {
+        if (! $chargeId && $paymentIntentId) {
             try {
                 Stripe::setApiKey(config('services.stripe.secret'));
                 $pi = PaymentIntent::retrieve($paymentIntentId);
                 $chargeId = $pi->latest_charge;
             } catch (Exception $e) {
-                Log::warning("Could not retrieve latest charge for PI {$paymentIntentId}: " . $e->getMessage());
+                Log::warning("Could not retrieve latest charge for PI {$paymentIntentId}: ".$e->getMessage());
             }
         }
 
@@ -233,11 +243,11 @@ class CheckoutController extends Controller
                 'status' => $lunarStatus,
                 'customer_id' => $customer?->id,
                 'placed_at' => $order->placed_at ?? now(),
-                'customer_reference' => 'USER-' . $order->user_id,
+                'customer_reference' => 'USER-'.$order->user_id,
             ]);
 
             // Only finalize shipping and emails if payment is fully received
-            if ($lunarStatus === 'payment-received' && $referenceId && !$order->transactions()->where('reference', $referenceId)->exists()) {
+            if ($lunarStatus === 'payment-received' && $referenceId && ! $order->transactions()->where('reference', $referenceId)->exists()) {
                 $order->transactions()->create([
                     'success' => true,
                     'type' => 'capture',
@@ -248,13 +258,20 @@ class CheckoutController extends Controller
                     'card_type' => 'stripe',
                 ]);
 
+                // Decrement stock for each physical item in the order
+                foreach ($order->lines as $line) {
+                    if ($line->type === 'physical' && $line->purchasable instanceof ProductVariant) {
+                        $line->purchasable->decrement('stock', $line->quantity);
+                    }
+                }
+
                 $this->processShippingAndNotifications($order);
             }
 
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Failed to sync order status: ' . $e->getMessage());
+            Log::error('Failed to sync order status: '.$e->getMessage());
         }
     }
 
@@ -270,7 +287,7 @@ class CheckoutController extends Controller
             ]
         );
 
-        if (!$user->wasRecentlyCreated) {
+        if (! $user->wasRecentlyCreated) {
             $user->update([
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'] ?? null,
@@ -301,7 +318,7 @@ class CheckoutController extends Controller
         $cart = CartSession::current();
         $customer = $user?->customers->first();
 
-        if (!$cart) {
+        if (! $cart) {
             $cart = Cart::create([
                 'user_id' => $user?->id,
                 'customer_id' => $customer?->id,
@@ -312,7 +329,7 @@ class CheckoutController extends Controller
         } else {
             $cart->update([
                 'user_id' => $user?->id,
-                'customer_id' => $customer?->id
+                'customer_id' => $customer?->id,
             ]);
         }
 
@@ -402,12 +419,12 @@ class CheckoutController extends Controller
         if (empty($user->stripe_id)) {
             $customer = Customer::create([
                 'email' => $user->email,
-                'name' => $user->first_name . ' ' . $user->last_name,
+                'name' => $user->first_name.' '.$user->last_name,
             ]);
             $user->update(['stripe_id' => $customer->id]);
         }
 
-        $lineItems = collect($cart->lines)->map(fn($line) => [
+        $lineItems = collect($cart->lines)->map(fn ($line) => [
             'price_data' => [
                 'currency' => strtolower($cart->currency->code),
                 'product_data' => ['name' => $line->purchasable->product->translateAttribute('name')],
@@ -432,8 +449,8 @@ class CheckoutController extends Controller
             'mode' => 'payment',
             'customer' => $user->stripe_id,
             'line_items' => $lineItems,
-            'success_url' => config('services.frontend_url') . '/success?cart_id=' . $cart->id . '&email=' . urlencode($user->email),
-            'cancel_url' => config('services.frontend_url') . '/checkout',
+            'success_url' => config('services.frontend_url').'/success?cart_id='.$cart->id.'&email='.urlencode($user->email),
+            'cancel_url' => config('services.frontend_url').'/checkout',
             'metadata' => [
                 'cart_id' => $cart->id,
                 'locale' => app()->getLocale(),
@@ -455,10 +472,10 @@ class CheckoutController extends Controller
 
     private function processShippingAndNotifications(Order $order): void
     {
-        $order->load(['shippingAddress.country', 'user', 'lines']);
+        $order->load(['shippingAddress.country', 'user', 'lines.purchasable', 'shippingLines']);
 
         $customerData = [
-            'name' => $order->user->first_name . ' ' . $order->user->last_name,
+            'name' => $order->user->first_name.' '.$order->user->last_name,
             'address' => $order->shippingAddress->line_one,
             'city' => $order->shippingAddress->city,
             'zip' => $order->shippingAddress->postcode,
@@ -467,18 +484,41 @@ class CheckoutController extends Controller
         ];
 
         try {
-            $shippingResult = $this->sendcloud->createParcel($customerData, 1.0, 8);
+            // Calculate total weight (default to 0.5kg if missing)
+            $weight = $order->lines->sum(function ($line) {
+                if ($line->type !== 'physical' || ! $line->purchasable) {
+                    return 0;
+                }
+                // Try to get weight from product attributes, fallback to 0.2kg per item
+                $pWeight = $line->purchasable->weight_value ?: 0.2;
+                return $pWeight * $line->quantity;
+            });
+
+            if ($weight <= 0) {
+                $weight = 0.5;
+            }
+
+            $shippingLine = $order->shippingLines->first();
+            // Use the identifier as the Sendcloud Shipping Method ID
+            $shippingMethodId = $shippingLine && is_numeric($shippingLine->identifier)
+                ? (int) $shippingLine->identifier
+                : 26848; // Fallback to DHL Paket 0-2kg if identifier is invalid
+
+            $shippingResult = $this->sendcloud->createParcel($customerData, $weight, $shippingMethodId);
             if ($shippingResult) {
                 $currentMeta = (array) ($order->meta ?? []);
                 $order->update([
+                    'tracking_number' => $shippingResult['tracking_number'],
+                    'label_url' => $shippingResult['label_url'],
                     'meta' => array_merge($currentMeta, [
                         'tracking_number' => $shippingResult['tracking_number'],
                         'label_url' => $shippingResult['label_url'],
+                        'sendcloud_parcel_id' => $shippingResult['parcel_id'],
                     ]),
                 ]);
             }
         } catch (Exception $e) {
-            Log::warning('Shipping label generation failed: ' . $e->getMessage());
+            Log::warning('Shipping label generation failed: '.$e->getMessage());
         }
 
         $this->sendOrderConfirmationEmail($order);
@@ -486,7 +526,7 @@ class CheckoutController extends Controller
 
     private function sendOrderConfirmationEmail(Order $order): void
     {
-        $productLines = $order->lines->filter(fn($line) => $line->type === 'physical');
+        $productLines = $order->lines->filter(fn ($line) => $line->type === 'physical');
 
         $products = $productLines->map(function ($line) {
             $name = $line->description;

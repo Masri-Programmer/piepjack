@@ -1,6 +1,9 @@
 export default {
     total: "Gesamt",
     remove: "Entfernen",
+    buttons: {
+        remove: "Entfernen",
+    },
     summary: "Zusammenfassung",
     product: {
         size: "Größe",
@@ -13,10 +16,13 @@ export default {
         maximum_quantity: "Das Produkt hat seine maximale Menge erreicht",
         title: "FUSSBALL MESH SHORTS PINK",
         notFound: "Keine Produkte gefunden",
+        outOfStock: "Produkt ausverkauft",
         productOutofStock: "Produkt aus dem Vorrat",
         review_success_title: "Bewertung eingereicht!",
         review_submitted_message:
             "Vielen Dank für Ihre Bewertung! Sie wurde erfolgreich eingereicht.",
+        stock: "Vorrat: nur noch {count} verfügbar",
+        lowStock: "Nur noch {count} verfügbar!",
         ab: "ab",
         reviews: "Bewertungen",
         comment: "Kommentar",
@@ -45,13 +51,13 @@ export default {
             switzerland: "Schweiz & andere europäische Länder",
             usa: "USA",
             restOfWorld: "Rest der Welt",
-            germanyDelivery: "2-4 Werktage",
-            austriaDelivery: "2-4 Werktage",
+            germanyDelivery: "4-8 Werktage",
+            austriaDelivery: "4-8 Werktage",
             switzerlandDelivery: "3-5 Werktage",
             usaDelivery: "8-10 Werktage",
             restWorldDelivery: "8-10 Werktage",
             returnsInfo:
-                "Sie können Ihre Bestellung innerhalb von 14 Tagen über unser",
+                "Rückgaben innerhalb 14 Tage über unsere",
             returnsPortal: "Rückgabeportal",
         },
     },
@@ -111,6 +117,10 @@ export default {
         backToInfo: "Zurück zur Information",
         backToShipping: "Zurück zum Versand",
         backToBilling: "Zurück zur Rechnungsadresse",
+        information: "Information",
+        shipping: "Versand",
+        billing: "Rechnungsstellung",
+        payment: "Zahlung",
         continueToShipping: "Weiter zum Versand",
         continueToBilling: "Weiter zur Rechnungsadresse",
         continueToPayment: "Weiter zur Zahlung",
@@ -131,6 +141,7 @@ export default {
         noShippingMethods:
             "Keine Versandmethoden für Ihre Adresse verfügbar. Bitte prüfen Sie Ihre Angaben.",
         free: "Kostenlos",
+        swipeToRemove: "Wischen zum Entfernen",
     },
     input: {
         orderTracking: "Bestellnummer oder Tracking -Code (e.g GREFIYOO2Q)",
