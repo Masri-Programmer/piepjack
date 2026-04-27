@@ -98,9 +98,10 @@ class StoreShippingModifier extends ShippingModifier
                 new ShippingOption(
                     name: $displayName,
                     description: $displayDescription,
-                    identifier: 'sendcloud_'.$method['id'],
+                    identifier: 'SENDCLOUD_'.str_replace(' ', '_', strtoupper($baseMatch)),
                     price: new Price($price, $cart->currency, 1),
-                    taxClass: $taxClass
+                    taxClass: $taxClass,
+                    meta: ['sendcloud_id' => $method['id']]
                 )
             );
         }

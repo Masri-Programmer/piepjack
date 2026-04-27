@@ -225,8 +225,14 @@ class CheckoutController extends Controller
 
         $lunarStatus = $this->statusMapping[$stripeStatus] ?? 'processing';
 
-        // 3. Sync the order status
-        $this->syncOrderStatus($cart, $lunarStatus, $referenceId);
+        try {
+            // 3. Sync the order status
+            $this->syncOrderStatus($cart, $lunarStatus, $referenceId);
+        } catch (Exception $e) {
+            Log::error('Webhook sync failed for cart '.$cartId.': '.$e->getMessage());
+
+            return response()->json(['message' => __('Failed to sync order'), 'error' => $e->getMessage()], 500);
+        }
 
         return response()->json(['message' => __('Webhook handled successfully')]);
     }
@@ -272,6 +278,7 @@ class CheckoutController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Failed to sync order status: '.$e->getMessage());
+            throw $e;
         }
     }
 
@@ -335,6 +342,7 @@ class CheckoutController extends Controller
 
         $cart->lines()->delete();
         foreach ($products as $product) {
+            // Defensive: ensure we only add ProductVariant lines to the cart
             $cart->lines()->create([
                 'purchasable_type' => ProductVariant::class,
                 'purchasable_id' => $product['id'],
@@ -472,7 +480,10 @@ class CheckoutController extends Controller
 
     private function processShippingAndNotifications(Order $order): void
     {
-        $order->load(['shippingAddress.country', 'user', 'lines.purchasable', 'shippingLines']);
+        $order->load(['shippingAddress.country', 'user', 'lines', 'shippingLines']);
+
+        // Safely load purchasable only for physical lines to avoid ArgumentCountError with ShippingOption
+        $order->lines->where('type', 'physical')->load('purchasable.product');
 
         $customerData = [
             'name' => $order->user->first_name.' '.$order->user->last_name,
@@ -500,10 +511,10 @@ class CheckoutController extends Controller
             }
 
             $shippingLine = $order->shippingLines->first();
-            // Use the identifier as the Sendcloud Shipping Method ID, removing the 'sendcloud_' prefix if present
+            // Use the sendcloud_id from meta if available, otherwise default to DHL
             $shippingMethodId = 26848; // Fallback
-            if ($shippingLine && $shippingLine->identifier) {
-                $shippingMethodId = str_replace('sendcloud_', '', $shippingLine->identifier);
+            if ($shippingLine && isset($shippingLine->meta['sendcloud_id'])) {
+                $shippingMethodId = $shippingLine->meta['sendcloud_id'];
             }
 
             $shippingResult = $this->sendcloud->createParcel($customerData, $weight, (int) $shippingMethodId);

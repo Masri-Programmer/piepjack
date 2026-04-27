@@ -51,8 +51,8 @@ class ShippingController extends Controller
         $totalWeight = 1.0; // Placeholder until physical weights exist
         $shippingLine = $order->shippingLines->first();
         $shippingMethodId = 26848; // Fallback
-        if ($shippingLine && $shippingLine->identifier) {
-            $shippingMethodId = str_replace('sendcloud_', '', $shippingLine->identifier);
+        if ($shippingLine && isset($shippingLine->meta['sendcloud_id'])) {
+            $shippingMethodId = $shippingLine->meta['sendcloud_id'];
         }
 
         try {
