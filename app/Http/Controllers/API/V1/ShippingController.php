@@ -50,12 +50,13 @@ class ShippingController extends Controller
         // 2. Call the service to create the parcel
         $totalWeight = 1.0; // Placeholder until physical weights exist
         $shippingLine = $order->shippingLines->first();
-        $shippingMethodId = $shippingLine && is_numeric($shippingLine->identifier)
-            ? (int) $shippingLine->identifier
-            : 8;
+        $shippingMethodId = 26848; // Fallback
+        if ($shippingLine && $shippingLine->identifier) {
+            $shippingMethodId = str_replace('sendcloud_', '', $shippingLine->identifier);
+        }
 
         try {
-            $shippingResult = $this->sendcloud->createParcel($customerData, $totalWeight, $shippingMethodId);
+            $shippingResult = $this->sendcloud->createParcel($customerData, $totalWeight, (int) $shippingMethodId);
 
             // 3. Save the tracking number to database
             $currentMeta = (array) ($order->meta ?? []);

@@ -491,6 +491,7 @@ class CheckoutController extends Controller
                 }
                 // Try to get weight from product attributes, fallback to 0.2kg per item
                 $pWeight = $line->purchasable->weight_value ?: 0.2;
+
                 return $pWeight * $line->quantity;
             });
 
@@ -499,12 +500,13 @@ class CheckoutController extends Controller
             }
 
             $shippingLine = $order->shippingLines->first();
-            // Use the identifier as the Sendcloud Shipping Method ID
-            $shippingMethodId = $shippingLine && is_numeric($shippingLine->identifier)
-                ? (int) $shippingLine->identifier
-                : 26848; // Fallback to DHL Paket 0-2kg if identifier is invalid
+            // Use the identifier as the Sendcloud Shipping Method ID, removing the 'sendcloud_' prefix if present
+            $shippingMethodId = 26848; // Fallback
+            if ($shippingLine && $shippingLine->identifier) {
+                $shippingMethodId = str_replace('sendcloud_', '', $shippingLine->identifier);
+            }
 
-            $shippingResult = $this->sendcloud->createParcel($customerData, $weight, $shippingMethodId);
+            $shippingResult = $this->sendcloud->createParcel($customerData, $weight, (int) $shippingMethodId);
             if ($shippingResult) {
                 $currentMeta = (array) ($order->meta ?? []);
                 $order->update([

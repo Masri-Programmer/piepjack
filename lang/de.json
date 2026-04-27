@@ -97,5 +97,13 @@
     "Simply show this QR code at the parcel shop.": "Zeige diesen QR-Code einfach im Paketshop vor.",
     "DOWNLOAD LABEL": "ETIKETT HERUNTERLADEN",
     "What happens next?": "Wie geht es weiter?",
-    "Our logistics team is now checking the goods. The refund is usually made within 3-5 working days to your original payment method.": "Unsere Logistik prüft nun die Ware. Die Erstattung erfolgt in der Regel innerhalb von 3-5 Werktagen auf dein ursprüngliches Zahlungsmittel."
+    "Our logistics team is now checking the goods. The refund is usually made within 3-5 working days to your original payment method.": "Unsere Logistik prüft nun die Ware. Die Erstattung erfolgt in der Regel innerhalb von 3-5 Werktagen auf dein ursprüngliches Zahlungsmittel.",
+    "DHL Paket": "DHL Paket",
+    "DPD Classic": "DPD Standardversand",
+    "DPD Business Express": "DPD Expressversand",
+    "DPD Parcelletter": "DPD Briefsendung",
+    "Unstamped letter": "Unfrankierter Brief",
+    "Shipping via dhl_de": "Versand via DHL",
+    "Shipping via dpd": "Versand via DPD",
+    "Shipping via sendcloud": "Versand via Sendcloud"
 }
