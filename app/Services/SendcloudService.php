@@ -54,27 +54,34 @@ class SendcloudService
      * @param  float  $weight  The total weight of the order in kg.
      * @param  int  $shippingMethodId  The Sendcloud ID for the shipping method.
      * @param  bool|null  $requestLabel  Whether to request the label (defaults to config).
+     * @param  array  $parcelItems  Optional items to include in the parcel for customs/tracking.
      * @return array|null Returns tracking number and label URL, or null on failure.
      */
-    public function createParcel(array $customerData, float $weight, int $shippingMethodId, ?bool $requestLabel = null): ?array
+    public function createParcel(array $customerData, float $weight, int $shippingMethodId, ?bool $requestLabel = null, array $parcelItems = []): ?array
     {
         $requestLabel = $requestLabel ?? config('services.sendcloud.request_label', true);
 
         try {
+            $payload = [
+                'parcel' => [
+                    'name' => $customerData['name'],
+                    'address' => $customerData['address'],
+                    'city' => $customerData['city'],
+                    'postal_code' => $customerData['zip'],
+                    'country' => $customerData['country_code'],
+                    'email' => $customerData['email'],
+                    'weight' => (string) $weight,
+                    'request_label' => $requestLabel,
+                    'shipping_method' => $shippingMethodId,
+                ],
+            ];
+
+            if (! empty($parcelItems)) {
+                $payload['parcel']['parcel_items'] = $parcelItems;
+            }
+
             $response = Http::withBasicAuth($this->publicKey, $this->secretKey)
-                ->post("{$this->baseUrl}/parcels", [
-                    'parcel' => [
-                        'name' => $customerData['name'],
-                        'address' => $customerData['address'],
-                        'city' => $customerData['city'],
-                        'postal_code' => $customerData['zip'],
-                        'country' => $customerData['country_code'],
-                        'email' => $customerData['email'],
-                        'weight' => (string) $weight,
-                        'request_label' => $requestLabel,
-                        'shipping_method' => $shippingMethodId,
-                    ],
-                ]);
+                ->post("{$this->baseUrl}/parcels", $payload);
 
             if ($response->successful()) {
                 $data = $response->json('parcel');
@@ -91,7 +98,7 @@ class SendcloudService
             if ($response->status() === 412 && $requestLabel === true) {
                 Log::warning('Sendcloud label announcement failed (412). Retrying without label request.');
 
-                return $this->createParcel($customerData, $weight, $shippingMethodId, false);
+                return $this->createParcel($customerData, $weight, $shippingMethodId, false, $parcelItems);
             }
 
             Log::error('Sendcloud API Error', [

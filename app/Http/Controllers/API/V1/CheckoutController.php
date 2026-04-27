@@ -39,16 +39,6 @@ class CheckoutController extends Controller
 {
     protected SendcloudService $sendcloud;
 
-    protected array $statusMapping = [
-        'requires_capture' => 'requires-capture',
-        'canceled' => 'cancelled',
-        'processing' => 'processing',
-        'requires_action' => 'awaiting-payment',
-        'requires_confirmation' => 'auth-pending',
-        'requires_payment_method' => 'failed',
-        'succeeded' => 'payment-received',
-    ];
-
     public function __construct(SendcloudService $sendcloud)
     {
         $this->sendcloud = $sendcloud;
@@ -190,7 +180,7 @@ class CheckoutController extends Controller
 
         $stripeObject = $event->data->object;
         $cartId = $stripeObject->metadata->cart_id ?? null;
-        $locale = $stripeObject->metadata->locale ?? 'de';
+        $locale = $stripeObject->metadata->locale ?? config('app.locale');
 
         // Set app locale for this process (e.g. for the email)
         App::setLocale($locale);
@@ -223,7 +213,7 @@ class CheckoutController extends Controller
             $stripeStatus = $stripeObject->payment_status === 'paid' ? 'succeeded' : 'requires_payment_method';
         }
 
-        $lunarStatus = $this->statusMapping[$stripeStatus] ?? 'processing';
+        $lunarStatus = config("services.stripe.status_mapping.{$stripeStatus}") ?? 'processing';
 
         try {
             // 3. Sync the order status
@@ -249,7 +239,7 @@ class CheckoutController extends Controller
                 'status' => $lunarStatus,
                 'customer_id' => $customer?->id,
                 'placed_at' => $order->placed_at ?? now(),
-                'customer_reference' => 'USER-'.$order->user_id,
+                'customer_reference' => config('shop.customer_reference_prefix').$order->user_id,
             ]);
 
             // Only finalize shipping and emails if payment is fully received
@@ -490,34 +480,39 @@ class CheckoutController extends Controller
             'address' => $order->shippingAddress->line_one,
             'city' => $order->shippingAddress->city,
             'zip' => $order->shippingAddress->postcode,
-            'country_code' => $order->shippingAddress->country->iso2 ?? 'DE',
+            'country_code' => $order->shippingAddress->country->iso2 ?? config('shop.default_country'),
             'email' => $order->user->email,
         ];
 
         try {
-            // Calculate total weight (default to 0.5kg if missing)
-            $weight = $order->lines->sum(function ($line) {
-                if ($line->type !== 'physical' || ! $line->purchasable) {
-                    return 0;
+            // Extract physical order lines and format for Sendcloud
+            $productLines = $order->lines->filter(fn ($line) => $line->type === 'physical');
+
+            $parcelItems = $productLines->map(function ($line) {
+                $name = $line->description;
+                if ($line->purchasable && $line->purchasable->product) {
+                    $name = $line->purchasable->product->translateAttribute('name');
                 }
-                // Try to get weight from product attributes, fallback to 0.2kg per item
-                $pWeight = $line->purchasable->weight_value ?: 0.2;
 
-                return $pWeight * $line->quantity;
-            });
+                return [
+                    'description' => $name,
+                    'quantity' => (int) $line->quantity,
+                    'weight' => '0.1', // Simple hardcoded dummy weight per item
+                    'value' => $line->unit_price instanceof Price ? $line->unit_price->decimal : (float) ($line->unit_price / 100),
+                ];
+            })->values()->toArray();
 
-            if ($weight <= 0) {
-                $weight = 0.5;
-            }
+            // Keep total parcel weight simple and hardcoded as requested
+            $weight = 1.0;
 
             $shippingLine = $order->shippingLines->first();
-            // Use the sendcloud_id from meta if available, otherwise default to DHL
-            $shippingMethodId = 26848; // Fallback
+            // Use the sendcloud_id from meta if available, otherwise default to configured method
+            $shippingMethodId = config('services.sendcloud.default_method_id');
             if ($shippingLine && isset($shippingLine->meta['sendcloud_id'])) {
                 $shippingMethodId = $shippingLine->meta['sendcloud_id'];
             }
 
-            $shippingResult = $this->sendcloud->createParcel($customerData, $weight, (int) $shippingMethodId, false);
+            $shippingResult = $this->sendcloud->createParcel($customerData, $weight, (int) $shippingMethodId, false, $parcelItems);
             if ($shippingResult) {
                 $currentMeta = (array) ($order->meta ?? []);
                 $order->update([

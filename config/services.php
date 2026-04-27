@@ -23,6 +23,15 @@ return [
         'webhooks' => [
             'lunar' => env('LUNAR_STRIPE_WEBHOOK_SECRET'),
         ],
+        'status_mapping' => [
+            'requires_capture' => 'requires-capture',
+            'canceled' => 'cancelled',
+            'processing' => 'processing',
+            'requires_action' => 'awaiting-payment',
+            'requires_confirmation' => 'auth-pending',
+            'requires_payment_method' => 'failed',
+            'succeeded' => 'payment-received',
+        ],
     ],
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
@@ -56,6 +65,7 @@ return [
         'public_key' => env('SENDCLOUD_PUBLIC_KEY'),
         'secret_key' => env('SENDCLOUD_SECRET_KEY'),
         'webhook_secret' => env('SENDCLOUD_WEBHOOK_SECRET'),
+        'default_method_id' => env('SENDCLOUD_DEFAULT_METHOD_ID', 26848),
         'default_return_method_id' => env('SENDCLOUD_DEFAULT_RETURN_METHOD_ID', '0'),
         'request_label' => env('SENDCLOUD_REQUEST_LABEL', true),
     ],
