@@ -105,7 +105,7 @@ class SendcloudWebhookController extends Controller
             case 12: // At sorting center
             case 13: // Being delivered
             case 3:  // In transit (another variation)
-                if (! in_array($order->status, ['shipped', 'delivered'])) {
+                if (! in_array($order->status, ['shipped', 'delivered', 'dispatched'])) {
                     $order->update(['status' => 'shipped']);
                     Log::info("Order {$order->reference} status updated to 'shipped'.");
 
@@ -123,6 +123,13 @@ class SendcloudWebhookController extends Controller
                 if (! in_array($order->status, ['shipped', 'delivered', 'dispatched'])) {
                     $order->update(['status' => 'dispatched']);
                     Log::info("Order {$order->reference} status updated to 'dispatched'.");
+
+                    try {
+                        Mail::to($order->user->email)->send(new OrderShipped($order));
+                        Log::info("Dispatched notification sent for order {$order->reference}.");
+                    } catch (\Exception $e) {
+                        Log::error("Failed to send dispatched notification for order {$order->reference}: ".$e->getMessage());
+                    }
                 }
                 break;
 
