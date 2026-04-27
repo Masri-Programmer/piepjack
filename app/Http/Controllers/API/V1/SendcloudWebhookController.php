@@ -19,7 +19,7 @@ class SendcloudWebhookController extends Controller
     {
         // 1. Verify Sendcloud Signature
         $signature = $request->header('Sendcloud-Signature');
-        $secret = config('services.sendcloud.secret_key');
+        $secret = config('services.sendcloud.webhook_secret') ?: config('services.sendcloud.secret_key'); // Fallback for backward compatibility while testing
         $rawPayload = $request->getContent();
 
         if (empty($secret)) {

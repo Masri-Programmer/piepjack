@@ -55,6 +55,7 @@ return [
     'sendcloud' => [
         'public_key' => env('SENDCLOUD_PUBLIC_KEY'),
         'secret_key' => env('SENDCLOUD_SECRET_KEY'),
+        'webhook_secret' => env('SENDCLOUD_WEBHOOK_SECRET'),
         'default_return_method_id' => env('SENDCLOUD_DEFAULT_RETURN_METHOD_ID', '0'),
         'request_label' => env('SENDCLOUD_REQUEST_LABEL', true),
     ],
