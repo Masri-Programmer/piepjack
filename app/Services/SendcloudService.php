@@ -48,27 +48,30 @@ class SendcloudService
     }
 
     /**
-     * Create a DHL parcel in Sendcloud and generate the label.
+     * Create a parcel in Sendcloud and generate the label.
      *
-     * * @param array $customerData The shipping address and contact info.
+     * @param  array  $customerData  The shipping address and contact info.
      * @param  float  $weight  The total weight of the order in kg.
-     * @param  int  $shippingMethodId  The Sendcloud ID for DHL (e.g., Standard or Express).
+     * @param  int  $shippingMethodId  The Sendcloud ID for the shipping method.
+     * @param  bool|null  $requestLabel  Whether to request the label (defaults to config).
      * @return array|null Returns tracking number and label URL, or null on failure.
      */
-    public function createParcel(array $customerData, float $weight, int $shippingMethodId): ?array
+    public function createParcel(array $customerData, float $weight, int $shippingMethodId, ?bool $requestLabel = null): ?array
     {
+        $requestLabel = $requestLabel ?? config('services.sendcloud.request_label', true);
+
         try {
             $response = Http::withBasicAuth($this->publicKey, $this->secretKey)
                 ->post("{$this->baseUrl}/parcels", [
                     'parcel' => [
                         'name' => $customerData['name'],
-                        'address' => $customerData['address'], // Street and house number
+                        'address' => $customerData['address'],
                         'city' => $customerData['city'],
                         'postal_code' => $customerData['zip'],
-                        'country' => $customerData['country_code'], // e.g., 'DE'
+                        'country' => $customerData['country_code'],
                         'email' => $customerData['email'],
                         'weight' => (string) $weight,
-                        'request_label' => true, // Automatically generate the PDF label
+                        'request_label' => $requestLabel,
                         'shipping_method' => $shippingMethodId,
                     ],
                 ]);
@@ -78,9 +81,17 @@ class SendcloudService
 
                 return [
                     'tracking_number' => $data['tracking_number'] ?? null,
-                    'label_url' => $data['documents'][0]['link'] ?? null, // URL to the PDF
+                    'label_url' => $data['documents'][0]['link'] ?? null,
                     'parcel_id' => $data['id'] ?? null,
                 ];
+            }
+
+            // If we get a 412 (Unprocessable Entity) and we were requesting a label,
+            // it likely means "User not allowed to announce". Try again without the label.
+            if ($response->status() === 412 && $requestLabel === true) {
+                Log::warning('Sendcloud label announcement failed (412). Retrying without label request.');
+
+                return $this->createParcel($customerData, $weight, $shippingMethodId, false);
             }
 
             Log::error('Sendcloud API Error', [
