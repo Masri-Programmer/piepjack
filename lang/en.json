@@ -93,5 +93,6 @@
     "Simply show this QR code at the parcel shop.": "Simply show this QR code at the parcel shop.",
     "DOWNLOAD LABEL": "DOWNLOAD LABEL",
     "What happens next?": "What happens next?",
-    "Our logistics team is now checking the goods. The refund is usually made within 3-5 working days to your original payment method.": "Our logistics team is now checking the goods. The refund is usually made within 3-5 working days to your original payment method."
+    "Our logistics team is now checking the goods. The refund is usually made within 3-5 working days to your original payment method.": "Our logistics team is now checking the goods. The refund is usually made within 3-5 working days to your original payment method.",
+    "Too Many Attempts.": "Too many attempts. You have exceeded the request limit. Please wait a moment before trying again."
 }
