@@ -49,7 +49,7 @@ class ShippingSeeder extends Seeder
 
         // 2. Seed the Shipping Methods and Rates
         foreach (self::SEED_METHODS as $methodData) {
-            $shippingMethod = ShippingMethod::firstOrCreate(
+            $shippingMethod = ShippingMethod::updateOrCreate(
                 ['code' => $methodData['code']],
                 [
                     'name' => $methodData['name'],

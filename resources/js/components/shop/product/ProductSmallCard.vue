@@ -25,7 +25,7 @@
         >
             <div class="flex justify-between items-start gap-4 mb-1">
                 <h6
-                    class="text-sm sm:text-base font-bold uppercase tracking-tight text-card-foreground line-clamp-2 min-w-0 break-words"
+                    class="text-sm sm:text-base font-bold uppercase tracking-tight text-card-foreground line-clamp-2 min-w-0 wrap-break-word"
                 >
                     {{ product.name }}
                     <span

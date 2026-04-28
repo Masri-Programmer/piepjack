@@ -273,7 +273,7 @@
                                         <input
                                             type="checkbox"
                                             v-model="termsAccepted"
-                                            class="mt-1 w-5 h-5 accent-primary-foreground cursor-pointer flex-shrink-0"
+                                            class="mt-1 w-5 h-5 accent-primary-foreground cursor-pointer shrink-0"
                                         />
                                         <span
                                             class="text-[10px] font-bold uppercase tracking-wider leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity"

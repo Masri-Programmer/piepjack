@@ -13,7 +13,7 @@
                     {{ $t("pages.faq.help") }}
                 </p>
                 <h1
-                    class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic break-words text-foreground"
+                    class="text-6xl sm:text-7xl md:text-9xl font-bold uppercase tracking-tighter leading-[0.8] italic wrap-break-word text-foreground"
                 >
                     {{ $t("pages.faq.title") }}
                 </h1>

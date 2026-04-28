@@ -66,7 +66,7 @@
             <div class="sticky top-24 flex flex-col gap-8">
                 <div class="space-y-2 border-b-[6px] border-accent_dark pb-6">
                     <h1
-                        class="text-4xl md:text-5xl lg:text-6xl font-accent_dark uppercase tracking-tighter leading-none italic break-words"
+                        class="text-4xl md:text-5xl lg:text-6xl font-accent_dark uppercase tracking-tighter leading-none italic wrap-break-word"
                     >
                         {{ data?.name }}
                     </h1>

@@ -9,7 +9,7 @@
                 alt=""
                 height=""
                 width=""
-                class="object-contain w-8 flex-shrink-0"
+                class="object-contain w-8 shrink-0"
             />
             <span class="flex-1">{{ $t("common.product.secureAndFast") }}</span>
         </div>
@@ -23,7 +23,7 @@
                 alt=""
                 height=""
                 width=""
-                class="object-contain w-8 flex-shrink-0"
+                class="object-contain w-8 shrink-0"
                 loading="lazy"
             />
             <span class="flex-1">{{

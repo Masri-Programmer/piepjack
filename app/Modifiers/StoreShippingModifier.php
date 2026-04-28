@@ -17,7 +17,6 @@ class StoreShippingModifier extends ShippingModifier
     /**
      * Stripe-supported countries in Europe (ISO 3166-1 alpha-2)
      */
-    // todo: move those countries to shipping seeder then pull them from db. for @shippingaddressstep and billingaddressstep too 
         protected const STRIPE_EUROPE_COUNTRIES = [
         'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE',
         'GR', 'HU', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU', 'MT', 'NL', 'NO',
@@ -27,7 +26,6 @@ class StoreShippingModifier extends ShippingModifier
     /**
      * Allowed base shipping methods and their carriers.
      */
-    // todo: move those countries to shipping seeder then pull them from db. for @shippingaddressstep and billingaddressstep too 
   protected const ALLOWED_METHODS = [
         'DHL Paket'                 => 'dhl_de',
         'DHL Paket International'   => 'dhl_de',

@@ -6,42 +6,33 @@
         <template #header>
             <div class="space-y-4 border-b-4 border-border pb-6">
                 <h1
-                    class="text-4xl md:text-6xl font-bold uppercase tracking-tighter italic"
+                    class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase tracking-tighter italic wrap-break-word hyphens-auto"
                 >
                     {{ $t("components.cart.title") }}
                 </h1>
-                <div
-                    class="bg-accent_light border-2 border-border p-4 rounded-none w-fit"
-                >
-                    <span class="text-sm font-bold uppercase tracking-widest">
-                        <strong
-                            v-html="$t('components.cart.shippingFree')"
-                        ></strong>
-                    </span>
-                </div>
             </div>
         </template>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
             <div class="lg:col-span-8">
-                <div class="w-full overflow-x-auto">
-                    <Table class="rounded-none border-2 border-border">
+                <div class="w-full overflow-x-auto pb-4">
+                    <Table class="rounded-none border-2 border-border w-full">
                         <TableHeader class="bg-muted/50">
                             <TableRow
                                 class="border-b-2 border-border hover:bg-transparent"
                             >
                                 <TableHead
-                                    class="font-black uppercase tracking-widest text-xs text-foreground py-6"
+                                    class="font-black uppercase tracking-widest text-[10px] sm:text-xs text-foreground py-4 sm:py-6 whitespace-nowrap"
                                 >
                                     {{ $t("components.cart.products") }}
                                 </TableHead>
                                 <TableHead
-                                    class="text-center font-black uppercase tracking-widest text-xs text-foreground py-6"
+                                    class="text-center font-black uppercase tracking-widest text-[10px] sm:text-xs text-foreground py-4 sm:py-6 whitespace-nowrap"
                                 >
                                     {{ $t("components.cart.quantity") }}
                                 </TableHead>
                                 <TableHead
-                                    class="text-right font-black uppercase tracking-widest text-xs text-foreground py-6"
+                                    class="text-right font-black uppercase tracking-widest text-[10px] sm:text-xs text-foreground py-4 sm:py-6 whitespace-nowrap"
                                 >
                                     {{ $t("components.cart.total") }}
                                 </TableHead>
@@ -59,36 +50,40 @@
                                         :key="item.id"
                                         class="hover:bg-muted transition-colors"
                                     >
-                                        <TableCell class="py-6">
+                                        <TableCell
+                                            class="py-4 sm:py-6 min-w-[250px] sm:min-w-[300px]"
+                                        >
                                             <div
-                                                class="flex items-center gap-6"
+                                                class="flex items-start sm:items-center gap-4 sm:gap-6"
                                             >
                                                 <div
-                                                    class="w-20 h-20 bg-muted border-2 border-border flex-shrink-0"
+                                                    class="w-16 h-16 sm:w-20 sm:h-20 bg-muted border-2 border-border shrink-0"
                                                 >
                                                     <img
                                                         :src="
                                                             item?.image_url ||
                                                             product?.image_url
                                                         "
-                                                        class="w-full h-full object-cover"
+                                                        class="w-full h-full object-contain"
                                                         :alt="product?.name"
                                                     />
                                                 </div>
-                                                <div class="space-y-1">
+                                                <div
+                                                    class="space-y-1 min-w-0 flex-1"
+                                                >
                                                     <p
-                                                        class="font-bold uppercase tracking-tight text-lg"
+                                                        class="font-bold uppercase tracking-tight text-sm sm:text-lg wrap-break-word text-wrap"
                                                     >
                                                         {{ product?.name }}
                                                     </p>
                                                     <div
                                                         v-if="item?.options"
-                                                        class="flex flex-wrap gap-2"
+                                                        class="flex flex-wrap gap-1.5 sm:gap-2"
                                                     >
                                                         <span
                                                             v-for="opt in item.options"
                                                             :key="opt.name"
-                                                            class="text-[10px] font-black uppercase tracking-widest bg-muted px-2 py-0.5 border border-border"
+                                                            class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-muted px-2 py-0.5 border border-border truncate max-w-full"
                                                         >
                                                             {{ opt.value }}
                                                         </span>
@@ -97,8 +92,12 @@
                                             </div>
                                         </TableCell>
 
-                                        <TableCell class="text-center py-6">
-                                            <div class="flex justify-center">
+                                        <TableCell
+                                            class="text-center py-4 sm:py-6 align-middle"
+                                        >
+                                            <div
+                                                class="flex justify-center min-w-[100px]"
+                                            >
                                                 <CustomNumberInput
                                                     :modelValue="
                                                         item.cartQuantity
@@ -118,12 +117,14 @@
                                             </div>
                                         </TableCell>
 
-                                        <TableCell class="text-right py-6">
+                                        <TableCell
+                                            class="text-right py-4 sm:py-6 align-middle min-w-[100px]"
+                                        >
                                             <div
                                                 class="flex flex-col items-end gap-1"
                                             >
                                                 <span
-                                                    class="font-mono font-bold text-lg"
+                                                    class="font-mono font-bold text-base sm:text-lg whitespace-nowrap"
                                                 >
                                                     {{
                                                         (
@@ -141,7 +142,7 @@
                                                             itemId: item.id,
                                                         })
                                                     "
-                                                    class="text-[10px] font-black uppercase tracking-widest text-destructive hover:underline"
+                                                    class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-destructive hover:underline whitespace-nowrap"
                                                 >
                                                     {{
                                                         $t("common.remove") ||
@@ -156,10 +157,10 @@
                             <TableRow v-else>
                                 <TableCell
                                     colspan="3"
-                                    class="py-24 text-center"
+                                    class="py-16 sm:py-24 text-center"
                                 >
                                     <p
-                                        class="text-xl font-bold uppercase tracking-widest text-muted-foreground"
+                                        class="text-lg sm:text-xl font-bold uppercase tracking-widest text-muted-foreground wrap-break-word text-balance px-4"
                                     >
                                         {{
                                             $t("components.cart.empty") ||
@@ -175,46 +176,60 @@
 
             <div class="lg:col-span-4">
                 <div
-                    class="border-[6px] border-main p-8 space-y-8 bg-background sticky top-24"
+                    class="border-4 sm:border-[6px] border-main p-6 sm:p-8 space-y-6 sm:space-y-8 bg-background sticky top-24"
                 >
                     <div class="space-y-4">
                         <h2
-                            class="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground border-b-2 border-border pb-2"
+                            class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-muted-foreground border-b-2 border-border pb-2 wrap-break-word"
                         >
                             {{ $t("common.summary") || "Order Summary" }}
                         </h2>
 
                         <div class="space-y-2">
                             <div
-                                class="flex justify-between items-center text-xl font-bold uppercase italic"
+                                class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-lg sm:text-xl font-bold uppercase italic gap-1"
                             >
-                                <span>{{ $t("common.total") || "Total" }}</span>
-                                <span class="font-mono"
+                                <span class="wrap-break-word">{{
+                                    $t("common.total") || "Total"
+                                }}</span>
+                                <span class="font-mono whitespace-nowrap"
                                     >{{ cartTotalPrice.toFixed(2) }}
                                     {{ $currency }}</span
                                 >
                             </div>
                             <p
                                 v-html="taxAndShippingInfo"
-                                class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground leading-relaxed"
+                                class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground leading-relaxed wrap-break-word text-balance"
                             ></p>
                         </div>
                     </div>
 
-                    <div class="pt-4 space-y-4">
+                    <div class="pt-4 space-y-3 sm:space-y-4 flex flex-col">
                         <Button
                             v-if="cartState.cartItems.length > 0"
                             as-child
-                            class="view-all w-full h-20 text-xl"
+                            class="view-all w-full h-16 sm:h-20 text-lg sm:text-xl whitespace-normal h-auto py-4 text-center"
                         >
-                            <router-link to="/checkout" class="view-all">
-                                <LockKeyhole :size="24" />
-                                {{ $t("components.cart.checkout") }}
+                            <router-link
+                                to="/checkout"
+                                class="view-all flex flex-wrap justify-center items-center gap-2"
+                            >
+                                <LockKeyhole :size="20" class="shrink-0" />
+                                <span class="wrap-break-word">{{
+                                    $t("components.cart.checkout")
+                                }}</span>
                             </router-link>
                         </Button>
 
-                        <Button as-child variant="outline" class="view-all">
-                            <router-link to="/collections">
+                        <Button
+                            as-child
+                            variant="outline"
+                            class="view-all w-full whitespace-normal h-auto py-4 text-center"
+                        >
+                            <router-link
+                                to="/collections"
+                                class="wrap-break-word"
+                            >
                                 {{ $t("components.buttons.weiterKaufen") }}
                             </router-link>
                         </Button>
