@@ -301,6 +301,42 @@ const validateField = async (field) => {
     }
 };
 const countries = ref([]);
+// Array of Stripe-supported European country codes (ISO 3166-1 alpha-2)
+const STRIPE_EUROPE_COUNTRIES = [
+    "AT",
+    "BE",
+    "BG",
+    "HR",
+    "CY",
+    "CZ",
+    "DK",
+    "EE",
+    "FI",
+    "FR",
+    "DE",
+    "GR",
+    "HU",
+    "IE",
+    "IT",
+    "LV",
+    "LI",
+    "LT",
+    "LU",
+    "MT",
+    "NL",
+    "NO",
+    "PL",
+    "PT",
+    "RO",
+    "SK",
+    "SI",
+    "ES",
+    "SE",
+    "CH",
+    "GB",
+    "GI",
+];
+
 const fetchCountries = async () => {
     try {
         const response = await axios
@@ -308,7 +344,11 @@ const fetchCountries = async () => {
             .get(
                 "https://restcountries.com/v3.1/region/europe?fields=languages,flags,cca2,idd,translations,name",
             );
-        countries.value = response.data;
+
+        // Filter the response data to only include Stripe-supported countries
+        countries.value = response.data.filter((country) =>
+            STRIPE_EUROPE_COUNTRIES.includes(country.cca2),
+        );
     } catch (error) {
         console.error("Error fetching countries:", error);
     }

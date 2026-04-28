@@ -1,6 +1,6 @@
 <template>
     <router-link
-        v-if="product"
+        v-if="product && !isComingSoon"
         :to="'/product/' + product.id + '/' + product.slug"
         class="block h-full group cursor-pointer"
         @mouseenter="mouseEnter"
@@ -75,6 +75,48 @@
             </CardContent>
         </Card>
     </router-link>
+
+    <div v-else-if="isComingSoon" class="block h-full opacity-60">
+        <Card
+            class="relative flex flex-col h-full overflow-hidden transition-all duration-300 border-transparent rounded-none bg-card"
+        >
+            <Badge
+                class="absolute z-10 top-3 left-3 rounded-none bg-muted text-muted-foreground"
+                variant="outline"
+            >
+                {{ $t("common.product.comingSoon") }}
+            </Badge>
+
+            <AspectRatio
+                :ratio="3 / 4"
+                class="w-full overflow-hidden bg-muted/50 rounded-none flex items-center justify-center"
+            >
+                <div class="w-full h-full bg-muted/20"></div>
+            </AspectRatio>
+
+            <CardContent
+                class="flex flex-col items-center justify-start grow p-3 sm:p-4 w-full border-t"
+            >
+                <div
+                    class="flex items-center justify-center w-full h-10 sm:h-12 mb-1"
+                >
+                    <div class="w-3/4 h-4 bg-muted rounded-sm"></div>
+                </div>
+
+                <div
+                    class="flex items-center justify-center w-full h-5 sm:h-6 mb-1"
+                >
+                    <div class="w-1/2 h-3 bg-muted rounded-sm"></div>
+                </div>
+
+                <div
+                    class="flex items-center justify-center w-full h-5 sm:h-6 mt-auto"
+                >
+                    <div class="w-1/3 h-4 bg-muted rounded-sm"></div>
+                </div>
+            </CardContent>
+        </Card>
+    </div>
 </template>
 
 <script setup>
@@ -104,6 +146,10 @@ const props = defineProps({
             reviews_count: 0,
         }),
     },
+    isComingSoon: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const imgHover = ref(false);
@@ -112,7 +158,6 @@ const mouseLeave = () => (imgHover.value = false);
 
 const now = useNow();
 
-// Determines if the product is new (within the last 7 days)
 const isNewProduct = computed(() => {
     if (!props.product?.created_at) return false;
     const createdAt = new Date(props.product.created_at);

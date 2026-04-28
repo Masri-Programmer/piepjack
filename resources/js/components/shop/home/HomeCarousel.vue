@@ -12,12 +12,15 @@
             class="vue-carousel"
         >
             <Slide
-                v-for="product in products.data"
-                :key="product.id"
+                v-for="(item, index) in displayItems"
+                :key="item.id || 'placeholder-' + index"
                 class="px-2 pb-4"
             >
                 <div class="carousel__item w-full h-full text-left">
-                    <ProductCard :product="product" />
+                    <ProductCard
+                        :product="item.isPlaceholder ? null : item"
+                        :isComingSoon="item.isPlaceholder"
+                    />
                 </div>
             </Slide>
 
@@ -41,7 +44,7 @@ import ProductCard from "../product/ProductCard.vue";
 import { Button } from "@/js/components/ui/button";
 import "@assets/css/carousel/homeCarousel.css";
 import "vue3-carousel/dist/carousel.css";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { apiQuery } from "@lib/helpers";
 const props = defineProps({
     id: { type: Number, required: true },
@@ -63,6 +66,20 @@ const {
     error,
     isLoading,
 } = apiQuery("products").useGet(params);
+
+const displayItems = computed(() => {
+    const items = [...(products.value?.data || [])];
+    const minItems = 4;
+
+    if (items.length < minItems) {
+        const diff = minItems - items.length;
+        for (let i = 0; i < diff; i++) {
+            items.push({ isPlaceholder: true });
+        }
+    }
+
+    return items;
+});
 
 const settings = {
     itemsToShow: 1.2,

@@ -8,6 +8,7 @@ export default {
     product: {
         size: "Größe",
         new: "neu",
+        comingSoon: "Demnächst",
         price: "49,99€",
         desc: "BESCHREIBUNG",
         PairsWellWith: "PASST ZU",

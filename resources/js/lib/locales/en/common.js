@@ -8,6 +8,7 @@ export default {
     product: {
         size: "Size",
         new: "new",
+        comingSoon: "Coming Soon",
         price: "49.99€",
         desc: "DESCRIPTION",
         addToCart: "Add to cart",

@@ -4,6 +4,7 @@ namespace App\Modifiers;
 
 use App\Services\SendcloudService;
 use Closure;
+use Illuminate\Support\Str;
 use Lunar\Base\ShippingModifier;
 use Lunar\DataTypes\Price;
 use Lunar\DataTypes\ShippingOption;
@@ -13,99 +14,121 @@ use Lunar\Models\TaxClass;
 
 class StoreShippingModifier extends ShippingModifier
 {
+    /**
+     * Stripe-supported countries in Europe (ISO 3166-1 alpha-2)
+     */
+    // todo: move those countries to shipping seeder then pull them from db. for @shippingaddressstep and billingaddressstep too 
+        protected const STRIPE_EUROPE_COUNTRIES = [
+        'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE',
+        'GR', 'HU', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU', 'MT', 'NL', 'NO',
+        'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'CH', 'GB', 'GI'
+    ];
+
+    /**
+     * Allowed base shipping methods and their carriers.
+     */
+    // todo: move those countries to shipping seeder then pull them from db. for @shippingaddressstep and billingaddressstep too 
+  protected const ALLOWED_METHODS = [
+        'DHL Paket'                 => 'dhl_de',
+        'DHL Paket International'   => 'dhl_de',
+        'DHL Paket Evening'         => 'dhl_de',
+        'DPD Classic'               => 'dpd',
+        'DPD Home'                  => 'dpd',
+        'DPD Predict'               => 'dpd',
+        'DPD Business Express'      => 'dpd',
+    ];
+    /**
+     * Keywords that flag a method as too niche for standard checkout.
+     */
+    protected const NOISY_KEYWORDS = [
+        'GoGreen', 'Alterssichtprüfung', 'Persönliche Übergabe',
+        'Nachbarschaftszustellung', 'Filial Routing', 'Service point',
+        'Shop2Home', 'KP',
+    ];
+
     public function __construct(protected SendcloudService $sendcloud) {}
 
     public function handle(Cart $cart, Closure $next)
     {
+        $countryCode = $cart->shippingAddress?->country?->iso2 ?? 'DE';
+
+        // 1. Early Exit: Restrict to Stripe-supported European countries
+        if (!in_array(strtoupper($countryCode), self::STRIPE_EUROPE_COUNTRIES, true)) {
+            return $next($cart); // Skip adding shipping options
+        }
+
         $taxClass = TaxClass::getDefault();
-        $shippingAddress = $cart->shippingAddress;
-        $countryCode = $shippingAddress?->country?->iso2 ?? 'DE';
-
         $methods = $this->sendcloud->getShippingMethods();
-
-        $allowedMethods = [
-            'DHL Paket' => ['carrier' => 'dhl_de'],
-            'DPD Classic' => ['carrier' => 'dpd'],
-            'DPD Business Express' => ['carrier' => 'dpd'],
-            'DPD Parcelletter' => ['carrier' => 'dpd'],
-            'Unstamped letter' => ['carrier' => 'sendcloud'],
-        ];
-
         $seenBaseMethods = [];
 
         foreach ($methods as $method) {
-            $name = $method['name'];
-            $carrier = $method['carrier'];
+            $name = $method['name'] ?? '';
+            $carrier = $method['carrier'] ?? '';
 
-            // Filter by country if countries are specified in the method
-            if (! empty($method['countries'])) {
-                $canShipTo = collect($method['countries'])->contains(fn ($c) => $c['iso_2'] === $countryCode);
-                if (! $canShipTo) {
-                    continue;
-                }
-            }
-
-            // Simple filtering: Find if the name matches one of our allowed base names
-            $baseMatch = null;
-            foreach ($allowedMethods as $baseName => $config) {
-                if (str_contains($name, $baseName) && $carrier === $config['carrier']) {
-                    $baseMatch = $baseName;
-                    break;
-                }
-            }
-
-            if (! $baseMatch) {
+            // 2. Validate Country Availability in Sendcloud
+            $countryInfo = $this->getCountryInfo($method, $countryCode);
+            if (!$countryInfo && !empty($method['countries'])) {
                 continue;
             }
 
-            // Skip if we already added this base type (avoids weight tiers 0-2kg, 2-5kg etc.)
-            if (isset($seenBaseMethods[$baseMatch])) {
+            // 3. Skip Noisy Methods
+            if (Str::contains($name, self::NOISY_KEYWORDS)) {
                 continue;
             }
 
-            // Skip methods with specific suffixes that make them too niche for standard checkout
-            $noisyKeywords = [
-                'GoGreen', 'Alterssichtprüfung', 'Persönliche Übergabe',
-                'Nachbarschaftszustellung', 'Filial Routing', 'Service point',
-                'Shop2Home', 'KP',
-            ];
-
-            $isNoisy = false;
-            foreach ($noisyKeywords as $keyword) {
-                if (str_contains($name, $keyword)) {
-                    $isNoisy = true;
-                    break;
-                }
-            }
-
-            if ($isNoisy) {
+            // 4. Match and Deduplicate Base Methods
+            $baseMatch = $this->getBaseMatch($name, $carrier);
+            if (!$baseMatch || isset($seenBaseMethods[$baseMatch])) {
                 continue;
             }
 
-            // Mark as seen so we don't add other weight variations of the same type
+            // Mark as seen to prevent duplicate weight tiers
             $seenBaseMethods[$baseMatch] = true;
 
-            $price = 590; // Default flat rate
-            if (str_contains(strtolower($name), 'express')) {
-                $price = 990;
-            }
+            // 5. Calculate Price (Fallback to 5.90€ if missing/zero)
+            $priceValue = ($countryInfo && ($countryInfo['price'] ?? 0) > 0)
+                ? (int) round($countryInfo['price'] * 100 + 2)
+                : 590;
 
-            // Clean up the name for display (e.g. "DHL Paket 0-2kg" -> "DHL Paket")
-            $displayName = __($baseMatch);
-            $displayDescription = __($method['service']['name'] ?? 'Shipping via '.$carrier);
-
+            // 6. Register Shipping Option
             ShippingManifest::addOption(
                 new ShippingOption(
-                    name: $displayName,
-                    description: $displayDescription,
-                    identifier: 'SENDCLOUD_'.str_replace(' ', '_', strtoupper($baseMatch)),
-                    price: new Price($price, $cart->currency, 1),
+                    name: __($baseMatch),
+                    description: __($method['service']['name'] ?? "Shipping via {$carrier}"),
+                    identifier: 'SENDCLOUD_' . Str::upper(Str::slug($baseMatch, '_')),
+                    price: new Price($priceValue, $cart->currency, 1),
                     taxClass: $taxClass,
-                    meta: ['sendcloud_id' => $method['id']]
+                    meta: ['sendcloud_id' => $method['id'] ?? null]
                 )
             );
         }
 
         return $next($cart);
+    }
+
+    /**
+     * Retrieve pricing/country config for the target country code.
+     */
+    protected function getCountryInfo(array $method, string $countryCode): ?array
+    {
+        if (empty($method['countries'])) {
+            return null;
+        }
+
+        return collect($method['countries'])->firstWhere('iso_2', $countryCode);
+    }
+
+    /**
+     * Identify the base method if it matches our allowed list.
+     */
+    protected function getBaseMatch(string $name, string $carrier): ?string
+    {
+        foreach (self::ALLOWED_METHODS as $baseName => $allowedCarrier) {
+            if (Str::contains($name, $baseName) && $carrier === $allowedCarrier) {
+                return $baseName;
+            }
+        }
+
+        return null;
     }
 }
