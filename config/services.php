@@ -19,7 +19,7 @@ return [
         'secret' => env('STRIPE_SECRET_KEY'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
         'webhook_return_secret' => env('STRIPE_WEBHOOK_SECRET_RETURN'),
-        'payment_methods' => ['card', 'sepa_debit', 'paypal'],
+        'payment_methods' => ['card', 'sepa_debit', 'paypal','klarna'],
         'webhooks' => [
             'lunar' => env('LUNAR_STRIPE_WEBHOOK_SECRET'),
         ],

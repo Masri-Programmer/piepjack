@@ -282,7 +282,11 @@ const validationSchema = Yup.object().shape({
     city: Yup.string()
         .max(255, t("validation.validation.cityMax", { max: 255 }))
         .required(t("validation.validation.city")),
-    land: Yup.mixed().required(t("validation.validation.land")),
+    land: Yup.mixed()
+        .required(t("validation.validation.land"))
+        .test("is-selected", t("validation.validation.land"), (value) => {
+            return value && typeof value === "object" && value.code;
+        }),
     stateProvince: Yup.string()
         .max(255, t("validation.validation.stateMax", { max: 255 }))
         .required(t("validation.validation.state")),

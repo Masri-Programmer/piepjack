@@ -244,7 +244,11 @@ const validationSchema = Yup.object().shape({
     address: Yup.string()
         .max(255, t("validation.validation.addressMax", { max: 255 }))
         .required(t("validation.validation.address")),
-    land: Yup.mixed().required(t("validation.validation.land")),
+    land: Yup.mixed()
+        .required(t("validation.validation.land"))
+        .test("is-selected", t("validation.validation.land"), (value) => {
+            return value && typeof value === "object" && value.code;
+        }),
     zip: Yup.string()
         .max(12, t("validation.validation.zipMax", { max: 12 }))
         .required(t("validation.validation.zip")),
