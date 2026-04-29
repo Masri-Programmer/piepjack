@@ -34,7 +34,7 @@ export const useShopGlobalState = createGlobalState(() => {
         lastName: "",
         address: "",
         zip: "",
-        land: "",
+        land: "DE",
         city: "",
         stateProvince: "",
         phone: "",
@@ -47,7 +47,7 @@ export const useShopGlobalState = createGlobalState(() => {
             address: "",
             zip: "",
             city: "",
-            land: "",
+            land: "DE",
             stateProvince: "",
         },
     };

@@ -267,7 +267,6 @@ const { data: orderData } = useQuery({
             "failed",
             "cancelled",
             "requires-capture",
-            "awaiting-payment",
         ];
 
         if (data && terminalStates.includes(data.status)) return false;

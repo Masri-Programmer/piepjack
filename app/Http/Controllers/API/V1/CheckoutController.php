@@ -34,6 +34,7 @@ use Stripe\Customer;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 use Stripe\Webhook as StripeWebhook;
+use Illuminate\Support\Facades\Cache;
 
 class CheckoutController extends Controller
 {
@@ -142,6 +143,17 @@ class CheckoutController extends Controller
 
             // 3. Recalculate
             $cart->calculate();
+
+            $order = Order::where('cart_id', $cart->id)->first() ?: $cart->createOrder();
+            $customer = $order->user?->customers->first();
+
+            $order->update([
+                'status' => 'awaiting-payment',
+                'customer_id' => $customer?->id,
+                'placed_at' => $order->placed_at ?? now(),
+                'customer_reference' => config('shop.customer_reference_prefix').$order->user_id,
+            ]);
+
             $session = $this->createStripeSession($cart, $user);
 
             DB::commit();
@@ -210,17 +222,29 @@ class CheckoutController extends Controller
         // 2. Determine the status
         $stripeStatus = $stripeObject->status ?? 'succeeded';
         if ($event->type === 'checkout.session.completed') {
-            $stripeStatus = $stripeObject->payment_status === 'paid' ? 'succeeded' : 'requires_payment_method';
+            if ($stripeObject->payment_status === 'paid') {
+                $stripeStatus = 'succeeded';
+            } elseif ($stripeObject->payment_status === 'unpaid') {
+                $stripeStatus = 'requires_action'; // Maps to 'awaiting-payment' in Lunar
+            } else {
+                $stripeStatus = 'requires_payment_method';
+            }
         }
 
         $lunarStatus = config("services.stripe.status_mapping.{$stripeStatus}") ?? 'processing';
 
-        try {
-            // 3. Sync the order status
-            $this->syncOrderStatus($cart, $lunarStatus, $referenceId);
+       try {
+            $lock = Cache::lock('stripe_webhook_cart_'.$cartId, 10);
+
+            $lock->block(5, function () use ($cart, $lunarStatus, $referenceId) {
+                $this->syncOrderStatus($cart, $lunarStatus, $referenceId);
+            });
+
+        } catch (\Illuminate\Contracts\Cache\LockTimeoutException $e) {
+            Log::info('Webhook locked by another process for cart ' . $cartId);
+            return response()->json(['message' => __('Handled by another process')], 200);
         } catch (Exception $e) {
             Log::error('Webhook sync failed for cart '.$cartId.': '.$e->getMessage());
-
             return response()->json(['message' => __('Failed to sync order'), 'error' => $e->getMessage()], 500);
         }
 
@@ -231,7 +255,7 @@ class CheckoutController extends Controller
     {
         DB::beginTransaction();
         try {
-            $order = $cart->draftOrder ?: $cart->createOrder();
+          $order = Order::where('cart_id', $cart->id)->first() ?: $cart->createOrder();
 
             $customer = $order->user?->customers->first();
 
@@ -452,6 +476,12 @@ class CheckoutController extends Controller
             'metadata' => [
                 'cart_id' => $cart->id,
                 'locale' => app()->getLocale(),
+            ],
+            'payment_intent_data' => [
+                'metadata' => [
+                    'cart_id' => $cart->id,
+                    'locale' => app()->getLocale(),
+                ],
             ],
         ];
 
