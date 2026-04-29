@@ -446,7 +446,7 @@ const {
 
 const isPickup = computed(() => {
     return order.value?.data?.shipping_lines?.some(
-        (line) => line.identifier === "Pickup",
+        (line) => line.identifier.toLowerCase() === "pickup",
     );
 });
 
