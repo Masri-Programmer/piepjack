@@ -113,17 +113,28 @@
                 <tr>
                     <td
                         style="padding-bottom: 10px; border-bottom: 1px solid #eeeeee; font-size: 14px; font-weight: bold; color: #111111;">
-                        {{ __('Shipping Information') }}
+                        {{ $order->shippingLines->first()?->identifier === 'PICKUP' ? __('Pickup Information') : __('Shipping Information') }}
                     </td>
                 </tr>
                 <tr>
                     <td style="padding-top: 15px; font-size: 13px; line-height: 1.6; color: #666666;">
-                        <strong>{{ __('Shipping Address') }}:</strong><br>
-                        {{ $address->street_address ?? $address->line_one }}<br>
-                        {{ $address->postal_code ?? $address->postcode }} {{ $address->city }}<br>
-                        {{ $address->country_name ?? $address->country->name }}
+                        @if($order->shippingLines->first()?->identifier === 'PICKUP')
+                            <strong>{{ __('Pickup Address') }}:</strong><br>
+                            Piepjack Store<br>
+                            Schollendamm 122a<br>
+                            27751 Delmenhorst, Deutschland<br>
+                            <br>
+                            <strong>{{ __('Instructions') }}:</strong><br>
+                            {{ __('Your order will be ready for pickup soon. We will notify you when it is ready.') }}
+                        @else
+                            <strong>{{ __('Shipping Address') }}:</strong><br>
+                            {{ $address->street_address ?? $address->line_one }}<br>
+                            {{ $address->postal_code ?? $address->postcode }} {{ $address->city }}<br>
+                            {{ $address->country_name ?? $address->country->name }}
+                        @endif
                     </td>
                 </tr>
+                @if($order->shippingLines->first()?->identifier !== 'PICKUP')
                 <tr>
                     <td style="padding-top: 25px;" align="center">
                         <a href="{{ config('app.url') }}/track-order/{{ $order->reference }}"
@@ -132,8 +143,9 @@
                         </a>
                     </td>
                 </tr>
+                @endif
                 
-                @if(!empty($order->meta['tracking_number']))
+                @if($order->shippingLines->first()?->identifier !== 'PICKUP' && !empty($order->meta['tracking_number']))
                 <tr>
                     <td style="padding-top: 20px; font-size: 13px; line-height: 1.6; color: #666666; border-top: 1px solid #f3f4f6; margin-top: 20px;">
                         <strong>{{ __('Tracking Number (DHL)') }}:</strong><br>

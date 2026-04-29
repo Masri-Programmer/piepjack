@@ -107,5 +107,11 @@
     "Unstamped letter": "Unfrankierter Brief",
     "Shipping via dhl_de": "Versand via DHL",
     "Shipping via dpd": "Versand via DPD",
-    "Shipping via sendcloud": "Versand via Sendcloud"
+    "Shipping via sendcloud": "Versand via Sendcloud",
+    "shipping.pickup.name": "Selbstabholung",
+    "shipping.pickup.description": "Hole deine Bestellung direkt bei uns ab: :address",
+    "Pickup Address": "Abholadresse",
+    "Pickup Information": "Informationen zur Abholung",
+    "Instructions": "Anweisungen",
+    "Your order is ready for pickup.": "Deine Bestellung ist abholbereit."
 }

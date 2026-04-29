@@ -38,9 +38,8 @@ import { ArrowLeft } from "lucide-vue-next";
                         PIEPJACK Clothing
                     </div>
                     <div class="text-lg font-medium leading-relaxed text-muted-foreground/90">
-                        Inhaber: Marvin Pieprzyk<br />
-                        Schollendamm 122a<br />
-                        27751 Delmenhorst<br />
+                        Inhaber: {{ $t('pages.store.owner') }}<br />
+                        {{ $t('pages.store.address') }}<br />
                         Deutschland
                     </div>
                 </section>
@@ -51,11 +50,11 @@ import { ArrowLeft } from "lucide-vue-next";
                         {{ $t("pages.impressum.contact.title") }}
                     </p>
                     <div class="flex flex-col space-y-2">
-                        <a href="mailto:info@piepjack-clothing.de" class="text-xl font-bold hover:text-main transition-colors">
-                            info@piepjack-clothing.de
+                        <a :href="'mailto:' + $t('pages.store.email')" class="text-xl font-bold hover:text-main transition-colors">
+                            {{ $t('pages.store.email') }}
                         </a>
-                        <a href="https://www.piepjack-clothing.de" target="_blank" class="text-xl font-bold hover:text-main transition-colors">
-                            www.piepjack-clothing.de
+                        <a :href="'https://' + $t('pages.store.website')" target="_blank" class="text-xl font-bold hover:text-main transition-colors">
+                            {{ $t('pages.store.website') }}
                         </a>
                     </div>
                 </section>

@@ -206,6 +206,10 @@ export default {
         invalidPromo: "Ungültiger Promo -Code",
         orderDiscount: "5% Rabatt (Bestellungen > 100€)",
         selectShipping: "Versand auswählen",
+        pickupInfo:
+            "Bitte beachten Sie: Ihre Bestellung muss an unserer Adresse abgeholt werden: {address}",
+        pickupSuccess:
+            "Bitte holen Sie Ihre Bestellung an folgender Adresse ab: {address}",
     },
     faq: {
         help: "BRAUCHST DU HILFE?",
@@ -285,5 +289,11 @@ export default {
         over: "ab",
         warning:
             "⚠️ Nach einzelnen Drops kann sich die Lieferzeit auf 10-16 Tage verlängern.",
+    },
+    store: {
+        owner: "Marvin Pieprzyk",
+        address: "Schollendamm 122a, 27751, Delmenhorst",
+        email: "info@piepjack-clothing.de",
+        website: "www.piepjack-clothing.de",
     },
 };

@@ -56,6 +56,22 @@ class StoreShippingModifier extends ShippingModifier
         }
 
         $taxClass = TaxClass::getDefault();
+
+        // 2. Special Case: Pickup Promo Code
+        if (strtoupper($cart->coupon_code ?? '') === 'PICKUP') {
+            ShippingManifest::addOption(
+                new ShippingOption(
+                    name: __('Pickup / Abholung'),
+                    description: __('Pick up your order at our store: Schollendamm 122a, 27751, Delmenhorst'),
+                    identifier: 'PICKUP',
+                    price: new Price(0, $cart->currency, 1),
+                    taxClass: $taxClass
+                )
+            );
+
+            return $next($cart); // Skip Sendcloud methods if pickup is selected via promo code
+        }
+
         $methods = $this->sendcloud->getShippingMethods();
         $seenBaseMethods = [];
 

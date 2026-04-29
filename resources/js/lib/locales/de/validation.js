@@ -88,5 +88,6 @@ export default {
         timeoutDesc:
             "Wir haben Ihre Bestellung erhalten, aber die Zahlungsbestätigung dauert länger als erwartet.",
         timeoutCheckEmail: "Bitte überprüfen Sie Ihre E-Mails auf Updates.",
+        checkEmailPickup: "Sie erhalten eine E-Mail, sobald Ihre Bestellung zur Abholung bereit ist.",
     },
 };

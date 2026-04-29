@@ -21,4 +21,13 @@ return [
         'item_weight_fallback' => (float) env('SHOP_SHIPPING_ITEM_WEIGHT_FALLBACK', 0.2),
     ],
 
+    'address' => [
+        'owner' => 'Marvin Pieprzyk',
+        'street' => 'Schollendamm 122a',
+        'postcode' => '27751',
+        'city' => 'Delmenhorst',
+        'country' => 'Deutschland',
+        'full' => 'Schollendamm 122a, 27751 Delmenhorst',
+    ],
+
 ];

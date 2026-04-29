@@ -206,7 +206,7 @@
 
                 <aside class="lg:col-span-5 space-y-8">
                     <Card
-                        v-if="order.data.tracking.number"
+                        v-if="order.data.tracking_number"
                         class="rounded-none border-2 border-primary bg-transparent"
                     >
                         <CardHeader class="p-6">
@@ -221,13 +221,16 @@
                                 <Truck class="w-5 h-5" />
                             </div>
                             <p class="text-xl font-black">
-                                {{ order.data.tracking.number }}
+                                {{ order.data.tracking_number }}
                             </p>
                         </CardHeader>
-                        <CardFooter class="p-6 pt-0">
+                        <CardFooter
+                            v-if="order.data.label_url"
+                            class="p-6 pt-0"
+                        >
                             <Button
                                 as="a"
-                                :href="order.data.tracking.url"
+                                :href="order.data.label_url"
                                 target="_blank"
                                 class="view-all"
                             >
