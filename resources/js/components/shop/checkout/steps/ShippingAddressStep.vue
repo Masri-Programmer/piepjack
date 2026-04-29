@@ -314,18 +314,25 @@ const STRIPE_EUROPE_COUNTRIES = [
 
 const fetchCountries = async () => {
     try {
-        const response = await axios
-            .create()
-            .get(
-                "https://restcountries.com/v3.1/region/europe?fields=languages,flags,cca2,idd,translations,name",
-            );
+        const response = await axios.get("/countries.json");
 
-        // Filter the response data to only include Stripe-supported countries
-        countries.value = response.data.filter((country) =>
+        const formattedCountries = response.data.map((country) => ({
+            name: country.name,
+            cca2: country.cca2,
+            idd: country.idd,
+            languages: country.languages,
+            translations: country.translations,
+            flags: {
+                svg: `https://flagcdn.com/${country.cca2.toLowerCase()}.svg`,
+                png: `https://flagcdn.com/w320/${country.cca2.toLowerCase()}.png`,
+            },
+        }));
+
+        countries.value = formattedCountries.filter((country) =>
             STRIPE_EUROPE_COUNTRIES.includes(country.cca2),
         );
     } catch (error) {
-        console.error("Error fetching countries:", error);
+        console.error("Error fetching local country data:", error);
     }
 };
 
