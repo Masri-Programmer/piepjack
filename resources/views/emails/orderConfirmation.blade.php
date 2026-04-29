@@ -121,11 +121,11 @@
                         @if($order->shippingLines->first()?->identifier === 'PICKUP')
                             <strong>{{ __('Pickup Address') }}:</strong><br>
                             Piepjack Store<br>
-                            Schollendamm 122a<br>
-                            27751 Delmenhorst, Deutschland<br>
+                            {{ config('shop.address.street') }}<br>
+                            {{ config('shop.address.postcode') }} {{ config('shop.address.city') }}, {{ config('shop.address.country') }}<br>
                             <br>
                             <strong>{{ __('Instructions') }}:</strong><br>
-                            {{ __('Your order will be ready for pickup soon. We will notify you when it is ready.') }}
+                            {{ __('Your order is ready for pickup.') }}
                         @else
                             <strong>{{ __('Shipping Address') }}:</strong><br>
                             {{ $address->street_address ?? $address->line_one }}<br>

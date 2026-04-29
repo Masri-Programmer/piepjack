@@ -246,6 +246,37 @@
                             <CardTitle
                                 class="text-xs font-black uppercase tracking-widest"
                                 >{{
+                                    $t("pages.tracking.shippingMethod")
+                                }}</CardTitle
+                            >
+                        </CardHeader>
+                        <CardContent
+                            class="p-6 pt-0 text-sm font-black uppercase leading-tight italic"
+                        >
+                            <p>{{ shippingMethodName }}</p>
+
+                            <div
+                                v-if="isPickup"
+                                class="mt-4 p-4 border-2 border-primary bg-background not-italic"
+                            >
+                                <p
+                                    class="text-[10px] text-muted-foreground mb-1 uppercase tracking-widest"
+                                >
+                                    {{ $t("pages.tracking.pickupAddress") }}
+                                </p>
+                                <p>{{ $t("pages.store.address") }}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card
+                        v-if="!isPickup"
+                        class="rounded-none border-2 border-border bg-accent_light shadow-none"
+                    >
+                        <CardHeader class="p-6">
+                            <CardTitle
+                                class="text-xs font-black uppercase tracking-widest"
+                                >{{
                                     $t("pages.tracking.deliveryAddress")
                                 }}</CardTitle
                             >
@@ -412,6 +443,18 @@ const {
     isLoading: isLoadingOrder,
     refetch: refetchOrder,
 } = apiQuery("orders").useGetById(orderQueryKey, orderQueryParams);
+
+const isPickup = computed(() => {
+    return order.value?.data?.shipping_lines?.some(
+        (line) => line.identifier === "Pickup",
+    );
+});
+
+const shippingMethodName = computed(() => {
+    const line = order.value?.data?.shipping_lines?.[0];
+    if (!line) return t("common.unknown");
+    return line.description || line.name;
+});
 
 const formatDateLocal = (dateString) => {
     if (!dateString) return t("common.unknown");

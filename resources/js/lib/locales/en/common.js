@@ -1,4 +1,5 @@
 export default {
+    unknown: "Unknown",
     total: "Total",
     remove: "Remove",
     buttons: {

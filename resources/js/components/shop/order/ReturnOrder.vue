@@ -268,7 +268,7 @@
 
                                 <div class="pt-2">
                                     <label
-                                        class="flex gap-4 items-start cursor-pointer group"
+                                        class="flex gap-4 items-center cursor-pointer group"
                                     >
                                         <input
                                             type="checkbox"

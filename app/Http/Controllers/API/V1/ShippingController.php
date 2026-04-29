@@ -49,6 +49,7 @@ class ShippingController extends Controller
             'zip' => $order->shippingAddress->postcode,
             'country_code' => $order->shippingAddress->country->iso2 ?? config('shop.default_country'),
             'email' => $order->user->email,
+            'order_number' => $order->reference,
         ];
 
         // 2. Extract and format physical items for Sendcloud
@@ -82,11 +83,12 @@ class ShippingController extends Controller
             // 3. Save the tracking number to database
             $currentMeta = (array) ($order->meta ?? []);
             $order->update([
-                'tracking_number' => $shippingResult['tracking_number'],
-                'label_url' => $shippingResult['label_url'],
+                'tracking_number' => $shippingResult['tracking_number'] ?? $order->tracking_number,
+                'label_url' => $shippingResult['label_url'] ?? $order->label_url,
                 'meta' => array_merge($currentMeta, [
-                    'tracking_number' => $shippingResult['tracking_number'],
-                    'label_url' => $shippingResult['label_url'],
+                    'tracking_number' => $shippingResult['tracking_number'] ?? $order->tracking_number,
+                    'label_url' => $shippingResult['label_url'] ?? $order->label_url,
+                    'sendcloud_parcel_id' => $shippingResult['parcel_id'] ?? null, // <-- ADD THIS
                 ]),
             ]);
 

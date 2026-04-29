@@ -40,6 +40,16 @@ class PublicOrderListResource extends JsonResource
             'billing_address' => $this->billingAddress,
             'shipping_address' => $this->shippingAddress,
 
+            // Shipping Methods
+            'shipping_lines' => $this->shippingLines->map(function ($line) {
+                return [
+                    'id' => $line->id,
+                    'name' => $line->description,
+                    'identifier' => $line->identifier,
+                    'total' => $line->total->decimal,
+                ];
+            }),
+
             // Products (Filtering out shipping lines as we did before)
             'products' => $this->lines->map(function ($line) {
                 if ($line->purchasable_type !== ProductVariant::class) {

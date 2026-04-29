@@ -27,7 +27,7 @@ class PublicOrderController extends Controller
         // Lunar orders belong to a user_id
         // We eager load the lines, the purchased variant (purchasable), and the parent product
         $orders = Order::where('user_id', $user->id)
-            ->with(['lines.purchasable.product'])
+            ->with(['lines.purchasable.product', 'shippingLines'])
             ->get();
 
         return response()->json(PublicOrderListResource::collection($orders));
@@ -46,6 +46,7 @@ class PublicOrderController extends Controller
             'shippingAddress.country',
             'user',
             'billingAddress',
+            'shippingLines',
         ])
             ->where('reference', $reference)
             ->first();

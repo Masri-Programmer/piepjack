@@ -187,6 +187,8 @@ export default {
         carrierSite: "Frachtführer-Website",
         deliveryAddress: "Lieferadresse",
         billingAddress: "Rechnungsadresse",
+        shippingMethod: "Versandart",
+        pickupAddress: "Abholadresse",
         summary: "Zusammenfassung",
         subtotal: "Zwischensumme",
         shipping: "Versand",

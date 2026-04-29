@@ -3,7 +3,7 @@
 @section('title', 'Neuer Rücksendeantrag: #' . $return->id)
 
 @section('preheader')
-    Ein neuer Rücksendeantrag für Bestellung #{{ $return->order_number }} wurde gestellt.
+    Ein neuer Rücksendeantrag für Bestellung #{{ $return->order->reference ?? $return->order_id }} wurde gestellt.
 @endsection
 
 @section('content')
@@ -19,7 +19,14 @@
                 <tr>
                     <td valign="top" width="50%" style="padding-top: 15px; padding-right: 10px;">
                         <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">Ursprüngliche Bestellung:</p>
-                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">#{{ $return->order_number }}</p>
+                        <p style="margin: 0 0 5px 0; font-size: 13px; color: #666666;">
+                            #{{ $return->order->reference ?? $return->order_id }}
+                        </p>
+                        <p style="margin: 0 0 15px 0; font-size: 13px;">
+                            <a href="{{ config('app.url') }}/lunar/orders/{{ $return->order_id }}" style="color: #171717; text-decoration: underline;">
+                                Im Hub ansehen &rarr;
+                            </a>
+                        </p>
 
                         <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">Kunde:</p>
                         <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666;">{{ $user->first_name }} {{ $user->last_name }}<br>{{ $user->email }}</p>
@@ -29,7 +36,7 @@
                         <p style="margin: 0 0 15px 0; font-size: 13px; color: #666666; font-style: italic;">"{{ $return->reason }}"</p>
 
                         <p style="margin: 0 0 5px 0; font-size: 13px; color: #111111; font-weight: bold;">Erstattungsbetrag:</p>
-                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #111111; font-weight: bold;">€{{ number_format($return->total, 2, ',', '.') }}</p>
+                        <p style="margin: 0 0 15px 0; font-size: 13px; color: #111111; font-weight: bold;">€{{ number_format($return->total ?? 0, 2, ',', '.') }}</p>
                     </td>
                 </tr>
             </table>
@@ -43,29 +50,47 @@
                     <td style="padding: 10px; font-size: 12px; font-weight: bold; color: #111111; width: 70%;">Produkt</td>
                     <td style="padding: 10px; font-size: 12px; font-weight: bold; color: #111111; text-align: center; width: 30%;">Menge</td>
                 </tr>
-                @foreach ($items as $product)
-                    <tr>
-                        <td style="padding: 12px 10px; border-bottom: 1px solid #f3f4f6; vertical-align: top;">
-                            <span style="font-size: 13px; color: #111111; font-weight: bold; display: block;">{{ $product['product_name'] }}</span>
-                            @if (!empty($product['options']))
-                                <div style="font-size: 11px; color: #888888; margin-top: 4px;">
-                                    @foreach ($product['options'] as $option)
-                                        {{ $option['name'] }}: {{ $option['value'] }}@if(!$loop->last), @endif
-                                    @endforeach
-                                </div>
-                            @endif
-                        </td>
-                        <td style="padding: 12px 10px; border-bottom: 1px solid #f3f4f6; vertical-align: top; text-align: center; font-size: 13px; color: #555555;">
-                            {{ $product['quantity'] }}
-                        </td>
-                    </tr>
-                @endforeach
+                <tr>
+                    <td colspan="2" style="padding-top: 20px;">
+                        <ul style="padding: 0; margin: 0;">
+                            @foreach($items as $product)
+                                <li style="margin-bottom: 20px; list-style: none; display: flex; gap: 15px;">
+                        
+                                    @if(!empty($product['image']))
+                                        <div>
+                                            <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" style="width: 80px; height: auto; border-radius: 4px;">
+                                        </div>
+                                    @endif
+                        
+                                    <div>
+                                        <strong>Product:</strong> {{ $product['name'] }} <br>
+                                        <strong>Quantity:</strong> {{ $product['quantity'] }} <br>
+                                        <strong>Price:</strong> {{ $product['price_per_item'] }} € <br>
+                        
+                                        @if(!empty($product['options']))
+                                            <small style="color: #555;">
+                                                @foreach($product['options'] as $option)
+                                                    {{ $option['name'] }}: {{ $option['value'] }}<br>
+                                                @endforeach
+                                            </small>
+                                        @endif
+                                    </div>
+                        
+                                </li>
+                            @endforeach
+                        </ul>
+                    </td>
+                </tr>
             </table>
         </td>
     </tr>
 
     <tr>
         <td style="padding: 30px 40px 40px 40px;" align="center">
+            <a href="{{ config('app.url') }}/lunar/orders/{{ $return->order_id }}"
+                style="display: inline-block; background-color: #f3f4f6; color: #111111; border: 1px solid #dddddd; padding: 12px 25px; text-decoration: none; font-size: 14px; font-weight: bold; border-radius: 0; margin-right: 10px;">
+                Bestellung ansehen
+            </a>
             <a href="{{ config('app.url') }}/lunar/returns/{{ $return->id }}"
                 style="display: inline-block; background-color: #171717; color: #ffffff; padding: 12px 25px; text-decoration: none; font-size: 14px; font-weight: bold; border-radius: 0;">
                 Rücksendung bearbeiten

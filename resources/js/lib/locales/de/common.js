@@ -1,4 +1,5 @@
 export default {
+    unknown: "Unbekannt",
     total: "Gesamt",
     remove: "Entfernen",
     buttons: {
@@ -57,8 +58,7 @@ export default {
             switzerlandDelivery: "3-5 Werktage",
             usaDelivery: "8-10 Werktage",
             restWorldDelivery: "8-10 Werktage",
-            returnsInfo:
-                "Rückgaben innerhalb 14 Tage über unsere",
+            returnsInfo: "Rückgaben innerhalb 14 Tage über unsere",
             returnsPortal: "Rückgabeportal",
         },
     },

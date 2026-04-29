@@ -9,9 +9,11 @@ use App\Mail\OrderConfirmation;
 use App\Models\User;
 use App\Services\SendcloudService;
 use Exception;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -34,7 +36,6 @@ use Stripe\Customer;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 use Stripe\Webhook as StripeWebhook;
-use Illuminate\Support\Facades\Cache;
 
 class CheckoutController extends Controller
 {
@@ -233,18 +234,20 @@ class CheckoutController extends Controller
 
         $lunarStatus = config("services.stripe.status_mapping.{$stripeStatus}") ?? 'processing';
 
-       try {
+        try {
             $lock = Cache::lock('stripe_webhook_cart_'.$cartId, 10);
 
             $lock->block(5, function () use ($cart, $lunarStatus, $referenceId) {
                 $this->syncOrderStatus($cart, $lunarStatus, $referenceId);
             });
 
-        } catch (\Illuminate\Contracts\Cache\LockTimeoutException $e) {
-            Log::info('Webhook locked by another process for cart ' . $cartId);
+        } catch (LockTimeoutException $e) {
+            Log::info('Webhook locked by another process for cart '.$cartId);
+
             return response()->json(['message' => __('Handled by another process')], 200);
         } catch (Exception $e) {
             Log::error('Webhook sync failed for cart '.$cartId.': '.$e->getMessage());
+
             return response()->json(['message' => __('Failed to sync order'), 'error' => $e->getMessage()], 500);
         }
 
@@ -255,7 +258,7 @@ class CheckoutController extends Controller
     {
         DB::beginTransaction();
         try {
-          $order = Order::where('cart_id', $cart->id)->first() ?: $cart->createOrder();
+            $order = Order::where('cart_id', $cart->id)->first() ?: $cart->createOrder();
 
             $customer = $order->user?->customers->first();
 
@@ -505,6 +508,16 @@ class CheckoutController extends Controller
         // Safely load purchasable only for physical lines to avoid ArgumentCountError with ShippingOption
         $order->lines->where('type', 'physical')->load('purchasable.product');
 
+        $shippingLine = $order->shippingLines->first();
+
+        // Skip Sendcloud for Local Pickup orders
+        if ($shippingLine && $shippingLine->identifier === 'PICKUP') {
+            Log::info("Order #{$order->reference} is a pickup order. Skipping Sendcloud.");
+            $this->sendOrderConfirmationEmail($order);
+
+            return;
+        }
+
         $customerData = [
             'name' => $order->user->first_name.' '.$order->user->last_name,
             'address' => $order->shippingAddress->line_one,
@@ -512,6 +525,7 @@ class CheckoutController extends Controller
             'zip' => $order->shippingAddress->postcode,
             'country_code' => $order->shippingAddress->country->iso2 ?? config('shop.default_country'),
             'email' => $order->user->email,
+            'order_number' => $order->reference,
         ];
 
         try {
@@ -592,8 +606,8 @@ class CheckoutController extends Controller
 
         Mail::to($order->user->email)->send(new OrderConfirmation($orderData));
 
-        if (config('app.admin_email')) {
-            Mail::to(config('app.admin_email'))->send(new AdminOrderNotification($orderData));
+        if (config('mail.from.address')) {
+            Mail::to(config('mail.from.address'))->send(new AdminOrderNotification($orderData));
         }
     }
 }

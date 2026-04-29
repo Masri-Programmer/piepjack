@@ -75,7 +75,7 @@ class PublicReturningController extends Controller
         // 🔹 FIX 2: Generate Sendcloud Label & Send Email Immediately
         try {
             $order->load('shippingAddress.country');
-            $this->generateSendcloudReturnLabel($order, $return);
+            // $this->generateSendcloudReturnLabel($order, $return);
             $this->sendReturnConfirmationEmail($order->fresh(), $return->fresh());
         } catch (Exception $e) {
             Log::error("Failed to finalize return #{$return->id}: ".$e->getMessage());
@@ -290,8 +290,8 @@ class PublicReturningController extends Controller
             Mail::to($recipientEmail)->send(new ReturnConfirmation($returnData));
 
             // Send to Admin
-            if (config('app.admin_email')) {
-                Mail::to(config('app.admin_email'))->send(new AdminReturnNotification($returnData));
+            if (config('mail.from.address')) {
+                Mail::to(config('mail.from.address'))->send(new AdminReturnNotification($returnData));
             }
         } catch (Exception $e) {
             Log::error("Failed to send return confirmation email for return ID {$return->id}: ".$e->getMessage());

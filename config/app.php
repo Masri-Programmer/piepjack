@@ -127,6 +127,4 @@ return [
 
     'artisan_password' => env('ARTISAN_PASSWORD'),
 
-    'admin_email' => env('ADMIN_EMAIL', 'info@piepjack-clothing.de'),
-
 ];

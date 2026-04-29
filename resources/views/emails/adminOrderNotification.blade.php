@@ -63,14 +63,21 @@
         <td style="padding: 30px 40px 40px 40px;">
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
-                    <td style="padding-bottom: 10px; border-bottom: 1px solid #eeeeee; font-size: 14px; font-weight: bold; color: #111111;">Lieferadresse</td>
+                    <td style="padding-bottom: 10px; border-bottom: 1px solid #eeeeee; font-size: 14px; font-weight: bold; color: #111111;">
+                        {{ $order->shippingLines->first()?->identifier === 'PICKUP' ? 'Abholung' : 'Lieferadresse' }}
+                    </td>
                 </tr>
                 <tr>
                     <td style="padding-top: 15px; font-size: 13px; line-height: 1.6; color: #666666;">
-                        {{ $address->first_name }} {{ $address->last_name }}<br>
-                        {{ $address->line_one }}<br>
-                        {{ $address->postcode }} {{ $address->city }}<br>
-                        {{ $address->country->name }}
+                        @if($order->shippingLines->first()?->identifier === 'PICKUP')
+                            <strong style="color: #111111; font-size: 15px;">ABHOLUNG: {{ strtoupper(config('shop.address.full')) }}</strong><br>
+                            Kunde wird benachrichtigt, sobald bereit.
+                        @else
+                            {{ $address->first_name }} {{ $address->last_name }}<br>
+                            {{ $address->line_one }}<br>
+                            {{ $address->postcode }} {{ $address->city }}<br>
+                            {{ $address->country->name }}
+                        @endif
                     </td>
                 </tr>
 

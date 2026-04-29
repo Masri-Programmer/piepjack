@@ -17,24 +17,25 @@ class StoreShippingModifier extends ShippingModifier
     /**
      * Stripe-supported countries in Europe (ISO 3166-1 alpha-2)
      */
-        protected const STRIPE_EUROPE_COUNTRIES = [
+    protected const STRIPE_EUROPE_COUNTRIES = [
         'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE',
         'GR', 'HU', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU', 'MT', 'NL', 'NO',
-        'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'CH', 'GB', 'GI'
+        'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'CH', 'GB', 'GI',
     ];
 
     /**
      * Allowed base shipping methods and their carriers.
      */
-  protected const ALLOWED_METHODS = [
-        'DHL Paket'                 => 'dhl_de',
-        'DHL Paket International'   => 'dhl_de',
-        'DHL Paket Evening'         => 'dhl_de',
-        'DPD Classic'               => 'dpd',
-        'DPD Home'                  => 'dpd',
-        'DPD Predict'               => 'dpd',
-        'DPD Business Express'      => 'dpd',
+    protected const ALLOWED_METHODS = [
+        'DHL Paket' => 'dhl_de',
+        'DHL Paket International' => 'dhl_de',
+        'DHL Paket Evening' => 'dhl_de',
+        'DPD Classic' => 'dpd',
+        'DPD Home' => 'dpd',
+        'DPD Predict' => 'dpd',
+        'DPD Business Express' => 'dpd',
     ];
+
     /**
      * Keywords that flag a method as too niche for standard checkout.
      */
@@ -51,7 +52,7 @@ class StoreShippingModifier extends ShippingModifier
         $countryCode = $cart->shippingAddress?->country?->iso2 ?? 'DE';
 
         // 1. Early Exit: Restrict to Stripe-supported European countries
-        if (!in_array(strtoupper($countryCode), self::STRIPE_EUROPE_COUNTRIES, true)) {
+        if (! in_array(strtoupper($countryCode), self::STRIPE_EUROPE_COUNTRIES, true)) {
             return $next($cart); // Skip adding shipping options
         }
 
@@ -61,8 +62,8 @@ class StoreShippingModifier extends ShippingModifier
         if (strtoupper($cart->coupon_code ?? '') === 'PICKUP') {
             ShippingManifest::addOption(
                 new ShippingOption(
-                    name: __('Pickup / Abholung'),
-                    description: __('Pick up your order at our store: Schollendamm 122a, 27751, Delmenhorst'),
+                    name: __('shipping.pickup.name'),
+                    description: __('shipping.pickup.description', ['address' => config('shop.address.full')]),
                     identifier: 'PICKUP',
                     price: new Price(0, $cart->currency, 1),
                     taxClass: $taxClass
@@ -81,7 +82,7 @@ class StoreShippingModifier extends ShippingModifier
 
             // 2. Validate Country Availability in Sendcloud
             $countryInfo = $this->getCountryInfo($method, $countryCode);
-            if (!$countryInfo && !empty($method['countries'])) {
+            if (! $countryInfo && ! empty($method['countries'])) {
                 continue;
             }
 
@@ -92,7 +93,7 @@ class StoreShippingModifier extends ShippingModifier
 
             // 4. Match and Deduplicate Base Methods
             $baseMatch = $this->getBaseMatch($name, $carrier);
-            if (!$baseMatch || isset($seenBaseMethods[$baseMatch])) {
+            if (! $baseMatch || isset($seenBaseMethods[$baseMatch])) {
                 continue;
             }
 
@@ -109,7 +110,7 @@ class StoreShippingModifier extends ShippingModifier
                 new ShippingOption(
                     name: __($baseMatch),
                     description: __($method['service']['name'] ?? "Shipping via {$carrier}"),
-                    identifier: 'SENDCLOUD_' . Str::upper(Str::slug($baseMatch, '_')),
+                    identifier: 'SENDCLOUD_'.Str::upper(Str::slug($baseMatch, '_')),
                     price: new Price($priceValue, $cart->currency, 1),
                     taxClass: $taxClass,
                     meta: ['sendcloud_id' => $method['id'] ?? null]

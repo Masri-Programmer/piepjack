@@ -20,6 +20,26 @@
 
                     <Breadcrumbs :data="currentBreadcrumbs" class="mb-12" />
 
+                    <transition name="slide-down">
+                        <div
+                            v-if="isPickup"
+                            class="mb-12 p-6 bg-accent border-l-8 border-main text-main shadow-sm animate-in fade-in slide-in-from-top-4 duration-500"
+                        >
+                            <p
+                                class="text-sm font-bold uppercase tracking-widest mb-1"
+                            >
+                                {{ $t("common.forms.pickup") || "Abholung" }}
+                            </p>
+                            <p class="text-base font-medium leading-relaxed">
+                                {{
+                                    $t("pages.checkout.pickupInfo", {
+                                        address: $t("pages.store.address"),
+                                    })
+                                }}
+                            </p>
+                        </div>
+                    </transition>
+
                     <div class="relative">
                         <transition name="fade" mode="out-in">
                             <component
@@ -79,7 +99,7 @@ import "@assets/css/checkout/checkout.css";
 import logo from "@img/logo-new.png";
 import Breadcrumbs from "../../Breadcrumbs.vue";
 import CheckoutCart from "../cart/CheckoutCart.vue";
-import { validateCart } from "@lib/store/shop/index.js";
+import { validateCart, checkoutform } from "@lib/store/shop/index.js";
 
 import { useStorage } from "@vueuse/core";
 
@@ -105,6 +125,10 @@ onMounted(async () => {
 
 const currentStep = ref(1);
 const maxReachedStep = useStorage("checkout-max-step", 1);
+
+const isPickup = computed(() => {
+    return checkoutform.value.shippingMethod?.identifier === "PICKUP";
+});
 
 const steps = [
     {

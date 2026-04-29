@@ -55,12 +55,15 @@ class SendcloudWebhookController extends Controller
         }
 
         $parcelId = $parcel['id'] ?? null;
-
+        $orderNumber = $parcel['order_number'] ?? null;
         // 3. Find Order by Parcel ID or Tracking Number
         $order = Order::where('meta->sendcloud_parcel_id', $parcelId)
-            ->orWhere(function ($query) use ($trackingNumber) {
+            ->orWhere(function ($query) use ($trackingNumber, $orderNumber) {
                 if ($trackingNumber) {
                     $query->where('tracking_number', $trackingNumber);
+                }
+                if ($orderNumber) {
+                    $query->orWhere('reference', $orderNumber);
                 }
             })->first();
 

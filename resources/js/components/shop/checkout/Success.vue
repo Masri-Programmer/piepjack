@@ -1,8 +1,5 @@
 <template>
-    <PageLayout
-        :title="pageTitle"
-        :description="pageDescription"
-    >
+    <PageLayout :title="pageTitle" :description="pageDescription">
         <template #header>
             <div
                 class="border-b-12 border-border pb-8 text-center md:text-left"
@@ -50,6 +47,46 @@
                 <p class="text-4xl font-mono font-bold mb-6">
                     #{{ orderReference }}
                 </p>
+
+                <!-- Pickup Information -->
+                <div
+                    v-if="orderDetailsData?.data?.shipping_lines?.some(line => line.identifier === 'PICKUP')"
+                    class="mb-6 bg-accent border-2 border-main p-6 w-full max-w-lg text-main animate-in slide-in-from-top-4 duration-500"
+                >
+                    <p class="text-lg font-bold uppercase tracking-widest mb-2">
+                        {{ $t("pages.checkout.pickupSuccess", { address: $t("pages.store.address") }) }}
+                    </p>
+                    <p class="text-sm font-medium opacity-80">
+                        {{ $t("validation.success.checkEmailPickup", "You will receive an email as soon as your order is ready for collection.") }}
+                    </p>
+                </div>
+
+                <div
+                    v-if="orderDetailsData?.data?.tracking_number"
+                    class="mb-6 bg-background border-2 border-border p-4 w-full max-w-sm"
+                >
+                    <p
+                        class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-1"
+                    >
+                        {{
+                            $t(
+                                "validation.success.trackingNumber",
+                                "Tracking Number",
+                            )
+                        }}
+                    </p>
+                    <a
+                        v-if="orderDetailsData?.data?.label_url"
+                        :href="orderDetailsData.data.label_url"
+                        target="_blank"
+                        class="text-xl font-mono font-bold text-main hover:underline"
+                    >
+                        {{ orderDetailsData.data.tracking_number }}
+                    </a>
+                    <p v-else class="text-xl font-mono font-bold">
+                        {{ orderDetailsData.data.tracking_number }}
+                    </p>
+                </div>
                 <p class="text-lg font-medium opacity-80 mb-2">
                     {{ $t("validation.success.thankYou") }}
                 </p>

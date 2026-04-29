@@ -52,10 +52,9 @@
                         </p>
                         <p
                             class="text-xs text-muted-foreground mt-0.5"
+                            v-html="method.description"
                             v-if="method.description"
-                        >
-                            {{ method.description }}
-                        </p>
+                        ></p>
                     </Label>
                 </div>
                 <p class="font-bold text-sm text-foreground">
@@ -114,15 +113,17 @@ const loadMethods = async () => {
         if (response?.data) {
             shippingMethods.value = response.data;
 
-            // Default to first if not set
-            if (
-                !checkoutform.value.shippingMethodId &&
-                shippingMethods.value.length
-            ) {
+            const currentId = checkoutform.value.shippingMethodId;
+            const stillAvailable = shippingMethods.value.find(
+                (m) => m.id === currentId,
+            );
+
+            if (!stillAvailable && shippingMethods.value.length) {
+                // If current selection is gone or none selected, pick the first available
                 selectMethod(shippingMethods.value[0].id);
-            } else if (checkoutform.value.shippingMethodId) {
-                // Sync current selection
-                selectMethod(checkoutform.value.shippingMethodId);
+            } else if (stillAvailable) {
+                // Sync current selection object with fresh data
+                selectMethod(stillAvailable.id);
             }
         }
     } catch (error) {
@@ -155,6 +156,7 @@ watch(
         () => checkoutform.value.land?.code || checkoutform.value.land,
         () => checkoutform.value.zip,
         () => cartState.value.cartItems,
+        () => cartState.value.promoCode,
     ],
     () => loadMethods(),
     { deep: true },
