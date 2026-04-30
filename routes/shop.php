@@ -23,7 +23,7 @@ Route::prefix('shop')->as('shop.')->group(function () {
     Route::get('discounts', [DiscountController::class, 'index']);
     Route::get('order-lookup/{cartId}', [CheckoutController::class, 'lookupOrder'])->middleware('throttle:30,1');
     Route::post('shipping-methods', [CheckoutController::class, 'getShippingMethods'])->middleware('throttle:30,1');
-    Route::post('checkout', [CheckoutController::class, 'checkout'])->middleware('throttle:5,1');
+    Route::post('checkout', [CheckoutController::class, 'checkout'])->middleware('throttle:8,1');
     // Route::get('sendTestEmail/{orderId}', [CheckoutController::class, 'sendTestEmail']);
     Route::get('sendReturnTestEmail/{returnId}', [PublicReturningController::class, 'sendReturnEmailTest']);
     Route::post('webhook/stripe', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1');

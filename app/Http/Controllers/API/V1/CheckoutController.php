@@ -112,7 +112,7 @@ class CheckoutController extends Controller
         ]);
     }
 
-    public function checkout(CheckoutRequest $request): JsonResponse
+   public function checkout(CheckoutRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
@@ -127,22 +127,30 @@ class CheckoutController extends Controller
             $cart = $this->getAndSyncCart($user, $validated['products']);
             $this->setCartAddresses($cart, $validated, $user);
 
-            $availableOptions = ShippingManifest::getOptions($cart);
-            $shippingOption = $availableOptions->first(fn ($o) => $o->identifier === $validated['shipping_method_id']);
-
-            if (! $shippingOption) {
-                throw new Exception(__('Shipping method unavailable. Please re-select.'));
-            }
-
-            $cart->setShippingOption($shippingOption);
-
+            // 1. UPDATE PROMO CODE FIRST
+            // This ensures the StoreShippingModifier sees the 'PICKUP' code
             if (array_key_exists('promo_code', $validated)) {
                 $cart->update([
                     'coupon_code' => $validated['promo_code'] ? strtoupper($validated['promo_code']) : null,
                 ]);
             }
 
-            // 3. Recalculate
+            // 2. FETCH SHIPPING OPTIONS AFTER PROMO CODE IS SET
+            $availableOptions = ShippingManifest::getOptions($cart);
+
+            // 3. AUTO-SELECT 'PICKUP' IF THE PROMO CODE IS ACTIVE
+            if (strtoupper($cart->coupon_code ?? '') === 'PICKUP') {
+                $shippingOption = $availableOptions->first(fn ($o) => $o->identifier === 'PICKUP');
+            } else {
+                $shippingOption = $availableOptions->first(fn ($o) => $o->identifier === $validated['shipping_method_id']);
+            }
+
+            if (! $shippingOption) {
+                throw new Exception(__('Shipping method unavailable. Please re-select.'));
+            }
+
+            // 4. APPLY THE ZERO-COST SHIPPING AND RECALCULATE
+            $cart->setShippingOption($shippingOption);
             $cart->calculate();
 
             $order = Order::where('cart_id', $cart->id)->first() ?: $cart->createOrder();
