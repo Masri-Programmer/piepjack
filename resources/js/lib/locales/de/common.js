@@ -189,6 +189,7 @@ export default {
     },
     alerts: {
         orderNotFound: "Nicht gefunden.",
+        orderNotDispatched: "Rücksendungen sind nur für versandte Bestellungen möglich.",
         fetchError: "Beim Abrufen Ihrer Bestellung ist ein Fehler aufgetreten.",
         fillAllFields: "Bitte füllen Sie alle Felder aus.",
         selectAtLeastOneProduct: "Bitte wählen Sie mindestens ein Produkt.",

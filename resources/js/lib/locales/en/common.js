@@ -185,6 +185,7 @@ export default {
     },
     alerts: {
         orderNotFound: "Order not found.",
+        orderNotDispatched: "Returns are only available for orders that have been dispatched.",
         fetchError: "There was an error fetching your order.",
         fillAllFields: "Please fill out all fields.",
         selectAtLeastOneProduct: "Please select at least one product.",

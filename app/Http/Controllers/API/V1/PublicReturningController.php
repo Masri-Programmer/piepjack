@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Lunar\Models\Order;
-use Lunar\Models\Product;
 use Stripe\Checkout\Session;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\Webhook as StripeWebhook;
@@ -48,8 +47,8 @@ class PublicReturningController extends Controller
             return $this->unprocessableEntityResponse(__('The provided email does not match the email associated with this order.'));
         }
 
-        if (! in_array($order->status, ['payment-received', 'dispatched'])) {
-            return $this->unprocessableEntityResponse(__('Returns can only be created for paid, shipped, or delivered orders.'));
+        if ($order->status !== 'dispatched') {
+            return $this->unprocessableEntityResponse(__('Returns can only be created for orders that have been dispatched.'));
         }
 
         // Create the RMA record
@@ -63,7 +62,7 @@ class PublicReturningController extends Controller
         );
 
         foreach ($validated['items'] as $item) {
-            if (! $this->canAddReturnItem($return, $item)) {
+            if (!$this->canAddReturnItem($return, $item)) {
                 continue;
             }
             ReturnItem::updateOrCreate(
@@ -72,13 +71,13 @@ class PublicReturningController extends Controller
             );
         }
 
-        // 🔹 FIX 2: Generate Sendcloud Label & Send Email Immediately
+        // 🔹 Generate Sendcloud Return Request & Send Email Immediately
         try {
             $order->load('shippingAddress.country');
-            // $this->generateSendcloudReturnLabel($order, $return);
+            $this->createSendcloudReturnRequest($order, $return);
             $this->sendReturnConfirmationEmail($order->fresh(), $return->fresh());
         } catch (Exception $e) {
-            Log::error("Failed to finalize return #{$return->id}: ".$e->getMessage());
+            Log::error("Failed to finalize return #{$return->id}: " . $e->getMessage());
         }
 
         return $this->successResponse(__('Return request submitted successfully.'), [
@@ -94,7 +93,7 @@ class PublicReturningController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
 
-        if (! $sigHeader) {
+        if (!$sigHeader) {
             return $this->badRequestResponse(__('Missing Stripe-Signature header.'));
         }
 
@@ -114,14 +113,18 @@ class PublicReturningController extends Controller
         $orderId = $metadata['order_id'] ?? null;
         $returnId = $metadata['return_id'] ?? null;
 
-        if (! $orderId || ! $returnId) {
+        if (!$orderId || !$returnId) {
             return $this->badRequestResponse(__('Missing required metadata.'));
         }
 
         $order = Order::find($orderId);
         $return = Returning::find($returnId);
 
-        if (! $order || ! $return) {
+        if (!$order || !$return || $return->order_id !== $order->id) {
+            return $this->notFoundResponse(__('Invalid Order or Return relationship.'));
+        }
+
+        if (!$order || !$return) {
             return $this->notFoundResponse(__('Order or Return not found.'));
         }
 
@@ -135,7 +138,7 @@ class PublicReturningController extends Controller
                 try {
                     $this->sendReturnConfirmationEmail($order, $return);
                 } catch (Exception $e) {
-                    Log::error("Failed to send return confirmation email for return ID {$return->id}: ".$e->getMessage());
+                    Log::error("Failed to send return confirmation email for return ID {$return->id}: " . $e->getMessage());
                 }
                 break;
 
@@ -198,8 +201,8 @@ class PublicReturningController extends Controller
     private function createStripeSession(Order $order, Returning $return, float $total, string $email): Session
     {
 
-        $successUrl = config('services.frontend_url').'/return-order/success?return_number='.$return->return_number;
-        $cancelUrl = config('services.frontend_url').'/return-order';
+        $successUrl = config('services.frontend_url') . '/return-order/success?return_number=' . $return->return_number;
+        $cancelUrl = config('services.frontend_url') . '/return-order';
 
         return Session::create([
             'line_items' => [
@@ -245,13 +248,13 @@ class PublicReturningController extends Controller
         // Use user email or fallback to billing address email
         $recipientEmail = $user?->email ?? $order->billingAddress?->contact_email;
 
-        if (! $recipientEmail) {
+        if (!$recipientEmail) {
             Log::error("No recipient email found for Order ID: {$order->id}");
 
             return;
         }
 
-        if (! $address) {
+        if (!$address) {
             Log::error("Shipping Address not found for Order ID: {$order->id}");
 
             return;
@@ -271,7 +274,7 @@ class PublicReturningController extends Controller
                 'quantity' => $returnItem->quantity,
                 'price_per_item' => $line?->unit_price?->decimal ?? 0,
                 'image' => $productVariant->product->thumbnail?->getUrl() ?? config('services.branding.logo_url'),
-                'options' => $productVariant->values->map(fn ($value) => [
+                'options' => $productVariant->values->map(fn($value) => [
                     'name' => (string) ($value->option?->translate('name') ?? ''),
                     'value' => (string) ($value->translate('name') ?? ''),
                 ])->toArray(),
@@ -294,7 +297,7 @@ class PublicReturningController extends Controller
                 Mail::to(config('mail.from.address'))->send(new AdminReturnNotification($returnData));
             }
         } catch (Exception $e) {
-            Log::error("Failed to send return confirmation email for return ID {$return->id}: ".$e->getMessage());
+            Log::error("Failed to send return confirmation email for return ID {$return->id}: " . $e->getMessage());
         }
     }
 
@@ -345,7 +348,7 @@ class PublicReturningController extends Controller
 
         // FIX: Load order with the necessary relationships
         $order = Order::with(['user', 'shippingAddress'])->find($return->order_id);
-        if (! $order) {
+        if (!$order) {
             return $this->notFoundResponse('Order not found');
         }
 
@@ -355,15 +358,15 @@ class PublicReturningController extends Controller
     }
 
     /**
-     * Generate a return label via Sendcloud API.
+     * Generate a return request in Sendcloud.
      */
-    private function generateSendcloudReturnLabel(Order $order, Returning $return): void
+    private function createSendcloudReturnRequest(Order $order, Returning $return): void
     {
         $publicKey = config('services.sendcloud.public_key');
         $secretKey = config('services.sendcloud.secret_key');
         $returnMethodId = config('services.sendcloud.default_return_method_id');
 
-        if (! $publicKey || ! $secretKey) {
+        if (!$publicKey || !$secretKey) {
             Log::warning('Sendcloud credentials not configured.');
 
             return;
@@ -373,9 +376,20 @@ class PublicReturningController extends Controller
 
         try {
             // Sendcloud API requires "from_" fields when is_return is true
+            // Setting request_label to false creates it as an open request in Sendcloud dashboard
             $response = Http::withBasicAuth($publicKey, $secretKey)
                 ->post('https://panel.sendcloud.sc/api/v2/parcels', [
                     'parcel' => [
+                        // Destination (Your Store - New Address)
+                        'name' => config('shop.address.owner'),
+                        'company_name' => config('app.name'),
+                        'address' => config('shop.address.street'),
+                        'city' => config('shop.address.city'),
+                        'postal_code' => config('shop.address.postcode'),
+                        'country' => config('shop.address.country', 'DE'),
+                        'email' => config('mail.from.address'),
+
+                        // Sender (The Customer returning the item)
                         'from_name' => "{$address->first_name} {$address->last_name}",
                         'from_address_1' => $address->line_one,
                         'from_house_number' => $address->house_number ?? '',
@@ -383,26 +397,24 @@ class PublicReturningController extends Controller
                         'from_postal_code' => $address->postcode,
                         'from_country' => $address->country->iso2,
                         'from_email' => $address->contact_email,
+
                         'is_return' => true,
-                        'request_label' => true,
+                        'request_label' => false,
                         'return_method' => (int) $returnMethodId,
                         'external_order_id' => $order->reference,
                         'weight' => '1.000',
                     ],
                 ]);
-
             if ($response->successful()) {
                 $data = $response->json()['parcel'];
                 $return->update([
                     'sendcloud_return_id' => $data['id'],
-                    'label_url' => $data['label']['label_printer'] ?? null,
-                    'qr_code_url' => $data['label']['qr_code'] ?? null,
                 ]);
             } else {
-                Log::error('Sendcloud Return Label Error: '.$response->body());
+                Log::error('Sendcloud Return Request Error: ' . $response->body());
             }
         } catch (Exception $e) {
-            Log::error('Sendcloud Return Label Exception: '.$e->getMessage());
+            Log::error('Sendcloud Return Request Exception: ' . $e->getMessage());
         }
     }
 }

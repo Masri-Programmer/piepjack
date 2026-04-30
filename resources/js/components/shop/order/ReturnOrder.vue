@@ -366,6 +366,11 @@ const fetchOrder = async () => {
             throw new Error(t("common.alerts.orderNotFound"));
         }
 
+        if (data.data.status !== "dispatched") {
+            toast.error(t("common.alerts.orderNotDispatched"));
+            return;
+        }
+
         activeStep.value = 2;
     } catch (error) {
         toast.error(error.message || t("common.alerts.fetchError"));

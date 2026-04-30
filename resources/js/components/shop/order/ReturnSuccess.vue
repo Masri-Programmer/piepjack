@@ -88,9 +88,4 @@ const returnNumber = computed(() => route.query.return_number);
 
 // We fetch categories to show recommendations (promoted ones)
 const { data, isLoading } = apiQuery("categories").useGet({});
-
-onMounted(() => {
-    // Clear cart on success
-    cartState.value.cartItems = [];
-});
 </script>
