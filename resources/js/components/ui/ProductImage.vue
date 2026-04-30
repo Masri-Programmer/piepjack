@@ -4,10 +4,21 @@
         :alt="alt || 'Product Image'"
         :loading="lazy ? 'lazy' : 'eager'"
         :decoding="lazy ? 'async' : 'auto'"
-        :class="cn('transition-opacity duration-300', fitClass, customClass)"
+        :class="cn('transition-opacity duration-300 transform-gpu backface-hidden', fitClass, customClass)"
         @error="handleError"
     />
 </template>
+
+<style scoped>
+.transform-gpu {
+    transform: translateZ(0);
+    will-change: transform;
+}
+.backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+</style>
 
 <script setup>
 import { computed, ref } from "vue";
