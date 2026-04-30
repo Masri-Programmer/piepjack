@@ -49,6 +49,12 @@
 </head>
 
 <body style="margin: 0 !important; padding: 0 !important; background-color: #f4f4f5;">
+    @if(app()->environment('local'))
+        <div style="background-color: #fef3c7; color: #92400e; padding: 10px; text-align: center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: bold; border-bottom: 1px solid #f59e0b; text-transform: uppercase; letter-spacing: 1px;">
+            ⚠️ TEST-EMAIL (LOKALE UMGEBUNG) ⚠️
+        </div>
+    @endif
+
     <div style="display: none; max-height: 0; overflow: hidden;">
         @yield('preheader')
     </div>
