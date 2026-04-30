@@ -1,159 +1,274 @@
 <template>
-  <div v-show="nav" class="fixed inset-0 z-50 overflow-hidden text-xs">
-    <!-- Overlay Background -->
-    <transition name="fade">
-      <div
-        v-show="nav"
-        class="absolute inset-0 bg-zinc-900 bg-opacity-55"
-      ></div>
-    </transition>
-    <!-- NavSidebar Content -->
-    <section class="absolute inset-y-0 left-0 max-w-full flex">
-      <transition name="slide">
-        <div
-          v-show="nav"
-          class="w-screen max-w-md h-full flex flex-col py-6 bg-background shadow-xl me-24"
-          ref="NavSidebar"
+    <!-- Teleport ensures the fixed overlay escapes any potential z-index stacking context issues -->
+    <Teleport to="body">
+        <!-- Overlay Background -->
+        <transition
+            enter-active-class="transition-opacity ease-linear duration-300"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-active-class="transition-opacity ease-linear duration-300"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
         >
-          <!-- NavSidebar Header -->
-          <div class="flex items-center justify-between px-4">
-            <button @click="$emit('closeNav')">
-              <span class="sr-only">{{ $t("common.menu.close") }}</span>
-              <svg
-                class="h-8 w-8 opacity-55"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div
+                v-show="nav"
+                class="fixed inset-0 z-40 bg-foreground/50 backdrop-blur-sm"
                 aria-hidden="true"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+            ></div>
+        </transition>
 
-          <div
-            class="flex flex-col h-1/2 uppercase relative p-4"
-            v-if="openTab === 1"
-          >
-            <div
-              class="flex justify-between items-center h-full border-animate border-gray border-b cursor-pointer px-1"
+        <!-- Sidebar Content -->
+        <transition
+            enter-active-class="transition ease-in-out duration-300 transform"
+            enter-from-class="-translate-x-full"
+            enter-to-class="translate-x-0"
+            leave-active-class="transition ease-in-out duration-300 transform"
+            leave-from-class="translate-x-0"
+            leave-to-class="-translate-x-full"
+        >
+            <aside
+                v-show="nav"
+                ref="NavSidebarRef"
+                class="fixed inset-y-0 left-0 z-50 flex w-full max-w-sm flex-col bg-background text-foreground shadow-2xl border-r border-border"
+                aria-label="Main Navigation"
             >
-              <router-link
-                to="/collections"
-                @click="$emit('closeNav')"
-                class="flex items-center h-full border-animate cursor-pointer px-1"
-              >
-                <p class="cursor-pointer text-xs">
-                  {{ $t("common.menu.shopAll") }}
-                </p>
-              </router-link>
-            </div>
-            <router-link
-              to="/"
-              @click="$emit('closeNav')"
-              class="flex items-center h-full border-animate border-gray border-b cursor-pointer px-1"
-            >
-              <span class="cursor-pointer text-xs">{{
-                $t("common.menu.home")
-              }}</span>
-            </router-link>
-            <div
-              class="flex justify-between items-center h-full border-animate border-gray border-b cursor-pointer px-1"
-              @click="openTab = 3"
-            >
-              <p class="cursor-pointer text-xs">
-                {{ $t("common.menu.collections") }}
-              </p>
-              <ChevronRight strokeWidth="1" size="20" />
-            </div>
-
-            <router-link
-              to="/about"
-              @click="$emit('closeNav')"
-              class="flex items-center h-full border-animate border-gray border-b cursor-pointer px-1"
-            >
-              <span class="cursor-pointer text-xs">{{
-                $t("common.menu.aboutUs")
-              }}</span>
-            </router-link>
-          </div>
-
-          <div
-            class="flex flex-col h-1/2 uppercase relative p-4"
-            v-if="openTab === 3"
-          >
-            <div
-              class="flex justify-between items-center border-animate border-gray border-b cursor-pointer px-1 py-4"
-              @click="openTab = 1"
-            >
-              <ChevronLeft strokeWidth="1" size="20" />
-              <p class="text-xs">{{ $t("common.menu.collections") }}</p>
-            </div>
-            <div class="flex flex-col">
-              <transition-group
-                name="fade-up"
-                tag="div"
-                class="flex flex-col justify-center"
-              >
-                <router-link
-                  v-for="(collection, index) in collections"
-                  :key="index"
-                  @click="$emit('closeNav')"
-                  :to="'/collections/' + collection.id + '/' + collection.slug"
-                  class="flex flex-col py-4 border-b border-gray"
+                <!-- Header -->
+                <header
+                    class="flex items-center justify-between border-b border-border p-4"
                 >
-                  {{ collection.name }}
-                </router-link>
-              </transition-group>
-            </div>
-          </div>
-        </div>
-      </transition>
-    </section>
-  </div>
+                    <span
+                        class="text-sm font-bold uppercase tracking-widest text-foreground"
+                    >
+                        {{ $t("common.menu.menu", "Menu") }}
+                    </span>
+                    <button
+                        @click="closeNavigation"
+                        class="rounded-none p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        aria-label="Close Navigation"
+                    >
+                        <X class="h-6 w-6" stroke-width="1.5" />
+                    </button>
+                </header>
+
+                <!-- Main Navigation Tabs -->
+                <div class="relative flex-1 overflow-x-hidden overflow-y-auto">
+                    <!-- Level 1: Main Menu -->
+                    <transition
+                        enter-active-class="transition-transform duration-300 ease-in-out"
+                        enter-from-class="-translate-x-full absolute w-full"
+                        enter-to-class="translate-x-0 relative"
+                        leave-active-class="transition-transform duration-300 ease-in-out absolute w-full"
+                        leave-from-class="translate-x-0"
+                        leave-to-class="-translate-x-full"
+                    >
+                        <nav v-if="openTab === 1" class="flex flex-col w-full">
+                            <ul
+                                class="flex flex-col uppercase text-sm font-medium tracking-wide"
+                            >
+                                <li class="border-b border-border">
+                                    <RouterLink
+                                        to="/collections"
+                                        @click="closeNavigation"
+                                        class="flex w-full items-center px-6 py-5 transition-colors hover:bg-muted hover:text-foreground"
+                                    >
+                                        {{ $t("common.menu.shopAll") }}
+                                    </RouterLink>
+                                </li>
+                                <li class="border-b border-border">
+                                    <RouterLink
+                                        to="/"
+                                        @click="closeNavigation"
+                                        class="flex w-full items-center px-6 py-5 transition-colors hover:bg-muted hover:text-foreground"
+                                    >
+                                        {{ $t("common.menu.home") }}
+                                    </RouterLink>
+                                </li>
+                                <li class="border-b border-border">
+                                    <button
+                                        @click="openTab = 3"
+                                        class="flex w-full items-center justify-between px-6 py-5 uppercase transition-colors hover:bg-muted hover:text-foreground rounded-none"
+                                    >
+                                        <span>{{
+                                            $t("common.menu.collections")
+                                        }}</span>
+                                        <ChevronRight
+                                            class="h-5 w-5 text-muted-foreground"
+                                            stroke-width="1.5"
+                                        />
+                                    </button>
+                                </li>
+                                <li class="border-b border-border">
+                                    <RouterLink
+                                        to="/about"
+                                        @click="closeNavigation"
+                                        class="flex w-full items-center px-6 py-5 transition-colors hover:bg-muted hover:text-foreground"
+                                    >
+                                        {{ $t("common.menu.aboutUs") }}
+                                    </RouterLink>
+                                </li>
+                            </ul>
+                        </nav>
+                    </transition>
+
+                    <!-- Level 2: Collections Sub-menu -->
+                    <transition
+                        enter-active-class="transition-transform duration-300 ease-in-out"
+                        enter-from-class="translate-x-full absolute w-full"
+                        enter-to-class="translate-x-0 relative"
+                        leave-active-class="transition-transform duration-300 ease-in-out absolute w-full"
+                        leave-from-class="translate-x-0"
+                        leave-to-class="translate-x-full"
+                    >
+                        <nav
+                            v-if="openTab === 3"
+                            class="flex flex-col w-full bg-background"
+                        >
+                            <button
+                                @click="openTab = 1"
+                                class="flex w-full items-center bg-muted/30 px-6 py-5 uppercase transition-colors hover:bg-muted border-b border-border rounded-none"
+                            >
+                                <ChevronLeft
+                                    class="mr-3 h-5 w-5 text-muted-foreground"
+                                    stroke-width="1.5"
+                                />
+                                <span
+                                    class="text-sm font-medium tracking-wide"
+                                    >{{ $t("common.menu.collections") }}</span
+                                >
+                            </button>
+
+                            <ul class="flex flex-col">
+                                <li
+                                    v-for="(collection, index) in collections"
+                                    :key="collection.id || index"
+                                    class="border-b border-border"
+                                >
+                                    <RouterLink
+                                        :to="`/collections/${collection.id}/${collection.slug}`"
+                                        @click="closeNavigation"
+                                        class="flex w-full items-center px-8 py-4 text-sm transition-colors hover:bg-muted hover:text-foreground"
+                                    >
+                                        {{ collection.name }}
+                                    </RouterLink>
+                                </li>
+                            </ul>
+                        </nav>
+                    </transition>
+                </div>
+
+                <!-- Footer / Action Items -->
+                <footer
+                    class="mt-auto flex grid grid-cols-3 border-t border-border bg-background"
+                >
+                    <!-- Language Selector -->
+                    <div
+                        class="flex items-center justify-center border-r border-border hover:bg-muted transition-colors"
+                    >
+                        <LanguageDropdown
+                            :open="isLangDropdownOpen"
+                            :handle-close="closeLangDropdownOpen"
+                            :handle-toggle="toggleLangDropdownOpen"
+                            class="h-full w-full rounded-none flex items-center justify-center p-4 cursor-pointer"
+                        />
+                    </div>
+
+                    <!-- User Account -->
+                    <a
+                        href="/lunar/login"
+                        class="flex items-center justify-center border-r border-border p-4 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground rounded-none"
+                        aria-label="User Account"
+                    >
+                        <ShieldUser class="h-5 w-5" stroke-width="1.5" />
+                    </a>
+
+                    <!-- Theme Toggle -->
+                    <button
+                        @click="toggleTheme"
+                        class="flex items-center justify-center p-4 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        aria-label="Toggle Theme"
+                    >
+                        <Sun v-if="isDark" class="h-5 w-5" stroke-width="1.5" />
+                        <Moon v-else class="h-5 w-5" stroke-width="1.5" />
+                    </button>
+                </footer>
+            </aside>
+        </transition>
+    </Teleport>
 </template>
 
 <script setup>
-import { onClickOutside } from "@vueuse/core";
-import { ChevronLeft, ChevronRight } from "lucide-vue-next";
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { onClickOutside, useDark, useToggle } from "@vueuse/core";
+import {
+    X,
+    ChevronLeft,
+    ChevronRight,
+    ShieldUser,
+    Sun,
+    Moon,
+} from "lucide-vue-next";
+import LanguageDropdown from "@components/LanguageDropdown.vue"; // Adjust alias if needed
+
 const props = defineProps({
-  nav: Boolean,
-  shopAllCategories: Array,
-  collections: Array,
+    nav: {
+        type: Boolean,
+        required: true,
+    },
+    shopAllCategories: {
+        type: Array,
+        default: () => [],
+    },
+    collections: {
+        type: Array,
+        default: () => [],
+    },
 });
 
-const NavSidebar = ref(null);
+const emit = defineEmits(["closeNav"]);
 
+// --- State ---
+const NavSidebarRef = ref(null);
 const openTab = ref(1);
+const isLangDropdownOpen = ref(false);
 
-const emit = defineEmits(["close"]);
-onClickOutside(NavSidebar, (event) => {
-  if (props.nav) emit("closeNav");
+// Reset navigation state whenever it's closed
+watch(
+    () => props.nav,
+    (isOpen) => {
+        if (!isOpen) {
+            setTimeout(() => {
+                openTab.value = 1;
+            }, 300); // Wait for transition before resetting
+        }
+    },
+);
+
+// --- Actions ---
+const closeNavigation = () => {
+    emit("closeNav");
+};
+
+onClickOutside(NavSidebarRef, () => {
+    if (props.nav) {
+        closeNavigation();
+    }
 });
-</script>
 
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
+// --- Theme Management ---
+const isDark = useDark({
+    selector: "html",
+    attribute: "class",
+    valueDark: "dark",
+    valueLight: "",
+});
+const toggleTheme = useToggle(isDark);
+
+// --- Language Dropdown Handlers ---
+function toggleLangDropdownOpen() {
+    isLangDropdownOpen.value = !isLangDropdownOpen.value;
 }
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+
+function closeLangDropdownOpen() {
+    isLangDropdownOpen.value = false;
 }
-.slide-enter-active,
-.slide-leave-active {
-  transition: transform 0.3s ease;
-}
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateX(-90%);
-}
-</style>
+</script>

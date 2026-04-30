@@ -57,7 +57,8 @@
 
             <nav class="flex items-center text-xs">
                 <ul class="flex items-center space-x-1 sm:space-x-2">
-                    <li class="flex">
+                    <!-- Added hidden md:flex to hide on mobile -->
+                    <li class="hidden md:flex">
                         <LanguageDropdown
                             :open="isLangDropdownOpen"
                             :handle:close="closeLangDropdownOpen"
@@ -66,7 +67,8 @@
                         />
                     </li>
 
-                    <li class="flex">
+                    <!-- Added hidden md:flex to hide on mobile -->
+                    <li class="hidden md:flex">
                         <a
                             href="/lunar/login"
                             class="p-2 text-foreground hover:bg-main hover:text-accent transition-colors rounded-none flex items-center justify-center"
@@ -76,7 +78,8 @@
                         </a>
                     </li>
 
-                    <li class="flex items-center">
+                    <!-- Added hidden md:flex to hide on mobile -->
+                    <li class="hidden md:flex items-center">
                         <button
                             @click="toggleTheme"
                             class="p-2 text-foreground hover:bg-main hover:text-accent transition-colors rounded-none outline-none focus-visible:ring-2 focus-visible:ring-main flex items-center justify-center"
@@ -91,6 +94,7 @@
                         </button>
                     </li>
 
+                    <!-- Search stays visible everywhere -->
                     <li class="flex items-center">
                         <button
                             @click="toggleModal"
@@ -101,6 +105,7 @@
                         </button>
                     </li>
 
+                    <!-- Cart stays visible everywhere -->
                     <li class="flex items-center">
                         <button
                             @click="toggleCart"
