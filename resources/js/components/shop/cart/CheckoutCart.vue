@@ -187,21 +187,23 @@ const applyPromoCode = () => {
     promoError.value = false;
     promoApplied.value = false;
 
-    if (!promoCode.value.trim()) {
+    const code = promoCode.value.trim().toLowerCase();
+
+    if (!code) {
         cartState.value.promoCode = "";
         return;
     }
 
+    // Check backend discounts
     const matched = (cartState.value.discounts || []).find(
-        (d) =>
-            d.coupon_code &&
-            d.coupon_code.toLowerCase() ===
-                promoCode.value.trim().toLowerCase(),
+        (d) => d.coupon_code && d.coupon_code.toLowerCase() === code,
     );
 
-    if (matched) {
+    // Hardcoded check for "pickup" or backend match
+    if (matched || code === "pickup") {
         promoApplied.value = true;
-        cartState.value.promoCode = matched.coupon_code;
+        // If it's the hardcoded 'pickup', set it, otherwise use the backend code
+        cartState.value.promoCode = matched ? matched.coupon_code : "PICKUP";
     } else {
         promoError.value = true;
         cartState.value.promoCode = "";
@@ -237,6 +239,12 @@ const appliedDiscounts = computed(() => {
     const subtotal = cartTotalPrice.value;
     const availableDiscounts = cartState.value.discounts || [];
     const currentItems = cartState.value.cartItems || [];
+
+    // Add logic for hardcoded PICKUP discount (e.g., 0 discount but valid code)
+    if (promoApplied.value && promoCode.value.toLowerCase() === "pickup") {
+        // Only push if you actually want 'PICKUP' to take money off
+        // Otherwise, it just stays 'Applied' with no price change
+    }
 
     availableDiscounts.forEach((discount) => {
         // 1. Check if it's a coupon discount
