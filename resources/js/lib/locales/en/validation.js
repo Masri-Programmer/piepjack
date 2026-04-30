@@ -58,6 +58,7 @@ export default {
         pendingDesc: "Your payment is still processing or requires further action. We will email you once it clears.",
         processingTitle: "Processing Payment...",
         processingDesc: "Please wait while we confirm your payment.",
+        waitProcessing: "Please wait a moment while we process your payment.",
         timeoutTitle: "Order Received",
         timeoutDesc:
             "We received your order, but payment confirmation is taking longer than expected.",

@@ -84,6 +84,7 @@ export default {
         processingTitle: "Zahlung wird verarbeitet...",
         processingDesc:
             "Bitte warten Sie, während wir Ihre Zahlung bestätigen.",
+        waitProcessing: "Bitte warten Sie einen Moment, während wir Ihre Zahlung verarbeiten.",
         timeoutTitle: "Bestellung erhalten",
         timeoutDesc:
             "Wir haben Ihre Bestellung erhalten, aber die Zahlungsbestätigung dauert länger als erwartet.",

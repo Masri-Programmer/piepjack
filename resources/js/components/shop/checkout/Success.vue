@@ -250,7 +250,14 @@
                     </router-link>
                 </Button>
             </div>
-            <Spinner v-else class="w-16 h-16 mx-auto text-main" />
+            <div v-else class="space-y-6">
+                <Spinner class="w-16 h-16 mx-auto text-main" />
+                <p
+                    class="text-sm font-bold uppercase tracking-widest text-muted-foreground animate-pulse"
+                >
+                    {{ $t("validation.success.waitProcessing") }}
+                </p>
+            </div>
         </div>
 
         <div
@@ -304,6 +311,7 @@ const { data: orderData } = useQuery({
             "failed",
             "cancelled",
             "requires-capture",
+            "processing",
         ];
 
         if (data && terminalStates.includes(data.status)) return false;
@@ -324,9 +332,18 @@ const pageTitle = computed(() => {
     if (isTimeout.value) {
         return t("validation.success.timeoutTitle");
     }
-    if (orderStatus.value === "pending") {
+
+    const terminalSuccessStates = [
+        "paid",
+        "payment-received",
+        "dispatched",
+        "requires-capture",
+    ];
+
+    if (!terminalSuccessStates.includes(orderStatus.value)) {
         return t("validation.success.order");
     }
+
     return t("validation.success.title");
 });
 
@@ -337,6 +354,18 @@ const pageDescription = computed(() => {
     if (isTimeout.value) {
         return t("validation.success.timeoutDesc");
     }
+
+    const terminalSuccessStates = [
+        "paid",
+        "payment-received",
+        "dispatched",
+        "requires-capture",
+    ];
+
+    if (!terminalSuccessStates.includes(orderStatus.value)) {
+        return t("validation.success.waitProcessing");
+    }
+
     return t("validation.success.thankYou");
 });
 
@@ -423,6 +452,16 @@ const paymentStateDetails = computed(() => {
                 icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
                 colorClass: "text-green-600 border-green-600 bg-green-600/10",
                 buttonClass: "bg-green-600 hover:bg-green-700 text-white",
+            };
+        case "processing":
+            return {
+                title: t("validation.success.processingTitle"),
+                description: t("validation.success.processingDesc"),
+                buttonText: t("validation.success.returnToShop"),
+                buttonLink: "/shop",
+                icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+                colorClass: "text-blue-500 border-blue-500 bg-blue-500/10",
+                buttonClass: "bg-blue-500 hover:bg-blue-600 text-white",
             };
         default:
             return null;
