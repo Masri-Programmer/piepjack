@@ -9,3 +9,6 @@ sudo mysql piepjack < /home/mohamad/Documents/piep/db.sql
 php artisan scout:import "Lunar\Models\Product"
 php artisan scout:import "Lunar\Models\Order"
 php artisan scout:import "Lunar\Models\Customer"
+
+php artisan lunar:delete-old-orders --date=2026-04-30
+php artisan lunar:delete-spam-orders
