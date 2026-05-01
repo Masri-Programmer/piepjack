@@ -112,64 +112,74 @@ class CheckoutController extends Controller
         ]);
     }
 
-   public function checkout(CheckoutRequest $request): JsonResponse
+    public function checkout(CheckoutRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
-        DB::beginTransaction();
         try {
-            $user = $this->findOrCreateUser($validated);
+            // Use a lock to prevent duplicate orders from concurrent requests
+            // We use the email as the lock key since it identifies the "identity" attempting checkout
+            return Cache::lock('checkout_'.md5($validated['email']), 30)->block(10, function () use ($validated) {
+                DB::beginTransaction();
+                try {
+                    $user = $this->findOrCreateUser($validated);
 
-            if (! $user->active) {
-                return response()->json(['message' => __('You are banned.')], 403);
-            }
+                    if (! $user->active) {
+                        return response()->json(['message' => __('You are banned.')], 403);
+                    }
 
-            $cart = $this->getAndSyncCart($user, $validated['products']);
-            $this->setCartAddresses($cart, $validated, $user);
+                    $cart = $this->getAndSyncCart($user, $validated['products']);
+                    $this->setCartAddresses($cart, $validated, $user);
 
-            // 1. UPDATE PROMO CODE FIRST
-            // This ensures the StoreShippingModifier sees the 'PICKUP' code
-            if (array_key_exists('promo_code', $validated)) {
-                $cart->update([
-                    'coupon_code' => $validated['promo_code'] ? strtoupper($validated['promo_code']) : null,
-                ]);
-            }
+                    // 1. UPDATE PROMO CODE FIRST
+                    // This ensures the StoreShippingModifier sees the 'PICKUP' code
+                    if (array_key_exists('promo_code', $validated)) {
+                        $cart->update([
+                            'coupon_code' => $validated['promo_code'] ? strtoupper($validated['promo_code']) : null,
+                        ]);
+                    }
 
-            // 2. FETCH SHIPPING OPTIONS AFTER PROMO CODE IS SET
-            $availableOptions = ShippingManifest::getOptions($cart);
+                    // 2. FETCH SHIPPING OPTIONS AFTER PROMO CODE IS SET
+                    $availableOptions = ShippingManifest::getOptions($cart);
 
-            // 3. AUTO-SELECT 'PICKUP' IF THE PROMO CODE IS ACTIVE
-            if (strtoupper($cart->coupon_code ?? '') === 'PICKUP') {
-                $shippingOption = $availableOptions->first(fn ($o) => $o->identifier === 'PICKUP');
-            } else {
-                $shippingOption = $availableOptions->first(fn ($o) => $o->identifier === $validated['shipping_method_id']);
-            }
+                    // 3. AUTO-SELECT 'PICKUP' IF THE PROMO CODE IS ACTIVE
+                    if (strtoupper($cart->coupon_code ?? '') === 'PICKUP') {
+                        $shippingOption = $availableOptions->first(fn ($o) => $o->identifier === 'PICKUP');
+                    } else {
+                        $shippingOption = $availableOptions->first(fn ($o) => $o->identifier === $validated['shipping_method_id']);
+                    }
 
-            if (! $shippingOption) {
-                throw new Exception(__('Shipping method unavailable. Please re-select.'));
-            }
+                    if (! $shippingOption) {
+                        throw new Exception(__('Shipping method unavailable. Please re-select.'));
+                    }
 
-            // 4. APPLY THE ZERO-COST SHIPPING AND RECALCULATE
-            $cart->setShippingOption($shippingOption);
-            $cart->calculate();
+                    // 4. APPLY THE ZERO-COST SHIPPING AND RECALCULATE
+                    $cart->setShippingOption($shippingOption);
+                    $cart->calculate();
 
-            $order = Order::where('cart_id', $cart->id)->first() ?: $cart->createOrder();
-            $customer = $order->user?->customers->first();
+                    $order = Order::where('cart_id', $cart->id)->latest()->first() ?: $cart->createOrder();
+                    $customer = $order->user?->customers->first();
 
-            $order->update([
-                'status' => 'awaiting-payment',
-                'customer_id' => $customer?->id,
-                'placed_at' => $order->placed_at ?? now(),
-                'customer_reference' => config('shop.customer_reference_prefix').$order->user_id,
-            ]);
+                    $order->update([
+                        'status' => 'awaiting-payment',
+                        'customer_id' => $customer?->id,
+                        'placed_at' => $order->placed_at ?? now(),
+                        'customer_reference' => config('shop.customer_reference_prefix').$order->user_id,
+                    ]);
 
-            $session = $this->createStripeSession($cart, $user);
+                    $session = $this->createStripeSession($cart, $user);
 
-            DB::commit();
+                    DB::commit();
 
-            return response()->json(['id' => $session->id, 'url' => $session->url]);
+                    return response()->json(['id' => $session->id, 'url' => $session->url]);
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    throw $e;
+                }
+            });
+        } catch (LockTimeoutException $e) {
+            return response()->json(['message' => __('Another checkout is in progress. Please wait.')], 409);
         } catch (Exception $e) {
-            DB::rollBack();
             Log::error('Checkout error: '.$e->getMessage());
 
             return response()->json(['message' => $e->getMessage()], 500);
@@ -266,7 +276,7 @@ class CheckoutController extends Controller
     {
         DB::beginTransaction();
         try {
-            $order = Order::where('cart_id', $cart->id)->first() ?: $cart->createOrder();
+            $order = Order::where('cart_id', $cart->id)->latest()->first() ?: $cart->createOrder();
 
             $customer = $order->user?->customers->first();
 

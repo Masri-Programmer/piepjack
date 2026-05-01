@@ -1,0 +1,11 @@
+rsync -av --progress /var/www/virtual/piepjack/testing-piepjack/storage/app/public/ /var/www/virtual/piepjack/piepjack-clothing.de/storage/app/public/
+stripe listen --forward-to  piepjack.test/api/V1/shop/webhook/stripe
+php artisan tinker
+\Lunar\Admin\Models\Staff::find(1)->update(['email' => 'info@piepjack-clothing.de', 'password' => Hash::make('password')]);
+
+live db:  /home/mohamad/Documents/piep/db.sql
+sudo mysql piepjack < /home/mohamad/Documents/piep/db.sql
+
+php artisan scout:import "Lunar\Models\Product"
+php artisan scout:import "Lunar\Models\Order"
+php artisan scout:import "Lunar\Models\Customer"
