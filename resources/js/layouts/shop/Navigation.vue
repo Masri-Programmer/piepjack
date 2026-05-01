@@ -171,7 +171,7 @@
 <script setup>
 import { ref } from "vue";
 import "@assets/css/navigation.css";
-import { useDark, useToggle } from "@vueuse/core";
+import { isDark, toggleTheme } from "@lib/store/theme";
 import { Button } from "@components/ui/button";
 import NavSidebar from "./NavSidebar.vue";
 import logoCircle from "@img/logo-new.png";
@@ -182,19 +182,6 @@ import SearchModal from "@pages/shop/SearchModal.vue";
 import { cartState, cartTotalQuantity } from "@lib/store/shop/index.js";
 import LanguageDropdown from "@components/LanguageDropdown.vue";
 import { ShieldUser, Sun, Moon, Search, ShoppingBag } from "lucide-vue-next";
-
-const isDark = useDark({
-    selector: "html",
-    attribute: "class",
-    valueDark: "dark",
-    valueLight: "",
-});
-
-const toggleTheme = () => {
-    console.log("[Navigation] Toggling theme. Current isDark:", isDark.value);
-    isDark.value = !isDark.value;
-    console.log("[Navigation] New isDark:", isDark.value);
-};
 
 const { data, error, isLoading } = apiQuery("categories").useGet({});
 

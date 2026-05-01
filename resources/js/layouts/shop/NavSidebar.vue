@@ -158,7 +158,7 @@
 
                 <!-- Footer / Action Items -->
                 <footer
-                    class="mt-auto flex grid grid-cols-3 border-t border-border bg-background"
+                    class="mt-auto grid grid-cols-3 border-t border-border bg-background"
                 >
                     <!-- Language Selector -->
                     <div
@@ -198,7 +198,8 @@
 
 <script setup>
 import { ref, watch } from "vue";
-import { onClickOutside, useDark, useToggle } from "@vueuse/core";
+import { onClickOutside } from "@vueuse/core";
+import { isDark, toggleTheme } from "@lib/store/theme";
 import {
     X,
     ChevronLeft,
@@ -253,15 +254,6 @@ onClickOutside(NavSidebarRef, () => {
         closeNavigation();
     }
 });
-
-// --- Theme Management ---
-const isDark = useDark({
-    selector: "html",
-    attribute: "class",
-    valueDark: "dark",
-    valueLight: "",
-});
-const toggleTheme = useToggle(isDark);
 
 // --- Language Dropdown Handlers ---
 function toggleLangDropdownOpen() {

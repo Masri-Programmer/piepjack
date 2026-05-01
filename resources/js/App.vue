@@ -1,11 +1,8 @@
 <template><router-view /></template>
 
 <script setup>
-import { useDark } from "@vueuse/core";
+import { isDark } from "@lib/store/theme";
 import { useShopGlobalState } from "@lib/store/shop/shop";
-
-// Initialize theme globally
-useDark();
 
 // Initialize global state at the root level
 useShopGlobalState();

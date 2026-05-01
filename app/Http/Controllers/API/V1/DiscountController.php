@@ -14,12 +14,14 @@ class DiscountController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $discounts = Discount::with([
-            'discountables',
-            'brands',
-            'customerGroups',
-            'channels',
-        ])
+        $discounts = Discount::active()
+            ->usable()
+            ->with([
+                'discountables',
+                'brands',
+                'customerGroups',
+                'channels',
+            ])
             ->orderBy('priority', 'asc')
             ->get();
 

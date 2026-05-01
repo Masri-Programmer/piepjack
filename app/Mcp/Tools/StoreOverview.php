@@ -25,7 +25,7 @@ class StoreOverview extends Tool
         $revenueFormatted = number_format($totalRevenue / 100, 2).' EUR';
 
         // Check for active Lunar discounts
-        $discounts = Discount::all()->map(fn ($d) => $d->name.' ('.$d->handle.')')->join(', ') ?: 'None';
+        $discounts = Discount::active()->usable()->get()->map(fn ($d) => $d->name.' ('.$d->handle.')')->join(', ') ?: 'None';
 
         $output = "Store Status Overview:\n";
         $output .= "- Total Orders: {$totalOrders}\n";

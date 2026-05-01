@@ -98,7 +98,7 @@ const handleOpenChange = (isOpen) => {
             </DialogHeader>
 
             <div
-                class="relative flex items-center border-b border-border bg-background shrink-0"
+                class="relative flex items-center border-b border-border bg-background shrink-0 mx-4"
             >
                 <Search
                     class="absolute right-6 w-5 h-5 text-muted-foreground pointer-events-none"
